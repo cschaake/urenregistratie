@@ -1,0 +1,113 @@
+Versie 1.0.9
+	Feature
+
+	Bug-fix
+		Boekers pagina geeft nu alleen boekers weer en niet alle gebruikers
+	
+	Known-bugs
+		Verversen van pagina met filter reset paging waardoor deze niet meer klopt
+
+Versie 1.0.8
+	Feature
+		Rapportage functionaliteit toegevoegd, alleen voor admin en super
+		Feedback formulier toegevoegd voor ingelogde gebruikers (alleen medium en large devices)
+		
+	Bug-fix
+		Urengoedkeuren pagina geoptimaliseerd. Correct aantal records en herstel form validatie na ok of cancel.
+		Foutmelding bij verwijderen record in opleidingsuren is gecorrigeerd.				
+
+	Known-bugs
+
+Versie 1.0.7
+	Feature
+		Configuratie pagina controleerd of gegevens niet gebruikt worden voordat deze worden verwijderd
+		Bij invoeren nieuwe uren wordt gecontroleerd of de uren niet overlappen met een nader record
+		Urenregistratie en configuratie schermen tonen foutmelding voordat modal wordt gesloten
+		Configureerbare activiteit waarbij opmerking verplicht wordt bij invoeren uren
+	
+	Bug-fix
+		Aantal objecten gestandaardiseerd
+		Bij uren boeken reset filter toont juiste aantal records
+		Urenregistratie pagina toont nu juiste aantal records, ook na filter aanpassingen
+		Urenregistratie pagina reset foutmeldingen herstelt
+
+	Known-bugs
+		Opleidingsuren java foutmelding bij delete opleidingsuren
+
+Versie 1.0.6
+	Feature
+		Datum checks zijn nu geparameteriseerd in settings.php
+		Configuratie pagina toegevoegd
+		Boekers admin pagina toegevoegd
+
+	Bug-fix
+		Invoeren van opleidingsuren wordt nu juiste jaartal overgenomen		
+
+Versie 1.0.5
+	Feature
+		Toevoegen van vast instructeurs uren
+		DB connect fouten worden nu afgevangen, gebruiker wordt een maintenance pagina getoond
+
+	Bug-fix
+		Overzicht afgekeurde uren kijkt niet naar gebruikers id
+		Eindtijd moet nu altijd later zijn dan starttijd bij opslaan van uren
+
+Versie 1.0.4
+	Bug-fix
+		Nieuwe en gewijzigde boekers krijgen nu weer groep mee zoda activeiten weer te selecteren zijn bij boeken van uren
+		Extra urenboekers record zonder rol en groep wordt nu niet meer aangemaakt
+		Overzichtspagina geeft te veel getallen achter de komma weer
+		Overzichtspagina details opklappen wijzigd in minder met andere pijl
+		Overzichtspagina geeft nu juiste progres bars weer
+		Help knop toegevoegd
+		Help modal voor alle pagina's toegevoegd
+	
+Bugs
+	Anonieme pagina
+		
+
+	Inloggen
+		Remember me optie
+
+	Overzicht pagina
+		Melding wanneer laatste uren 1 jaar geleden is.
+
+	Registreren
+		Eerst rol kiezen, en dan bijbehorende activiteit
+		Urenboeken bij eerste record gaat direct naar 2e pagina zodat alles leeg blijft
+
+	Goedkeuren
+		Zelf uren kunnen toevoegen
+
+	Mijn profiel
+
+	Wijzig wachtwoord
+
+	Gebruikers
+
+	Configuratie
+
+	Boekers
+		Nieuwe boeker toevoegen laat alle users inclusief boekers zien
+		Toevoegen nieuwe boeker springt niet naar laatste record met nieuwe boeker
+
+	Goedkeurders
+
+	Opleidingsuren
+			
+	
+Nieuwe wensen
+	Feedback
+	
+	
+	In 2e instantie zou het mooi zijn als deze opmerking dan in het veldje “activiteit” te zien is. (Dit laatste heeft geen prioriteit, maar iets voor de toekomst?) 
+	
+	Goedkeuren, activiteit wijzigen.	
+
+	Foutmeldingen bij database wijzigigen weergeven op modal voordat de modal afgesloten wordt zodat de gebruiker de gegevens kan wijzigen en opnieuw aanbieden.
+
+	Raportage
+		Overzicht van huidige stand geboekte uren per gebruiker. Rood wanneer periode van 2 jaar tussen 2 boekingen is gesignaleerd.
+		Inzoomen op gebruiker om alle geboekte uren te zien.
+		
+		
