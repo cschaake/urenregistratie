@@ -1,0 +1,12 @@
+<div ng-controller="rollenCtrl"> <!-- Angular container, within this element the myApp application is active -->
+    <div class="panel panel-default">
+        <div class="panel-body">
+
+			<div ng-show="message" class="alert alert-danger">
+				<a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>{{ message }}
+			</div>
+            <div ng-show="spinner" class="spinner"></div>
+			
+		</div>
+	</div>
+</div>
