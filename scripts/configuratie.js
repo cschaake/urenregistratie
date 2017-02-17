@@ -17,7 +17,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.6
- * @version    1.0.7
+ * @version    1.0.9
  */
 // --------------------------------------------------------------------
 // Custom App
@@ -252,7 +252,7 @@ angular.module('myApp')
 						$scope.messageRollen = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.rollen[index] = response.data;
+						$scope.rollen[index] = response.data.rollen[0];
 						$scope.rollen.form = null;
 						$scope.rollen.original = null;
 						$('#editrol').modal('hide'); // Close the modal
@@ -273,7 +273,7 @@ angular.module('myApp')
 						$scope.messageRollen = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.rollen.push(response.data[0]);
+						$scope.rollen.push(response.data.rollen[0]);
 						$scope.rollen.form = null;
 						$scope.rollen.original = null;
 						$('#editrol').modal('hide'); // Close the modal

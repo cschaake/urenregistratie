@@ -18,14 +18,15 @@
  * @copyright  2015 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version       1.0.6
+ * @version    1.0.9
  */
 
 include_once '../includes/db_connect.php';
 include_once '../includes/settings.php';
 include_once '../objects/Authenticate_obj.php';
-include_once '../objects/opleidingsuren_obj.php';
+include_once '../objects/Input_obj.php';
 
+include_once '../objects/opleidingsuren_obj.php';
 
 // Start or restart session
 include_once '../includes/login_functions.php';
@@ -41,81 +42,57 @@ if (!$authenticate->authorisation_check(false)) {
 }
 // We do have a valid user
 
-/**
- * POST method (CREATE)
- *
- * We need to insert a new record
- */
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get the post info from the json call
-    $postdata = file_get_contents('php://input');
-    $record = json_decode($postdata);
-	
-	postOpleidingsuren($record);
+// We do have a valid user
 
-/**
- * GET method (READ)
- *
- * We need to retrieve one or more records
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    // Everyone may execute this method
+$input = new input();
 
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
+switch ($input->get_method()) {
+    /**
+     * POST method (CREATE)
+     *
+     * We need to insert a new record
+     */
+    case 'POST':
+        postOpleidingsuren($input);
+        break;
+
+        /**
+         * GET method (READ)
+         *
+         * We need to read one or all records
+         */
+    case 'GET':
+        getOpleidingsuren();
+        break;
+
+        /**
+         * PUT method (UPDATE)
+         *
+         * We need to update a record
+         */
+    case 'PUT':
+        putOpleidingsuren($input);
+        break;
+
+        /**
+         * DELETE method (DELETE)
+         *
+         * We need to delete a record
+         */
+    case 'DELETE':
+        deleteOpleidingsuren($input);
+        break;
+
+        /**
+         * Other methods are not implemented
+         *
+         * Just return an error message
+         */
+    default:
         http_response_code(501);
         echo json_encode(array('success' => false, 'message' => 'Not implemented', 'code' => 501));
-        exit;
-
-    } else {
-        // We are called for all records
-		
-		getOpleidingsuren();
-
-	}
-
-/**
- * PUT method (UPDATE)
- *
- * We need to updata / replace an existing record
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        // Get the requested record
-        $request = substr(filter_var($_SERVER['PATH_INFO'], FILTER_SANITIZE_STRING),1);
-        // Get the post info from the json call
-        $postdata = file_get_contents('php://input');
-        $record = json_decode($postdata);
-		
-		putOpleidingsuren($record);
-
-    } else {
-        // No uren record is specified
-        http_response_code(400);
-        echo json_encode(array('success' => false, 'message' => 'Bad request', 'code' => 400));
-        exit;
-    }
-
-
-/**
- * DELETE method (DELETE)
- *
- * We need to delete an existing record
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        // Get the requested record
-        $request = substr(filter_var($_SERVER['PATH_INFO'], FILTER_SANITIZE_STRING),1);
-		
-		deleteOpleidingsuren($request); 
-
-	} else {
-        // No uren record is specified
-        http_response_code(400);
-        echo json_encode(array('success' => false, 'message' => 'Bad request', 'code' => 400));
-        exit;
-    }
 }
+
 
 /**
  * Checks the users rol
@@ -130,9 +107,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 function checkRol($username, $rol_id)
 {
 	global $mysqli;
-	
+
 	include_once('../objects/goedkeurders_obj.php');
-	
+
 	$rollen = new Goedkeurders($mysqli);
 	return (in_array($rol_id, $rollen->getRolId($username)));
 }
@@ -140,35 +117,45 @@ function checkRol($username, $rol_id)
 /**
  * Post opleidingsuren
  *
- * @param object $record
+ * @param input $input
  *
  * @return bool
  */
-function postOpleidingsuren($record)
+function postOpleidingsuren($input)
 {
 	global $authenticate;
 	global $mysqli;
-	
+
+	$json = $input->get_JSON();
+
 	// Check if we have the correct role to insert opleidingsuren
-	if (!checkRol($authenticate->username,$record->rol)) {
+	if (!checkRol($authenticate->username,$json->rol)) {
 		http_response_code(403);
         echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
         exit;
 	}
-	
+
+	// Only admin or super may execute this method
+	if ((!checkRol($authenticate->username,$json->rol)) || (!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
+	    http_response_code(403);
+	    echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
+	    exit;
+	}
+    // @todo Opleidingsuur object aanmaken en deze doorgeven aan opleidingsuren.
     $opleidingsuren_obj = new Opleidingsuren($mysqli);
 
     // Update record
     try {
-        $opleidingsuren = $opleidingsuren_obj->insert($record);
+        $opleidingsuren = $opleidingsuren_obj->insert($json);
     } catch(Exception $e) {
         http_response_code(500);
-        echo json_encode(array('success' => false, 'message' => 'Internal Server Error', 'code' => 500));
+        echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 500));
         exit;
     }
 
+    http_response_code(200);
+    header('Content-Type: application/json');
     echo json_encode($opleidingsuren);
-	
 	return true;
 }
 
@@ -181,13 +168,15 @@ function getOpleidingsuren()
 {
 	global $authenticate;
 	global $mysqli;
-	
+
     $opleidingsuren_obj = new Opleidingsuren($mysqli);
 
     $username = $authenticate->username;
 
-    if ((is_array($authenticate->group)) && (in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
+    if (($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
         $username = null;
+    } else {
+        $username = $authenticate->username;
     }
 
     try {
@@ -198,6 +187,9 @@ function getOpleidingsuren()
         print_r($e);
         exit;
     }
+
+    http_response_code(200);
+    header('Content-Type: application/json');
     echo json_encode($opleidingsuren);
 	return true;
 }
@@ -205,63 +197,90 @@ function getOpleidingsuren()
 /**
  * Put opleidingsuren
  *
- * @param object $record
+ * @param input $input
  *
  * @return bool
  */
-function putOpleidingsuren($record)
+function putOpleidingsuren($input)
 {
 	global $authenticate;
 	global $mysqli;
-	
-    // Only admin and super may update records of other users
-    if (($authenticate->username != $record->username) && 
-	((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group)))) {
+
+    // Only admin and super may update records
+    if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
         http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
+        header('Content-Type: application/json');
+        echo json_encode(array(
+            'success' => false,
+            'message' => 'Forbidden',
+            'code' => 403
+        ));
+        exit();
     }
+
+    $json = $input->get_JSON();
 
     $goedkeuren_obj = new goedkeuren($mysqli);
 
     // Update record
 	//Get uren by user (if not admin or super only show own uren)
-    try { 
-        $goedkeuren_obj->update($record);
+    try {
+        $goedkeuren_obj->update($json);
     } catch(Exception $e) {
         http_response_code(404);
         echo json_encode(array('success' => false, 'message' => 'Not found', 'code' => 404));
         exit;
     }
 
-    echo json_encode($record);
-		
-	return true;
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo json_encode($uren_obj);
+    return true;
 }
 
 /**
  * Delete opleidingsuren
  *
- * @param object $request
+ * @param input $input
  *
  * @return bool
  */
-function deleteOpleidingsuren($request)
+function deleteOpleidingsuren($input)
 {
-	global $mysqli;
+    global $authenticate;
+    global $mysqli;
+
+    // Only admin and super may update records
+    if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
+        http_response_code(403);
+        header('Content-Type: application/json');
+        echo json_encode(array(
+            'success' => false,
+            'message' => 'Forbidden',
+            'code' => 403
+        ));
+        exit();
+    }
 
     $opleidingsuren_obj = new Opleidingsuren($mysqli);
 
     // Update record
     try {
-        $opleidingsuren_obj->delete($request);
+        $opleidingsuren_obj->delete(array_keys($input->get_pathParams())[0]);
     } catch(Exception $e) {
         http_response_code(404);
         echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 404));
         exit;
     }
 
-    echo json_encode(array('success' => true));
-		
-	return true;
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo json_encode(array(
+        'success' => true,
+        'message' => 'Record successfully deleted',
+        'code' => 200
+    ));
+
+    return true;
 }
+

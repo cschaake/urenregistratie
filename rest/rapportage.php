@@ -8,9 +8,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.8
+ * @version    1.0.9
  */
 
 include_once '../includes/db_connect.php';
@@ -74,25 +74,25 @@ function getRapport(input $input)
 			case 'certificaten':
 				getCertificaten($authenticate->username);
 				break;
-				
+
 			case 'goedtekeuren':
 				getGoedtekeuren($authenticate->username);
 				break;
-				
+
 			default:
 				// Details for user in first param
-				if ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super')) { 
+				if ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super')) {
 					getHuidigeUren(array_keys($input->get_pathParams())[0]);
 				} else {
 					http_response_code(403);
 					header('Content-Type: application/json');
 					echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-					exit;				
+					exit;
 				}
 		}
 	} else {
 		// Overview of all users for admin and super, or details for current user
-		if ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super')) { 
+		if ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super')) {
 			getHuidigeUren();
 		} else {
 			getHuidigeUren($authenticate->username);
@@ -107,27 +107,28 @@ function getRapport(input $input)
  *
  * @return 	bool	Successflag
  */
-function getCertificaten($username) 
+function getCertificaten($username)
 {
 	global $mysqli;
-	
+
 	$rapport_obj = new Rapport($mysqli);
-	
-	try { 
+
+	try {
 		$rapport_obj->certificaten($username);
 	} catch(Exception $e) {
 		if ($e->getCode() != '404') {
 			http_response_code(400);
 			header('Content-Type: application/json');
 			echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 400));
-			exit;	
+			exit;
 		}
 	}
-	
+
     http_response_code(200);
 	header('Content-Type: application/json');
 	echo json_encode($rapport_obj);
 
+	return true;
 }
 
 /**
@@ -140,25 +141,27 @@ function getCertificaten($username)
 function getGoedtekeuren($username)
 {
 	global $mysqli;
-	
+
 	$rapport_obj = new Rapport($mysqli);
-	
-	try { 
+
+	try {
 		$rapport_obj->goedtekeuren($username);
 	} catch(Exception $e) {
 		if ($e->getCode() != '404') {
 			http_response_code(400);
 			header('Content-Type: application/json');
 			echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 400));
-			exit;	
+			exit;
 		}
 	}
-	
+
     http_response_code(200);
 	header('Content-Type: application/json');
 	echo json_encode($rapport_obj);
+
+	return true;
 }
- 
+
 /**
  * Get Rapport
  *
@@ -169,21 +172,23 @@ function getGoedtekeuren($username)
 function getHuidigeUren($username = null)
 {
 	global $mysqli;
-	
+
 	$rapport_obj = new Rapport($mysqli);
 
-	try { 
+	try {
 		$rapport_obj->gebruikersUren($username);
 	} catch(Exception $e) {
 		if ($e->getCode() != '404') {
 			http_response_code(400);
 			header('Content-Type: application/json');
 			echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 400));
-			exit;	
+			exit;
 		}
 	}
-	
+
     http_response_code(200);
 	header('Content-Type: application/json');
 	echo json_encode($rapport_obj);
+
+	return true;
 }

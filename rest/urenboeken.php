@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.0.7
+ * @version    1.0.9
  */
 include_once '../includes/db_connect.php';
 include_once '../includes/settings.php';
@@ -56,22 +56,22 @@ switch ($input->get_method()) {
     case 'POST':
         postUrenboeken($input);
         break;
-    
+
     // Read one or all records
     case 'GET':
         getUrenboeken($input);
         break;
-    
+
     // Update an existing record
     case 'PUT':
         putUrenboeken($input);
         break;
-    
+
     // delete an existing record
     case 'DELETE':
         deleteUrenboeken($input);
         break;
-    
+
     default:
         http_response_code(501);
         header('Content-Type: application/json');
@@ -93,9 +93,9 @@ function postUrenboeken(input $input)
 {
     global $mysqli;
     global $authenticate;
-    
+
     $json = $input->get_JSON();
-    
+
     // Only admin and super may update records of other users @todo fix onderstaande
     if (! ($authenticate->checkUsername($json->username) || $authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
         http_response_code(403);
@@ -107,15 +107,15 @@ function postUrenboeken(input $input)
         ));
         exit();
     }
-    
+
     if (! isset($json->reden)) {
         $json->reden = null;
     }
-    
+
     if (! isset($json->opmerking)) {
         $json->opmerking = null;
     }
-    
+
     try {
         $uur_obj = new Uur($json->username, $json->activiteit_id, $json->rol_id, $json->datum, $json->start, $json->eind, $json->uren, $json->opmerking, $json->akkoord, $json->reden);
     } catch (Exception $e) {
@@ -128,9 +128,9 @@ function postUrenboeken(input $input)
         ));
         exit();
     }
-    
+
     $uren_obj = new Uren($mysqli);
-    
+
     try {
         $uren_obj->create($uur_obj);
     } catch (Exception $e) {
@@ -143,11 +143,11 @@ function postUrenboeken(input $input)
         ));
         exit();
     }
-    
+
     http_response_code(200);
     header('Content-Type: application/json');
     echo json_encode($uren_obj);
-    
+
     return true;
 }
 
@@ -169,7 +169,7 @@ function getUrenboeken(input $input)
      * 3. /urenboeken.php/user -> gives all uren for user (other than currentuser) (admin and super only)
      * 4. /urenboeken.php/all -> gives all uren for all users (admin and super only)
      */
-    
+
     if ($input->hasPathParams() && (is_int(array_keys($input->get_pathParams())[0]))) {
         // Call method 2
         // Only admin and super may update records of other users
@@ -178,7 +178,7 @@ function getUrenboeken(input $input)
         } else {
             $username = null;
         }
-        
+
         $id = array_keys($input->get_pathParams())[0];
     } elseif ($input->hasPathParams() && (array_keys($input->get_pathParams())[0] == 'all')) {
         // Call method 4
@@ -193,7 +193,7 @@ function getUrenboeken(input $input)
             ));
             exit();
         }
-        
+
         $username = null;
         $id = null;
     } elseif ($input->hasPathParams()) {
@@ -215,7 +215,7 @@ function getUrenboeken(input $input)
         $username = $authenticate->username;
         $id = null;
     }
-    
+
     $uren_obj = new Uren($mysqli);
     try {
         $uren_obj->read($username, $id);
@@ -231,9 +231,9 @@ function getUrenboeken(input $input)
             exit();
         }
     }
-    
+
     $result['uren'] = $uren_obj->uren;
-    
+
     if (! $id) {
         $activiteiten_obj = new Activiteiten($mysqli);
         try {
@@ -250,9 +250,9 @@ function getUrenboeken(input $input)
                 exit();
             }
         }
-        
+
         $result['activiteiten'] = $activiteiten_obj->activiteiten;
-        
+
         $rollen_obj = new Rollen($mysqli);
         try {
             $rollen_obj->read($username);
@@ -266,14 +266,14 @@ function getUrenboeken(input $input)
             ));
             exit();
         }
-        
+
         $result['rollen'] = $rollen_obj->rollen;
     }
-    
+
     http_response_code(200);
     header('Content-Type: application/json');
     echo json_encode($result);
-    
+
     return true;
 }
 
@@ -288,9 +288,9 @@ function putUrenboeken(input $input)
 {
     global $mysqli;
     global $authenticate;
-    
+
     $json = $input->get_JSON();
-    
+
     // Only admin and super may update records of other users
     if (! ($authenticate->checkUsername($json->username) || $authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
         http_response_code(403);
@@ -302,15 +302,15 @@ function putUrenboeken(input $input)
         ));
         exit();
     }
-    
+
     if (! isset($json->reden)) {
         $json->reden = null;
     }
-    
+
     if (! isset($json->opmerking)) {
         $json->opmerking = null;
     }
-    
+
     try {
         $uur_obj = new Uur($json->username, $json->activiteit_id, $json->rol_id, $json->datum, $json->start, $json->eind, $json->uren, $json->opmerking, $json->akkoord, $json->reden, null, $json->id);
     } catch (Exception $e) {
@@ -323,9 +323,9 @@ function putUrenboeken(input $input)
         ));
         exit();
     }
-    
+
     $uren_obj = new Uren($mysqli);
-    
+
     try {
         $uren_obj->update($uur_obj);
     } catch (Exception $e) {
@@ -348,11 +348,11 @@ function putUrenboeken(input $input)
         ));
         exit();
     }
-    
+
     http_response_code(200);
     header('Content-Type: application/json');
     echo json_encode($uren_obj);
-    
+
     return true;
 }
 
@@ -367,7 +367,7 @@ function deleteUrenboeken(input $input)
 {
     global $mysqli;
     global $authenticate;
-    
+
     // No record to delete was provided
     if (! $input->get_pathParams()) {
         http_response_code(400);
@@ -379,16 +379,16 @@ function deleteUrenboeken(input $input)
         ));
         exit();
     }
-    
+
     // Only admin and super may update records of other users
     if (! $authenticate->checkGroup('admin') || ! $authenticate->checkGroup('super')) {
         $username = $authenticate->username;
     } else {
         $username = null;
     }
-    
+
     $uren_obj = new Uren($mysqli);
-    
+
     try {
         $uren_obj->delete(array_keys($input->get_pathParams())[0], $username);
     } catch (Exception $e) {
@@ -411,7 +411,7 @@ function deleteUrenboeken(input $input)
         ));
         exit();
     }
-    
+
     http_response_code(200);
     header('Content-Type: application/json');
     echo json_encode(array(
@@ -419,6 +419,6 @@ function deleteUrenboeken(input $input)
         'message' => 'Record successfully deleted',
         'code' => 200
     ));
-    
+
     return true;
 }
