@@ -8,9 +8,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -29,7 +29,7 @@ require_once ('Uur_obj.php');
  * @author Christiaan Schaake <chris@schaake.nu>
  * @copyright 2017 Schaake.nu
  * @license http://www.opensource.org/licenses/mit-license.html MIT License
- *         
+ *
  * @since Class available since Release 1.0.0
  */
 class Uren
@@ -55,7 +55,7 @@ class Uren
      * Creeer uren object
      *
      * @access public
-     * @param mysqli $mysqli            
+     * @param mysqli $mysqli
      * @throws Exception
      * @return bool Success flag
      */
@@ -85,11 +85,11 @@ class Uren
         if ($time) {
             throw new Exception('Reeds uren geboekt tussen ' . $time->start . ' en ' . $time->eind);
         }
-        
+
         $prep_stmt = "
-            INSERT 
-				ura_uren 
-            SET 
+            INSERT
+				ura_uren
+            SET
                 username = ?,
                 activiteit_id = ?,
                 rol_id = ?,
@@ -100,14 +100,14 @@ class Uren
                 akkoord = 0,
                 reden = '',
 				opmerking = ?";
-        
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             $stmt->bind_param('siisssds', $uur_obj->username, $uur_obj->activiteit_id, $uur_obj->rol_id, $uur_obj->datum, $uur_obj->start, $uur_obj->eind, $uur_obj->uren, $uur_obj->opmerking);
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->affected_rows >= 1) {
                 $id = (int) $stmt->insert_id;
             } else {
@@ -116,10 +116,10 @@ class Uren
             }
             $stmt->close();
         } else {
-            throw new Exception('Database error');
+            throw new Exception('Database error', 500);
         }
         $this->read($uur_obj->username, $id);
-        
+
         return true;
     }
 
@@ -139,7 +139,7 @@ class Uren
     public function read($username = null, $id = null, $pijldatum = null)
     {
         $prep_stmt = "
-            SELECT 
+            SELECT
                 ura_uren.id,
                 ura_uren.username,
                 ura_uren.activiteit_id,
@@ -170,9 +170,9 @@ class Uren
         if ($id) {
             $prep_stmt .= " AND ura_uren.id = ?";
         }
-        
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             if ($id && $username) {
                 $stmt->bind_param('si', $username, $id);
@@ -183,10 +183,10 @@ class Uren
             }
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->num_rows >= 1) {
                 $stmt->bind_result($id, $username, $activiteit_id, $activiteit, $groep_id, $groep, $rol_id, $rol, $datum, $start, $eind, $uren, $akkoord, $reden, $opmerking, $flag);
-                
+
                 while ($stmt->fetch()) {
                     $uur_obj = new Uur($username, $activiteit_id, $rol_id, $datum, $start, $eind, $uren, $opmerking, $akkoord, $reden, $flag, $id);
                     $uur_obj->addActiviteit($activiteit_id, $activiteit);
@@ -205,7 +205,7 @@ class Uren
         } else {
             throw new Exception('Database error', 500);
         }
-        
+
         return true;
     }
 
@@ -221,56 +221,56 @@ class Uren
     public function readGoedTeKeuren($username = null)
     {
         $prep_stmt = "
-            SELECT 
-                ura_uren.id, 
-				ura_uren.username, 
-				users.firstName, 
-				users.lastName, 
-				ura_uren.activiteit_id, 
-				ura_activiteiten.activiteit, 
-                ura_uren.rol_id, 
-				ura_rollen.rol, 
-				ura_uren.datum, 
-				ura_uren.start, 
-				ura_uren.eind, 
-				ura_uren.uren, 
+            SELECT
+                ura_uren.id,
+				ura_uren.username,
+				users.firstName,
+				users.lastName,
+				ura_uren.activiteit_id,
+				ura_activiteiten.activiteit,
+                ura_uren.rol_id,
+				ura_rollen.rol,
+				ura_uren.datum,
+				ura_uren.start,
+				ura_uren.eind,
+				ura_uren.uren,
 				ura_uren.opmerking
-            FROM 
+            FROM
 				ura_uren
-			JOIN 
+			JOIN
 				users ON ura_uren.username = users.username
-			JOIN 
+			JOIN
 				ura_rollen ON ura_uren.rol_id = ura_rollen.id
-			JOIN 
+			JOIN
 				ura_activiteiten ON ura_uren.activiteit_id = ura_activiteiten.id";
-        
+
         if ($username) {
-            $prep_stmt .= " 
-				JOIN 
+            $prep_stmt .= "
+				JOIN
 					ura_urengoedkeuren ON ura_uren.rol_id = ura_urengoedkeuren.rol_id";
         }
-        
+
         $prep_stmt .= "
             WHERE akkoord < 1 ";
-        
+
         if ($username) {
             $prep_stmt .= "
                 AND ura_urengoedkeuren.username = ?";
         }
-        
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             if ($username) {
                 $stmt->bind_param('s', $username);
             }
-            
+
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->num_rows >= 1) {
                 $stmt->bind_result($id, $username, $firstname, $lastname, $activiteit_id, $activiteit, $rol_id, $rol, $datum, $start, $eind, $uren, $opmerking);
-                
+
                 while ($stmt->fetch()) {
                     $uur_obj = new Uur($username, $activiteit_id, $rol_id, $datum, $start, $eind, $uren, $opmerking, null, null, null, $id);
                     $uur_obj->addActiviteit($activiteit_id, $activiteit);
@@ -289,7 +289,7 @@ class Uren
         } else {
             throw new Exception('Database error', 500);
         }
-        
+
         return true;
     }
 
@@ -305,9 +305,9 @@ class Uren
     public function update(Uur $uur_obj)
     {
         $prep_stmt = "
-            UPDATE 
-				ura_uren 
-            SET 
+            UPDATE
+				ura_uren
+            SET
                 username = ?,
                 activiteit_id = ?,
                 rol_id = ?,
@@ -320,14 +320,14 @@ class Uren
 				opmerking = ?
             WHERE
                 id = ?";
-        
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             $stmt->bind_param('siisssdissi', $uur_obj->username, $uur_obj->activiteit_id, $uur_obj->rol_id, $uur_obj->datum, $uur_obj->start, $uur_obj->eind, $uur_obj->uren, $uur_obj->akkoord, $uur_obj->reden, $uur_obj->opmerking, $uur_obj->id);
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->affected_rows < 0) {
                 $stmt->close();
                 throw new Exception('Uur record niet gevonden', 404);
@@ -336,9 +336,9 @@ class Uren
         } else {
             throw new Exception('Database error', 500);
         }
-        
+
         $this->read($uur_obj->username, $uur_obj->id);
-        
+
         return true;
     }
 
@@ -355,19 +355,19 @@ class Uren
     public function delete($id, $username = null)
     {
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
-        
+
         $prep_stmt = "
-            DELETE FROM 
+            DELETE FROM
 				ura_uren
-            WHERE 
+            WHERE
 				id = ? ";
-        
+
         if ($username) {
             $prep_stmt .= " AND username = ? ";
         }
-        
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             if ($username) {
                 $stmt->bind_param('is', $id, $username);
@@ -376,13 +376,13 @@ class Uren
             }
             $stmt->execute();
             $stmt->store_result();
-            
+
             $result = ($stmt->affected_rows >= 1);
             $stmt->close();
         } else {
             throw new Exception('Database error', 500);
         }
-        
+
         return $result;
     }
 
@@ -398,29 +398,29 @@ class Uren
     public function goedkeuren($id)
     {
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
-        
+
         $prep_stmt = "
-            UPDATE 
-				ura_uren 
-            SET 
+            UPDATE
+				ura_uren
+            SET
                 akkoord = 1
             WHERE
                 id = ?";
-        
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             $stmt->bind_param('i', $id);
-            
+
             $stmt->execute();
             $stmt->store_result();
-            
+
             $result = ($stmt->affected_rows >= 1);
             $stmt->close();
         } else {
             throw new Exception('Database error', 500);
         }
-        
+
         return $result;
     }
 
@@ -438,30 +438,30 @@ class Uren
     {
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
         $reden = filter_var($reden, FILTER_SANITIZE_STRING);
-        
+
         $prep_stmt = "
-            UPDATE 
-				ura_uren 
-            SET 
+            UPDATE
+				ura_uren
+            SET
                 akkoord = 2,
                 reden = ?
             WHERE
                 id = ?";
-        
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             $stmt->bind_param('si', $reden, $id);
-            
+
             $stmt->execute();
             $stmt->store_result();
-            
+
             $result = ($stmt->affected_rows >= 1);
             $stmt->close();
         } else {
             throw new Exception('Database error', 500);
         }
-        
+
         return $result;
     }
 
@@ -483,29 +483,29 @@ class Uren
     private function _checkTime($username, $date, $start, $end)
     {
         $result = false;
-        
+
         $prep_stmt = "
-            SELECT 
+            SELECT
 				start, eind
-			FROM 
+			FROM
 				ura_uren
-            WHERE 
+            WHERE
 				username = ?
-			AND 
+			AND
 				datum = ?
-			AND 
+			AND
 				eind > ?
-			AND 
+			AND
 				start < ?";
-        
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             $stmt->bind_param('ssss', $username, $date, $start, $end);
-            
+
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->affected_rows < 0) {
                 $stmt->close();
                 throw new Exception('Fout bij bepalen tijds overlap', 500);
@@ -513,12 +513,12 @@ class Uren
                 $stmt->bind_result($result->start, $result->eind);
                 $stmt->fetch();
             }
-            
+
             $stmt->close();
         } else {
             throw new Exception('Database error', 500);
         }
-        
+
         return $result;
     }
 }

@@ -123,7 +123,7 @@ function postUser($input)
 
     $users_obj = new Users($mysqli);
     try {
-        $user = $users_obj->setBoeker($boeker);
+        $users_obj->setBoeker($boeker);
     } catch (Exception $e) {
         http_response_code(404);
         header('Content-Type: application/json');
@@ -154,8 +154,6 @@ function getUsers($input)
 {
     global $mysqli;
     global $authenticate;
-
-    $json = $input->get_JSON();
 
     // Only admin and super may update records
     if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
@@ -309,7 +307,7 @@ function deleteUser($input)
 
         $users_obj = new Users($mysqli);
         try {
-            $users = $users_obj->deleteBoeker($username);
+            $users_obj->deleteBoeker($username);
         } catch (Exception $e) {
             http_response_code(404);
             header('Content-Type: application/json');

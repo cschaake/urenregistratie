@@ -202,8 +202,6 @@ function deleteCertificaten($input)
 	global $authenticate;
 	global $mysqli;
 
-	$json = $input->get_JSON();
-
 	// Only admin and super may update records of other users
 	if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
 	    http_response_code(403);

@@ -96,7 +96,7 @@ function postUrenboeken(input $input)
 
     $json = $input->get_JSON();
 
-    // Only admin and super may update records of other users @todo fix onderstaande
+    // Only admin and super may update records of other users
     if (! ($authenticate->checkUsername($json->username) || $authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
         http_response_code(403);
         header('Content-Type: application/json');

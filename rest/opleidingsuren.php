@@ -26,7 +26,8 @@ include_once '../includes/settings.php';
 include_once '../objects/Authenticate_obj.php';
 include_once '../objects/Input_obj.php';
 
-include_once '../objects/opleidingsuren_obj.php';
+include_once '../objects/Opleidingsuren_obj.php';
+include_once '../objects/Uur_obj.php';
 
 // Start or restart session
 include_once '../includes/login_functions.php';
@@ -141,12 +142,13 @@ function postOpleidingsuren($input)
 	    echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
 	    exit;
 	}
-    // @todo Opleidingsuur object aanmaken en deze doorgeven aan opleidingsuren.
+
+	$uur_obj = new Uur($json->username, $json->activiteit, $json->rol, $json->datum, "00:00", "00:00", $json->uren);
     $opleidingsuren_obj = new Opleidingsuren($mysqli);
 
     // Update record
     try {
-        $opleidingsuren = $opleidingsuren_obj->insert($json);
+        $opleidingsuren_obj->create($uur_obj);
     } catch(Exception $e) {
         http_response_code(500);
         echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 500));
@@ -155,8 +157,9 @@ function postOpleidingsuren($input)
 
     http_response_code(200);
     header('Content-Type: application/json');
-    echo json_encode($opleidingsuren);
-	return true;
+    echo json_encode($opleidingsuren_obj);
+
+    return true;
 }
 
 /**
@@ -180,7 +183,7 @@ function getOpleidingsuren()
     }
 
     try {
-        $opleidingsuren = $opleidingsuren_obj->get($username);
+        $opleidingsuren_obj->read($username);
     } catch(Exception $e) {
         http_response_code(404);
         echo json_encode(array('success' => false, 'message' => 'Not found', 'code' => 404));
@@ -190,8 +193,9 @@ function getOpleidingsuren()
 
     http_response_code(200);
     header('Content-Type: application/json');
-    echo json_encode($opleidingsuren);
-	return true;
+    echo json_encode($opleidingsuren_obj);
+
+    return true;
 }
 
 /**
@@ -283,4 +287,3 @@ function deleteOpleidingsuren($input)
 
     return true;
 }
-
