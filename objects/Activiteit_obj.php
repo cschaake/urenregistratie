@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Activiteit Object
  *
@@ -24,19 +25,21 @@
 /**
  * Activiteit object
  *
- * @package    Urenverantwoording
- * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @package Urenverantwoording
+ * @author Christiaan Schaake <chris@schaake.nu>
+ * @copyright 2017 Schaake.nu
+ * @license http://www.opensource.org/licenses/mit-license.html MIT License
  *
- * @since      Object available since Release 1.0.0
+ * @since Object available since Release 1.0.0
+ * @version 1.0.7
  */
-class Activiteit 
+class Activiteit
 {
+
     /**
      * id van de activiteit verplicht numeriek 5 lang
      *
-     * @var int           Id van de activiteit
+     * @var int Id van de activiteit
      * @access public
      */
     public $id;
@@ -44,7 +47,7 @@ class Activiteit
     /**
      * Naam van de activiteit verplicht alfanumeriek 30 lang
      *
-     * @var string        Naam van de activiteit
+     * @var string Naam van de activiteit
      * @access public
      */
     public $activiteit;
@@ -52,7 +55,7 @@ class Activiteit
     /**
      * Group_id verplicht numeriek 5 lang (link naar ura_groepen tabel)
      *
-     * @var int            Groep id
+     * @var int Groep id
      * @access public
      */
     public $groep_id;
@@ -60,7 +63,7 @@ class Activiteit
     /**
      * Naam van de groep (uit ura_groepen tabel)
      *
-     * @var string        Name van de groep
+     * @var string Name van de groep
      * @access public
      */
     public $groep;
@@ -68,32 +71,36 @@ class Activiteit
     /**
      * Opmerking verplicht
      *
-     * @var bool          Configuratie parameter of opmerking verplicht is bij boeken van deze activiteit
+     * @var bool Configuratie parameter of opmerking verplicht is bij boeken van deze activiteit
      * @access public
      */
     public $opmerkingVerplicht;
-	
+
     /**
      * Creeer activtiteit object
      *
-     * @param 	int 	$id			Id van de activiteit
-     * @param 	string 	$activiteit	naam van de activiteit
-     * @param 	int 	$group_id   Id van de groep
-     * @param 	string 	$group      Optioneel naam van de groep
+     * @param int $id
+     *            Id van de activiteit
+     * @param string $activiteit
+     *            naam van de activiteit
+     * @param int $group_id
+     *            Id van de groep
+     * @param string $group
+     *            Optioneel naam van de groep
      *
      * @return bool Succes vlag
      */
-    public function __construct($id, $activiteit, $groep_id, $groep = null, $opmerkingVerplicht = null) 
-	{
-		if ($id) {
-			$this->id = (int) filter_var($id, FILTER_SANITIZE_STRING);
-		} else {
-			$this->id = null;
-		}
-		$this->activiteit = filter_var($activiteit, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
-		$this->groep_id = (int) filter_var($groep_id, FILTER_SANITIZE_STRING);
-		$this->groep = filter_var($groep, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
-		$this->opmerkingVerplicht = (bool) $opmerkingVerplicht;
+    public function __construct($id, $activiteit, $groep_id, $groep = null, $opmerkingVerplicht = null)
+    {
+        if ($id) {
+            $this->id = (int) filter_var($id, FILTER_SANITIZE_STRING);
+        } else {
+            $this->id = null;
+        }
+        $this->activiteit = filter_var($activiteit, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        $this->groep_id = (int) filter_var($groep_id, FILTER_SANITIZE_STRING);
+        $this->groep = filter_var($groep, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        $this->opmerkingVerplicht = (bool) $opmerkingVerplicht;
 
         return true;
     }

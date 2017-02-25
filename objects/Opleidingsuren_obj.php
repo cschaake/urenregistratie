@@ -20,22 +20,22 @@
  * @since      File available since Release 1.0.5
  * @version       1.0.9
  */
-
-include_once('Uur_obj.php');
-include_once('User_obj.php');
+include_once ('Uur_obj.php');
+include_once ('User_obj.php');
 
 /**
  * Opleidingsuren object
  *
- * @package    Urenverantwoording
- * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2015 Schaake.nu
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @package Urenverantwoording
+ * @author Christiaan Schaake <chris@schaake.nu>
+ * @copyright 2015 Schaake.nu
+ * @license http://www.opensource.org/licenses/mit-license.html MIT License
  *
- * @since      File available since Release 1.0.0
+ * @since File available since Release 1.0.0
  */
 class Opleidingsuren
 {
+
     /**
      * Array met Uur objecten
      *
@@ -65,17 +65,16 @@ class Opleidingsuren
      *
      * Creates the opleidingsuren object that will contain all uren stuff
      *
-     * @param mysqli $mysqli Valid mysqli object
+     * @param mysqli $mysqli
+     *            Valid mysqli object
      *
      * @return bool Success flag
      */
-    public function __construct($mysqli)
+    public function __construct(mysqli $mysqli)
     {
-        if (!is_a($mysqli, 'mysqli'))
-        {
+        if (! is_a($mysqli, 'mysqli')) {
             throw new Exception('$mysqli is not a valid mysqli object');
-        } else
-        {
+        } else {
             $this->mysqli = $mysqli;
         }
         return true;
@@ -85,9 +84,10 @@ class Opleidingsuren
      * Update the opleidingsuren object
      *
      * Update a opleidingsuren record
-	 * Wordt vermoedelijk niet gebruikt!
+     * Wordt vermoedelijk niet gebruikt!
      *
-     * @param Uur $record opleidingsuur object
+     * @param Uur $record
+     *            opleidingsuur object
      *
      * @return array Urenrecord
      */
@@ -131,12 +131,17 @@ class Opleidingsuren
     /**
      * Get uren for opleidingsuren
      *
-     * @param string $username Username of the current loggedin user
+     * @param string $username
+     *            Username of the current loggedin user
      *
      * @return array Uren records
      */
     private function _getUren($username = null)
     {
+        if (isset($username)) {
+            $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        }
+
         $prep_stmt = "
             SELECT
                 ura_uren.id, ura_uren.username, users.firstName, users.lastName, ura_uren.activiteit_id, ura_activiteiten.activiteit,
@@ -146,8 +151,8 @@ class Opleidingsuren
             JOIN ura_rollen ON ura_uren.rol_id = ura_rollen.id
             JOIN ura_activiteiten ON ura_uren.activiteit_id = ura_activiteiten.id";
 
-        if ($username) {
-            $prep_stmt .=" JOIN ura_urengoedkeuren ON ura_uren.rol_id = ura_urengoedkeuren.rol_id";
+        if (isset($username)) {
+            $prep_stmt .= " JOIN ura_urengoedkeuren ON ura_uren.rol_id = ura_urengoedkeuren.rol_id";
         }
 
         $prep_stmt .= "
@@ -155,7 +160,7 @@ class Opleidingsuren
                 flag = 1
             ";
 
-        if ($username) {
+        if (isset($username)) {
             $prep_stmt .= " AND ura_urengoedkeuren.username = ?";
         }
 
@@ -169,10 +174,8 @@ class Opleidingsuren
             $stmt->execute();
             $stmt->store_result();
 
-            if ($stmt->num_rows > 0)  {
+            if ($stmt->num_rows > 0) {
                 $stmt->bind_result($id, $username, $firstname, $lastname, $activiteit_id, $activiteit, $rol_id, $rol, $datum, $start, $eind, $uren, $opmerking);
-
-                $uren_array = array();
 
                 while ($stmt->fetch()) {
                     $uur = $this->uren[] = new Uur($username, $activiteit_id, $rol_id, $datum, $start, $eind, $uren, $opmerking, null, null, null, $id);
@@ -199,7 +202,8 @@ class Opleidingsuren
      * Get users for opleidingsuren
      *
      * Get all the users that have group_id 1
-     * @TODO parameterise group_id for opleidingen
+     *
+     * @todo parameterise group_id for opleidingen
      *
      * @return array Users records
      */
@@ -214,15 +218,12 @@ class Opleidingsuren
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 
-        if ($stmt)
-        {
+        if ($stmt) {
             $stmt->execute();
             $stmt->store_result();
 
             if ($stmt->num_rows > 0) {
                 $stmt->bind_result($username, $firstname, $lastname);
-
-                $users_array = array();
 
                 while ($stmt->fetch()) {
                     $this->users[] = new User($username, $firstname, $lastname);
@@ -245,12 +246,19 @@ class Opleidingsuren
     /**
      * Get the combined uren and users
      *
-     * @param string $username Username of the current loggedin user
-     * @param int $id Record id
+     * @param string $username
+     *            Username of the current loggedin user
+     * @param int $id
+     *            Record id
      *
      * @return array Records
      */
-    public function read($username = null) {
+    public function read($username = null)
+    {
+        if (isset($username)) {
+            $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        }
+
         $this->_getUren($username);
         $this->_getUsers();
         return true;
@@ -259,7 +267,8 @@ class Opleidingsuren
     /**
      * Insert a new uren record
      *
-     * @param Uur $record Uur object
+     * @param Uur $record
+     *            Uur object
      *
      * @return array Record
      */
@@ -285,9 +294,7 @@ class Opleidingsuren
             $stmt->execute();
             $stmt->store_result();
 
-            if ($stmt->affected_rows >= 1) {
-                $id = (int) $stmt->insert_id;
-            } else {
+            if ($stmt->affected_rows == 0) {
                 $stmt->close();
                 throw new Exception('Error updating record', 500);
             }
@@ -303,7 +310,8 @@ class Opleidingsuren
     /**
      * Delete an uren record
      *
-     * @param string $id Id of the record to be deleted
+     * @param string $id
+     *            Id of the record to be deleted
      *
      * @return bool
      */
@@ -327,7 +335,7 @@ class Opleidingsuren
             $result = ($stmt->affected_rows >= 1);
             $stmt->close();
         } else {
-                throw new Exception('Database error', 500);
+            throw new Exception('Database error', 500);
         }
 
         return $result;

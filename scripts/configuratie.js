@@ -153,7 +153,7 @@ angular.module('myApp')
 						$scope.messageGroepen = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.groepen[index] = response.data[0];
+						$scope.groepen[index] = response.data.groepen[0];
 						// Destroy temporary objects
 						$scope.groepen.form = null;
 						$scope.groepen.original = null;
@@ -178,7 +178,7 @@ angular.module('myApp')
 						$scope.messageGroepen = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.groepen.push(response.data);
+						$scope.groepen.push(response.data.groepen[0]);
 						// Destroy temporary objects
 						$scope.groepen.form = null;
 						$scope.groepen.original = null;
@@ -207,7 +207,7 @@ angular.module('myApp')
 			url : 'rest/groepen.php/' + $scope.groepen.form.id,
 			headers : { 'Content-Type': 'application/json' }
 		}).then(function(response) {
-			if (response.data.message) {
+			if (!response.data.success) {
 				$scope.messageGroepen = response.data.message;
 				$scope.spinner = false;
 			} else {
@@ -317,7 +317,7 @@ angular.module('myApp')
 	// Function for certificaat editing 
 	$scope.editcertificaat = function(index) {
 
-		$scope.certificaten.form = angular.copy($scope.certificaten[index]); 
+	$scope.certificaten.form = angular.copy($scope.certificaten[index]); 
         $scope.certificaten.form.index = index; 
         $scope.certificaten.form.edit = true; 
 
@@ -345,7 +345,7 @@ angular.module('myApp')
 						$scope.messageCertificaten = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.certificaten[index] = response.data[0];
+						$scope.certificaten[index] = response.data.certificaten[0];
 						$scope.certificaten.form = null;
 						$scope.certificaten.original = null;
 						$scope.spinner = false;
@@ -367,7 +367,7 @@ angular.module('myApp')
 						$scope.messageCertificaten = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.certificaten.push(response.data[0]);
+						$scope.certificaten.push(response.data.certificaten[0]);
 						$scope.certificaten.form = null;
 						$scope.certificaten.original = null;
 						$scope.spinner = false;

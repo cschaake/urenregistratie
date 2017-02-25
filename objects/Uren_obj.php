@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.7
+ * @version    1.0.9
  */
 require_once ('Uur_obj.php');
 
@@ -31,6 +31,7 @@ require_once ('Uur_obj.php');
  * @license http://www.opensource.org/licenses/mit-license.html MIT License
  *
  * @since Class available since Release 1.0.0
+ * @version 1.0.9
  */
 class Uren
 {
@@ -138,6 +139,16 @@ class Uren
      */
     public function read($username = null, $id = null, $pijldatum = null)
     {
+        if (isset($username)) {
+            $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        }
+        if (isset($id)) {
+            $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
+        }
+        if (isset($pijldatum)) {
+            $pijldatum = date('Y-m-d', strtotime($pijldatum));
+        }
+
         $prep_stmt = "
             SELECT
                 ura_uren.id,
@@ -220,6 +231,10 @@ class Uren
      */
     public function readGoedTeKeuren($username = null)
     {
+        if (isset($username)) {
+            $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        }
+
         $prep_stmt = "
             SELECT
                 ura_uren.id,
@@ -348,13 +363,17 @@ class Uren
      * @access public
      * @param int $id
      *            Uur id
-     * @param string $username Username
+     * @param string $username
+     *            Username
      * @throws Exception
      * @return bool Succes vlag
      */
     public function delete($id, $username = null)
     {
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
+        if (isset($username)) {
+            $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        }
 
         $prep_stmt = "
             DELETE FROM
@@ -430,7 +449,8 @@ class Uren
      * @access public
      * @param int $id
      *            Uur id
-     * @param string $reden Reden
+     * @param string $reden
+     *            Reden
      * @throws Exception
      * @return bool Succes vlag
      */

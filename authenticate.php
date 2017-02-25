@@ -112,7 +112,7 @@ if ($_SERVER ['REQUEST_METHOD'] == 'POST') {
 	putUser($request, $authenticate);
 
 } elseif ($_SERVER ['REQUEST_METHOD'] == 'DELETE') {
-	
+
 	deleteUser($authenticate);
 
 }
@@ -123,9 +123,9 @@ if ($_SERVER ['REQUEST_METHOD'] == 'POST') {
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
 */
-function doLogin($request, $authenticate) 
+function doLogin($request, $authenticate)
 {
     // Logon to application
     $username = filter_var ( $request->username, FILTER_SANITIZE_STRING );
@@ -156,7 +156,7 @@ function doLogin($request, $authenticate)
     }
 
 	// User is locked due to too many failed login attempts
-        if (! $session) { 
+        if (! $session) {
             echo json_encode ( array (
                 'succes' => false,
                 'message' => 'Gebruiker gelocked',
@@ -169,7 +169,7 @@ function doLogin($request, $authenticate)
             'message' => 'Gebruiker ingelogd'
             ) );
         $_SESSION = $session;
-			
+
 	return true;
 }
 
@@ -178,9 +178,9 @@ function doLogin($request, $authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
 */
-function doLogout($authenticate) 
+function doLogout($authenticate)
 {
     // Logout from application
     $username = filter_var ( $_SESSION ['username'], FILTER_SANITIZE_STRING );
@@ -201,7 +201,7 @@ function doLogout($authenticate)
         'success' => true,
         'message' => 'Gebruker uitgelogd'
         ) );
-		
+
 	return true;
 }
 
@@ -211,9 +211,9 @@ function doLogout($authenticate)
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
 */
-function doPasswordReset($request, $authenticate) 
+function doPasswordReset($request, $authenticate)
 {
     $email = filter_var ( $request->email, FILTER_SANITIZE_EMAIL );
 
@@ -231,7 +231,7 @@ function doPasswordReset($request, $authenticate)
         'success' => true,
         'message' => 'Wachtwoord reset verzonden'
         ) );
-	
+
 	return true;
 }
 
@@ -241,7 +241,7 @@ function doPasswordReset($request, $authenticate)
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
 */
 function doPasswordChange($request, $authenticate)
 {
@@ -274,7 +274,7 @@ function doPasswordChange($request, $authenticate)
                     'success' => true,
                     'message' => 'Wachtwoord gewijzigd'
             ) );
-			
+
 			return true;
 }
 
@@ -284,7 +284,7 @@ function doPasswordChange($request, $authenticate)
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function doRegister($request, $authenticate)
 {
@@ -293,12 +293,12 @@ function doRegister($request, $authenticate)
             $password1 = filter_var ( $request->password1, FILTER_SANITIZE_STRING );
             $password2 = filter_var ( $request->password2, FILTER_SANITIZE_STRING );
             $email = filter_var ( $request->email, FILTER_SANITIZE_EMAIL );
-            if (isset ( $request->firstname )) { 
+            if (isset ( $request->firstname )) {
                 $firstname = filter_var ( $request->firstname, FILTER_SANITIZE_STRING );
             } else {
                 $firstname = filter_var ( $request->firstName, FILTER_SANITIZE_STRING );
             }
-            if (isset ( $request->lastname )) { 
+            if (isset ( $request->lastname )) {
                 $lastname = filter_var ( $request->lastname, FILTER_SANITIZE_STRING );
             } else {
                 $lastname = filter_var ( $request->lastName, FILTER_SANITIZE_STRING );
@@ -318,7 +318,7 @@ function doRegister($request, $authenticate)
                     'success' => true,
                     'message' => 'Gebruiker aangemaakt'
             ) );
-			
+
 			return true;
 }
 
@@ -327,7 +327,7 @@ function doRegister($request, $authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getVerify($authenticate)
 {
@@ -346,20 +346,20 @@ function getVerify($authenticate)
             }
 
             include_once ('includes/validate_success.php');
-			
+
 			return true;
 }
 
 /**
  * Cofirm password reset
  *
- * @return bool 
+ * @return bool
  */
 function getConfirmReset()
 {
             // Execute password reset from email
             require_once ('confirmreset.php');
-			
+
 			return true;
 }
 
@@ -368,7 +368,7 @@ function getConfirmReset()
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getGroups($authenticate)
 {
@@ -386,7 +386,7 @@ function getGroups($authenticate)
                 }
                 echo json_encode ( $groups );
             }
-			
+
 			return true;
 }
 
@@ -395,7 +395,7 @@ function getGroups($authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getUnlock($authenticate)
 {
@@ -414,7 +414,7 @@ function getUnlock($authenticate)
             }
 
             include_once ('includes/unlock_success.php');
-			
+
 			return true;
 }
 
@@ -423,7 +423,7 @@ function getUnlock($authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getSelf($authenticate)
 {
@@ -445,7 +445,7 @@ function getSelf($authenticate)
                         'code' => 401
                 ) );
             }
-			
+
 			return true;
 }
 
@@ -454,7 +454,7 @@ function getSelf($authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getListUsers($authenticate)
 {
@@ -470,7 +470,7 @@ function getListUsers($authenticate)
                     // Check if username is same or got the right permissions
                     $request_user = substr ( filter_var ( $_SERVER ['PATH_INFO'], FILTER_SANITIZE_STRING ), 1 );
 
-                    if ($request_user != $authenticate->username && 
+                    if ($request_user != $authenticate->username &&
 				    ((! is_array ( $authenticate->group )) || ! (in_array ( 'admin', $authenticate->group ) || in_array ( 'super', $authenticate->group )))) {
                         http_response_code ( 403 );
                         echo json_encode ( array (
@@ -479,7 +479,7 @@ function getListUsers($authenticate)
                             'code' => 403
                         ));
                         exit ();
-                        
+
                     }
 
                     $user = new $authenticate ( $mysqli );
@@ -533,7 +533,7 @@ function getListUsers($authenticate)
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function putUser($request, $authenticate)
 {
@@ -545,9 +545,11 @@ function putUser($request, $authenticate)
             $super = false;
         }
 
+        $user_obj = new User($request->username, $request->firstname, $request->lastname);
+
         // Update user information
         try {
-            $authenticate->update_user ( $request, $super );
+            $authenticate->update_user ( $user_obj, $super );
         } catch ( Exception $e ) {
             echo json_encode ( array (
                     'success' => false,
@@ -568,7 +570,7 @@ function putUser($request, $authenticate)
                 'code' => 401
         ) );
     }
-	
+
 	return true;
 }
 
@@ -577,7 +579,7 @@ function putUser($request, $authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function deleteUser($authenticate)
 {
@@ -617,6 +619,6 @@ function deleteUser($authenticate)
             exit ();
         }
     }
-	
+
 	return true;
 }

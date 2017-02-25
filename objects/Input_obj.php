@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Input Object
  *
@@ -19,142 +20,144 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.7
+ * @version    1.0.9
  */
- 
+
 /**
  * Input object
  *
- * @package    Tools
+ * @package Tools
  * @subpackage Input
- * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @author Christiaan Schaake <chris@schaake.nu>
+ * @copyright 2017 Schaake.nu
+ * @license http://www.opensource.org/licenses/mit-license.html MIT License
  *
- * @since      Class available since Release 1.0.0
+ * @since Class available since Release 1.0.0
+ * @version 1.0.9
  */
-class Input 
+class Input
 {
+
     /**
      * HTTP method
      *
-     * @var 	string 			$method        HTTP Method of request
-     * @access 	private
+     * @var string $method HTTP Method of request
+     * @access private
      */
     private $method;
-    
+
     /**
      * Path
      *
-     * @var 	string 			$path        	Path of request on webserver
-     * @access 	private
+     * @var string $path Path of request on webserver
+     * @access private
      */
     private $path;
-    
+
     /**
-     * Script 	name
+     * Script name
      *
-     * @var 	string 			$script        	Name of the called script (without PATH_INFO)
-     * @access 	private
+     * @var string $script Name of the called script (without PATH_INFO)
+     * @access private
      */
     private $script;
 
     /**
      * Content Type
      *
-     * @var 	string 			$contentType    Content type of the request
-     * @access 	private
+     * @var string $contentType Content type of the request
+     * @access private
      */
     private $contentType;
-    
+
     /**
      * PATH INFO parameters
      *
-     * @var 	array 			$pathParams    	Associated Array containing all PATH INFO parameters (SANITIZED) 
-     * @access 	public
+     * @var array $pathParams Associated Array containing all PATH INFO parameters (SANITIZED)
+     * @access public
      */
     public $pathParams;
-    
+
     /**
      * GET parameters
      *
-     * @var 	array 			$getParams        Associated Array containing all GET parameters (SANITIZED)
-     * @access 	private
+     * @var array $getParams Associated Array containing all GET parameters (SANITIZED)
+     * @access private
      */
     private $getParams;
-    
+
     /**
-     * POST 	parameters
+     * POST parameters
      *
-     * @var 	array 			$postParams    	Associated Array containing all POST parameters (SANITIZED)
-     * @access 	private
+     * @var array $postParams Associated Array containing all POST parameters (SANITIZED)
+     * @access private
      */
     private $postParams;
-    
+
     /**
      * DOM document of request body
      *
-     * @var 	DOMDocument 	$DOM        		DOMDocument of request body in case of XML input
-     * @access 	private
+     * @var DOMDocument $DOM DOMDocument of request body in case of XML input
+     * @access private
      */
     private $DOM;
-    
+
     /**
      * JSON data of request body
      *
-     * @var 	array|stdClass 	$JSON    		Array or standard class in case of JSON input
-     * @access 	private
+     * @var array|stdClass $JSON Array or standard class in case of JSON input
+     * @access private
      */
     private $JSON;
-    
+
     /**
      * Create the input object
      *
      * Creates and processes the client input and fills the object
      *
-	 * @access public	 
-     * @throws Exception 	if input could not be converted into a DOM Document or JSON object
-     * @return bool 		Success flag
+     * @access public
+     * @throws Exception if input could not be converted into a DOM Document or JSON object
+     * @return bool Success flag
      */
-    public function __construct() 
-	{
+    public function __construct()
+    {
         // Detect content type
         if (isset($_SERVER['CONTENT_TYPE'])) {
-            $this->contentType =  $_SERVER['CONTENT_TYPE'];
+            $this->contentType = $_SERVER['CONTENT_TYPE'];
         } else {
             $this->contentType = "text/plain";
         }
-        
+
         $this->method = $_SERVER['REQUEST_METHOD'];
         $split = strrpos($_SERVER['SCRIPT_NAME'], '/');
-        $this->script = substr($_SERVER['SCRIPT_NAME'],$split + 1);
-        $this->path = substr($_SERVER['SCRIPT_NAME'],0,$split);
-        
+        $this->script = substr($_SERVER['SCRIPT_NAME'], $split + 1);
+        $this->path = substr($_SERVER['SCRIPT_NAME'], 0, $split);
+
         // Process the request body
         switch ($this->contentType) {
-            case 'application/json': 
+            case 'application/json':
                 $contents = utf8_encode(file_get_contents('php://input'));
-                if (!$this->JSON = json_decode($contents)) {
+                if (! $this->JSON = json_decode($contents)) {
                     throw new Exception("Input is not a valid JSON object");
                 }
-            break;
-            
-            case 'application/xml': 
+                break;
+
+            case 'application/xml':
                 $this->DOM = new DOMDocument();
-                if (!$this->DOM->loadXML(file_get_contents('php://input'))) {
+                if (! $this->DOM->loadXML(file_get_contents('php://input'))) {
                     throw new Exception("Input is not a valid XML document");
-                }        
-            break;
-            
+                }
+                break;
+
             default:
         }
-        
+
         // Process the Path Info
         if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        
+
             // Convert the extentions to an array
             $pathInfo = explode('/', substr($_SERVER['PATH_INFO'], 1));
-        
+
             // Sanitize all input
             foreach ($pathInfo as $key => $value) {
                 $value = filter_var($value, FILTER_SANITIZE_STRING);
@@ -168,7 +171,7 @@ class Input
                 $this->pathParams[$param] = $value;
             }
         }
-        
+
         // Process the URL Parameters
         if (strlen($_SERVER['QUERY_STRING']) > 0) {
             foreach ($_GET as $key => $value) {
@@ -181,79 +184,79 @@ class Input
             }
         }
     }
-    
+
     /**
      * Returns the HTTP method of the request
      *
-	 * @access public
-     * @return string 	The method type  
+     * @access public
+     * @return string The method type
      */
-    public function get_method() 
-	{
+    public function get_method()
+    {
         return $this->method;
     }
-    
+
     /**
      * Returns the path called by the client
      *
-	 * @access public
-     * @return string 	URL Path
+     * @access public
+     * @return string URL Path
      */
-    public function get_path() 
-	{
+    public function get_path()
+    {
         return $this->path;
     }
-    
+
     /**
      * Returns the script called by the client, without the PATH_INFO extensions
      *
-	 * @access public
-     * @return string 	Scriptname
+     * @access public
+     * @return string Scriptname
      */
-    public function get_script() 
-	{
+    public function get_script()
+    {
         return $this->script;
     }
-    
+
     /**
      * Returns Content Type of the request
      *
-	 * @access public
-     * @return string 	Content Type
+     * @access public
+     * @return string Content Type
      */
-    public function get_contentType() 
-	{
+    public function get_contentType()
+    {
         return $this->contentType;
     }
-    
+
     /**
      * Returns PATH_INFO parameters and values
-     * 
-     * Contains an associated array where the array keys are the names of the parameters. If values are provided, 
+     *
+     * Contains an associated array where the array keys are the names of the parameters. If values are provided,
      * the values are inserted there respective the array keys.
      *
-	 * @access public
+     * @access public
      * @return array|null Associated Array containing all PATH_INFO parameters and values
      */
-    public function get_pathParams() 
-	{
+    public function get_pathParams()
+    {
         return $this->pathParams;
     }
-    
+
     /**
      * Returns all GET parameters and values
      *
      * Contains an associated array where the array keys are the names of the parameters. If values are provided,
      * the values are inserted there respective the array keys.
      *
-	 * @access public
+     * @access public
      * @return array|null Associated Array containing all GET parameters and values
      */
-    public function get_getParams() 
-	{
+    public function get_getParams()
+    {
         return $this->getParams;
     }
-    
+
     /**
      * Returns all POST parameters and values
      *
@@ -261,62 +264,62 @@ class Input
      * the values are inserted there respective the array keys.
      * POST parameters not provided when request contained XML or JSON content.
      *
-	 * @access public
+     * @access public
      * @return array|null Associated Array containing all POST parameters and values
      */
-    public function get_postParams() 
-	{
+    public function get_postParams()
+    {
         if ($this->postParams) {
             return $this->postParams;
         } else {
             return null;
         }
     }
-    
+
     /**
      * Returns the XML in the body of the request
      *
      * The XML is already converted into a DOM Document object.
      *
-	 * @access public
+     * @access public
      * @return DOMDocument|null DOM Document object containing the XML document in the request
      */
-    public function get_DOM() 
-	{
+    public function get_DOM()
+    {
         if ($this->DOM) {
             return $this->DOM;
         } else {
             return null;
         }
     }
-    
+
     /**
      * Returns the JSON in the body of the request
      *
      * The JSON is already converted into an array or standard class
      *
-	 * @access public
+     * @access public
      * @return array|stdClass|null DOM Document object containing the XML document in the request
      */
-    public function get_JSON() 
-	{
+    public function get_JSON()
+    {
         if ($this->JSON) {
             return $this->JSON;
         } else {
             return null;
         }
     }
-	
-	/**
+
+    /**
      * Checks if Path Params are provided
      *
      * pathParams should contain an array of path parameters if any are provided.
      *
-	 * @access public
-     * @return 	bool	True if path parameters are provided
+     * @access public
+     * @return bool True if path parameters are provided
      */
-	public function hasPathParams()
-	{
-		return is_array($this->pathParams);
-	}
+    public function hasPathParams()
+    {
+        return is_array($this->pathParams);
+    }
 }

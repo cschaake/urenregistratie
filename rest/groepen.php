@@ -109,8 +109,8 @@ function postGroep($input)
 	    exit();
 	}
 
-	$groepen_obj = new groepen($mysqli);
-	$groep = new groep(null, $json->groep);
+	$groepen_obj = new Groepen($mysqli);
+	$groep = new Groep(null, $json->groep);
 
 	try {
 		$groepen_obj->create($groep);
@@ -122,7 +122,7 @@ function postGroep($input)
 
     http_response_code(200);
     header('Content-Type: application/json');
-    echo json_encode($groepen_obj->groepen); // @todo alleen object terug geven
+    echo json_encode($groepen_obj);
 
     return true;
 }
@@ -142,7 +142,7 @@ function getGroepen(input $input = null)
     if ($input->hasPathParams()) {
         // We are called for one record
 
-        $groepen_obj = new groepen($mysqli);
+        $groepen_obj = new Groepen($mysqli);
         try {
             $groep = $groepen_obj->get(array_keys($input->get_pathParams())[0]);
         } catch(Exception $e) {
@@ -156,7 +156,7 @@ function getGroepen(input $input = null)
     } else {
         // We are called for all records
 
-        $groepen_obj = new groepen($mysqli);
+        $groepen_obj = new Groepen($mysqli);
         try {
             $groepen_obj->read();
         } catch(Exception $e) {
@@ -205,7 +205,7 @@ function deleteGroep($input)
 	    $username = null;
 	}
 
-	$groepen_obj = new groepen($mysqli);
+	$groepen_obj = new Groepen($mysqli);
 
 	try {
 		$groepen_obj->delete(array_keys($input->get_pathParams())[0]);
@@ -254,10 +254,11 @@ function putGroep($input)
 	    exit();
 	}
 
-	$groepen_obj = new groepen($mysqli);
+	$groep_obj = new Groep($json->id, $json->groep);
+	$groepen_obj = new Groepen($mysqli);
 
 	try {
-		$groepen_obj->update($json);
+		$groepen_obj->update($groep_obj);
 	} catch(Exception $e) {
 		http_response_code(500);
 		echo json_encode(array('success' => false, 'message' => 'Internal Server Error, ' . $e->getMessage(), 'code' => 500));
@@ -266,7 +267,7 @@ function putGroep($input)
 
 	http_response_code(200);
 	header('Content-Type: application/json');
-	echo json_encode($groepen_obj->groepen);
+	echo json_encode($groepen_obj);
 
 	return true;
 }

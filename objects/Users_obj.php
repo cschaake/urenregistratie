@@ -8,9 +8,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -20,34 +20,34 @@
  * @since      File available since Release 1.0.0
  * @version    1.0.8
  */
- 
+
 /**
  * Rollen object
- * 
+ *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * 
+ *
  * @since      Class available since Release 1.0.0
- */ 
+ */
 class Users {
-    
-    /**
-     * id required with length of 5 characters
-     * 
-     * @var integer
-     * @access private
-     */
-    private $id;
 
     /**
-     * rol required with length of 30 characters
-     * 
-     * @var string
+     * users
+     *
+     * @var User[]
+     * @access public
+     */
+    public $users;
+
+    /**
+     * Mysqli object
+     *
+     * @var mysqli
      * @access private
      */
-    private $rol;
+    private $mysqli;
 
     /**
      * Create the activtiteiten object
@@ -66,7 +66,7 @@ class Users {
         }
         return true;
     }
-    
+
     /**
      * Get all boekers
      *
@@ -75,26 +75,26 @@ class Users {
      */
     public function getBoekers() {
         $prep_stmt = "
-            SELECT 
+            SELECT
                 ura_urenboeken.username, users.firstName, users.lastName
             FROM
                 ura_urenboeken
                     LEFT JOIN
-                 users ON ura_urenboeken.username = users.username 
+                 users ON ura_urenboeken.username = users.username
             GROUP BY users.username
             ";
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
-            
+
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->num_rows >= 1) {
                 $stmt->bind_result($username, $firstname, $lastname);
-                
+
                 $rollen = array();
-                
+
                 while ($stmt->fetch()) {
                     $rollen[] = ['username'=>$username, 'firstname'=>$firstname, 'lastname'=>$lastname];
                 }
@@ -104,15 +104,15 @@ class Users {
                 $stmt->close();
                 throw new Exception('No users found');
             }
-            
+
         } else {
             throw new Exception('Database error');
         }
-        
+
         $stmt->close();
         return $rollen;
     }
-    
+
     /**
      * Get a single user
      *
@@ -121,23 +121,23 @@ class Users {
      */
     public function get() {
         $prep_stmt = "
-            SELECT 
+            SELECT
                 users.username, users.firstName, users.lastName
             FROM
                 users
             ";
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
-            
+
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->num_rows >= 1) {
                 $stmt->bind_result($username, $firstname, $lastname);
-                
+
                 $rollen = array();
-                
+
                 while ($stmt->fetch()) {
                     $rollen[] = ['username'=>$username, 'firstname'=>$firstname, 'lastname'=>$lastname];
                 }
@@ -147,15 +147,15 @@ class Users {
                 $stmt->close();
                 throw new Exception('No users found');
             }
-            
+
         } else {
             throw new Exception('Database error');
         }
-        
+
         $stmt->close();
         return $rollen;
     }
-    
+
     /**
      * Get a single boeker
      *
@@ -165,7 +165,7 @@ class Users {
      */
     public function getBoeker($username) {
         $prep_stmt = "
-            SELECT 
+            SELECT
                 users.username,
                 users.firstName,
                 users.lastName,
@@ -186,27 +186,27 @@ class Users {
             WHERE
                 users.username = ?
             ";
-        
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             $stmt->bind_param('s',$username);
-            
+
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->num_rows >= 1) {
                 $stmt->bind_result($username, $firstname, $lastname, $groep_id, $rol_id, $rol, $gecertificeerd, $verloopt);
-                
+
                 $rollen = array();
                 $groepen = array();
-                
-                
+
+
                 while ($stmt->fetch()) {
                     if ($rol_id) {
                         $rollen[] = ['rol_id'=>$rol_id,  'rol'=>$rol, 'gecertificeerd'=>$gecertificeerd, 'verloopt'=>$verloopt];
                     }
-                    
+
                     if ($groep_id) {
                         $groepen[] = $groep_id;
                     }
@@ -218,16 +218,16 @@ class Users {
                 $stmt->close();
                 throw new Exception('No users found');
             }
-            
+
         } else {
             throw new Exception('Database error');
         }
-        
+
         $stmt->close();
         return $user;
     }
-    
-	
+
+
     /**
      * Set a single boeker
      *
@@ -235,13 +235,13 @@ class Users {
      * @throws Exception
      */
     public function setBoeker($boeker) {
-        
+
         // Delete all records
         $prep_stmt = 'DELETE FROM ura_urenboeken WHERE username = ?';
         $stmt = $this->mysqli->prepare($prep_stmt);
         if ($stmt) {
             $stmt->bind_param('s',$boeker['username']);
-            
+
             $stmt->execute();
             $stmt->store_result();
             if ($stmt->num_rows >= 0) {
@@ -254,12 +254,12 @@ class Users {
             throw new Exception('Database error');
         }
         $stmt->close();
-        
+
         $prep_stmt = 'DELETE FROM ura_certificaat WHERE username = ?';
         $stmt = $this->mysqli->prepare($prep_stmt);
         if ($stmt) {
             $stmt->bind_param('s',$boeker['username']);
-            
+
             $stmt->execute();
             $stmt->store_result();
             if ($stmt->num_rows >= 0) {
@@ -280,7 +280,7 @@ class Users {
                 $stmt = $this->mysqli->prepare($prep_stmt);
                 if ($stmt) {
                     $stmt->bind_param('sii',$boeker['username'], $rol['rol_id'], $rol['groep_id']);
-                    
+
                     $stmt->execute();
                     $stmt->store_result();
                     if ($stmt->num_rows >= 0) {
@@ -293,13 +293,13 @@ class Users {
                     throw new Exception('Database error');
                 }
                 $stmt->close();
-                
+
                 // Insert records
                 $prep_stmt = 'INSERT INTO ura_certificaat (username, rol_id, gecertificeerd, verloopt, groep_id) VALUES (?, ?, ?, ?, ?)';
                 $stmt = $this->mysqli->prepare($prep_stmt);
                 if ($stmt) {
                     $stmt->bind_param('sissi',$boeker['username'], $rol['rol_id'], $rol['gecertificeerd'], $rol['verloopt'], $rol['groep_id']);
-                    
+
                     $stmt->execute();
                     $stmt->store_result();
                     if ($stmt->num_rows >= 0) {
@@ -319,10 +319,10 @@ class Users {
 			$stmt = $this->mysqli->prepare($prep_stmt);
 			if ($stmt) {
 				$stmt->bind_param('s',$boeker['username']);
-					
+
 				$stmt->execute();
 				$stmt->store_result();
-				
+
 				if ($stmt->num_rows >= 0) {
 					$user = null;
 				} else {
@@ -334,7 +334,7 @@ class Users {
 			}
 			$stmt->close();
 		}
-        
+
     }
 
     /**
@@ -345,13 +345,13 @@ class Users {
      * @return boolean
      */
     public function deleteBoeker($username) {
-        
+
         // Delete all records
         $prep_stmt = 'DELETE FROM ura_urenboeken WHERE username = ?';
         $stmt = $this->mysqli->prepare($prep_stmt);
         if ($stmt) {
             $stmt->bind_param('s',$username);
-            
+
             $stmt->execute();
             $stmt->store_result();
             if ($stmt->num_rows >= 0) {
@@ -364,12 +364,12 @@ class Users {
             throw new Exception('Database error');
         }
         $stmt->close();
-        
+
         $prep_stmt = 'DELETE FROM ura_certificaat WHERE username = ?';
         $stmt = $this->mysqli->prepare($prep_stmt);
         if ($stmt) {
             $stmt->bind_param('s',$username);
-            
+
             $stmt->execute();
             $stmt->store_result();
             if ($stmt->num_rows >= 0) {
@@ -382,10 +382,10 @@ class Users {
             throw new Exception('Database error');
         }
         $stmt->close();
-        
+
         return true;
     }
-    
+
     /**
      * Get all goedkeurders
      *
@@ -394,7 +394,7 @@ class Users {
      */
     public function getGoedkeurders() {
         $prep_stmt = "
-            SELECT 
+            SELECT
                 users.username, users.firstName, users.lastName
             FROM
                 users
@@ -404,17 +404,17 @@ class Users {
                 ura_urengoedkeuren.groep_id > 0
             GROUP BY users.username";
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
-            
+
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->num_rows >= 1) {
                 $stmt->bind_result($username, $firstname, $lastname);
-                
+
                 $rollen = array();
-                
+
                 while ($stmt->fetch()) {
                     $rollen[] = ['username'=>$username, 'firstname'=>$firstname, 'lastname'=>$lastname];
                 }
@@ -424,25 +424,25 @@ class Users {
                 $stmt->close();
                 throw new Exception('No users found');
             }
-            
+
         } else {
             throw new Exception('Database error');
         }
-        
+
         $stmt->close();
         return $rollen;
     }
-	
+
 	/**
      * Controlleer of gebruiker kan goedkeuren
      *
 	 * @param  string	 $username	Username
-     * @throws Exception  				
+     * @throws Exception
      * @return bool       			Resultaat (true is kan goedkeuren)
      */
 	public function kanGoedkeuren($username) {
         $username = filter_var($username, FILTER_SANITIZE_STRING);
-        
+
         $prep_stmt = "
             SELECT DISTINCT
                 username
@@ -450,21 +450,21 @@ class Users {
                 ura_urengoedkeuren
             WHERE
                 username = ?";
-                
+
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             $stmt->bind_param('s', $username);
-            
-            $stmt->execute();   
+
+            $stmt->execute();
             $stmt->store_result();
-            
+
             $result = ($stmt->affected_rows >= 1);
-            $stmt->close();    
+            $stmt->close();
         } else {
             throw new Exception('Database error');
         }
-		
+
 		return $result;
     }
 }

@@ -102,10 +102,11 @@ function postCertificaat($input)
 	    exit;
 	}
 
+	$certificaat_obj = new Certificaat(null, $json->rol_id, null, $json->looptijd, $json->uren, $json->groep_id, null);
 	$certificaten_obj = new Certificaten($mysqli);
 
 	try {
-		$certificaten_obj->create($json);
+		$certificaten_obj->create($certificaat_obj);
 	} catch(Exception $e) {
 		http_response_code(500);
         echo json_encode(array('success' => false, 'message' => 'Internal Server Error', 'code' => 500));
@@ -114,7 +115,7 @@ function postCertificaat($input)
 
     http_response_code(200);
     header('Content-Type: application/json');
-    echo json_encode($certificaten_obj->certificaten); // @todo Object terug geven
+    echo json_encode($certificaten_obj);
 
     return true;
 }
@@ -183,7 +184,7 @@ function putCertificaat($input)
 
 	http_response_code(200);
 	header('Content-Type: application/json');
-	echo json_encode($certificaten_obj->certificaten); // @todo object terug geven
+	echo json_encode($certificaten_obj);
 
 	return true;
 }

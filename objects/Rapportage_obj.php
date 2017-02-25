@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Rapportage Object
  *
@@ -8,9 +9,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -18,41 +19,43 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.8
+ * @version    1.0.9
  */
-  
- /**
+
+/**
  * Rapport object
- * 
- * @package    Urenverantwoording
- * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * 
- * @since      File available since Release 1.0.0
- */ 
-class Rapport 
+ *
+ * @package Urenverantwoording
+ * @author Christiaan Schaake <chris@schaake.nu>
+ * @copyright 2017 Schaake.nu
+ * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ *
+ * @since File available since Release 1.0.0
+ * @version 1.0.9
+ */
+class Rapport
 {
+
     /**
      * Array met RapportageRecord objecten
      *
-     * @var    RaportageGoedTeKeuren[] | RaportageCertificaat[] | Uren[]
+     * @var RaportageGoedTeKeuren[] | RaportageCertificaat[] | Uren[]
      * @access public
      */
     public $records;
-	
-	/**
+
+    /**
      * Array met Rollen objecten
      *
-     * @var    Rollen[]
+     * @var Rollen[]
      * @access public
      */
     public $rollen;
-	
-	/**
+
+    /**
      * Array met Activiteiten objecten
      *
-     * @var    Activiteiten[]
+     * @var Activiteiten[]
      * @access public
      */
     public $activiteiten;
@@ -60,44 +63,50 @@ class Rapport
     /**
      * Mysqli object
      *
-     * @var    mysqli	
+     * @var mysqli
      * @access private
      */
     private $mysqli;
-    
+
     /**
      * Create the uren object
      *
      * Creates the uren object that will contain all uren stuff
      *
-     * @param mysqli $mysqli Valid mysqli object
+     * @param mysqli $mysqli
+     *            Valid mysqli object
      *
      * @return bool Success flag
      */
-    public function __construct($mysqli) 
-	{
-        if (!is_a($mysqli, 'mysqli')) {
+    public function __construct(mysqli $mysqli)
+    {
+        if (! is_a($mysqli, 'mysqli')) {
             throw new Exception('$mysqli is not a valid mysqli object');
         } else {
             $this->mysqli = $mysqli;
         }
         return true;
     }
-    
-	/**
+
+    /**
      * Lees certificaten statistiek
      *
      * @access public
-	 * @param  string	 $username	optional Username
-     * @throws Exception  				
-     * @return bool       			Succes vlag
+     * @param string $username
+     *            optional Username
+     * @throws Exception
+     * @return bool Succes vlag
      */
-    public function certificaten($username = null) 
-	{
-		include_once('RapportageCertificaat_obj.php');
-		
+    public function certificaten($username = null)
+    {
+        if (isset($username)) {
+            $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        }
+
+        include_once ('RapportageCertificaat_obj.php');
+
         $prep_stmt = "
-            SELECT 
+            SELECT
 				ura_certificaat.id,
 				users.username,
 				users.firstName,
@@ -114,7 +123,7 @@ class Rapport
 					FROM ura_uren
 					WHERE
 						ura_uren.rol_id = ura_certificaat.rol_id
-						AND ura_uren.datum BETWEEN ura_certificaat.gecertificeerd AND ura_certificaat.verloopt 
+						AND ura_uren.datum BETWEEN ura_certificaat.gecertificeerd AND ura_certificaat.verloopt
 						AND ura_uren.username = ura_certificaat.username
 				) 'ureningevoerd',
 				(
@@ -136,34 +145,34 @@ class Rapport
 						AND ura_uren.akkoord = 2
 				) 'urenafgekeurd'
 			FROM
-				ura_certificaat 
+				ura_certificaat
 				LEFT JOIN ura_rollen ON ura_certificaat.rol_id = ura_rollen.id
-				LEFT JOIN ura_certificering ON ura_certificering.rol_id = ura_certificaat.rol_id 
+				LEFT JOIN ura_certificering ON ura_certificering.rol_id = ura_certificaat.rol_id
 				LEFT JOIN users ON users.username = ura_certificaat.username ";
-			if ($username) {
-				$prep_stmt .= " WHERE ura_certificaat.username = ? ";
-				$prep_stmt .= " GROUP BY ura_certificaat.rol_id ";
-			} else {
-				$prep_stmt .= " ORDER BY ura_certificaat.rol_id ";
-			}
+        if ($username) {
+            $prep_stmt .= " WHERE ura_certificaat.username = ? ";
+            $prep_stmt .= " GROUP BY ura_certificaat.rol_id ";
+        } else {
+            $prep_stmt .= " ORDER BY ura_certificaat.rol_id ";
+        }
         $stmt = $this->mysqli->prepare($prep_stmt);
-            
+
         if ($stmt) {
-            
-			if ($username) {
-				$stmt->bind_param('s', $username);
-			}
-			
+
+            if ($username) {
+                $stmt->bind_param('s', $username);
+            }
+
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->num_rows >= 1) {
                 $stmt->bind_result($id, $username, $voornaam, $achternaam, $laatstelogin, $gecertificeerd, $verloopt, $rol_id, $rol, $looptijd, $uren, $ingevoerd, $goedgekeurd, $afgekeurd);
-            
+
                 while ($stmt->fetch()) {
-					if ($username) {
-						$this->records[] = new RaportageCertificaat($id, $username, $voornaam, $achternaam, $laatstelogin, $gecertificeerd, $verloopt, $rol_id, $rol, $looptijd, $uren, $ingevoerd, $goedgekeurd, $afgekeurd);
-					}
+                    if ($username) {
+                        $this->records[] = new RaportageCertificaat($id, $username, $voornaam, $achternaam, $laatstelogin, $gecertificeerd, $verloopt, $rol_id, $rol, $looptijd, $uren, $ingevoerd, $goedgekeurd, $afgekeurd);
+                    }
                 }
             } elseif ($stmt->num_rows == 0) {
                 $stmt->close();
@@ -176,31 +185,34 @@ class Rapport
         } else {
             throw new Exception('Database error', 500);
         }
-        
-		return true;
+
+        return true;
     }
-    
-	/**
+
+    /**
      * Lees goedtekeuren statistiek
      *
      * @access public
-	 * @param  string	 $username	optional Username
-     * @throws Exception  				
-     * @return bool       			Succes vlag
+     * @param string $username
+     *            optional Username
+     * @throws Exception
+     * @return bool Succes vlag
      */
-    public function goedtekeuren($username) 
-	{
-		include_once('RapportageGoedTeKeuren_obj.php');
-		
+    public function goedtekeuren($username)
+    {
+        $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+
+        include_once ('RapportageGoedTeKeuren_obj.php');
+
         $prep_stmt = "
-            SELECT 
+            SELECT
                 ura_urengoedkeuren.username,
                 ura_uren.rol_id,
                 ura_rollen.rol,
                 SUM(ura_uren.uren),
                 ura_groepen.id,
                 ura_groepen.groep,
-                (SELECT 
+                (SELECT
                         SUM(ura_uren.uren)
                     FROM
                         ura_uren
@@ -222,20 +234,19 @@ class Rapport
                     OR ura_uren.akkoord = NULL)
             GROUP BY ura_rollen.id";
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
-            
+
             $stmt->bind_param('s', $username);
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->num_rows >= 1) {
                 $stmt->bind_result($username, $rol_id, $rol, $uren, $groep_id, $groep, $totaaluren);
-                
+
                 while ($stmt->fetch()) {
-					$this->records[] = new RaportageGoedTeKeuren($username, $rol_id, $rol, $uren, $groep_id, $groep, $totaaluren);
+                    $this->records[] = new RaportageGoedTeKeuren($username, $rol_id, $rol, $uren, $groep_id, $groep, $totaaluren);
                 }
-				
             } elseif ($stmt->num_rows == 0) {
                 $stmt->close();
                 throw new Exception('Geen data gevonden', 404);
@@ -247,78 +258,92 @@ class Rapport
         } else {
             throw new Exception('Database error', 500);
         }
-        
-		return true;
+
+        return true;
     }
-	
-	/**
+
+    /**
      * Lees gebruikers uren
      *
      * @access public
-	 * @param  string	 $username	optional Username
-     * @throws Exception  				
-     * @return bool       			Succes vlag
+     * @param string $username
+     *            optional Username
+     * @throws Exception
+     * @return bool Succes vlag
      */
-	public function gebruikersUren($username = null) 
-	{
-		if ($username) {
-			// Overzicht van de gebruiker, gegroepeerd op certificaat en alleen in huidige certificaat periode 		Uur objecten
-			include_once('Uren_obj.php');
-			
-			$uren_obj = new Uren($this->mysqli);
-			
-			try { 
-				$uren_obj->read($username, null, time());
-			} catch(Exception $e) {
-				if ($e->getCode() != '404') {
-					http_response_code(400);
-					header('Content-Type: application/json');
-					echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 400));
-					exit;	
-				}
-			}
-			
-			$this->records = $uren_obj->uren;
-			
-		} else {
-			// Overzicht van alle gebruikers, gegroeperd op certificaat en alleen in huidige certifcaat periode	RapportageCertificaat objecten
-			$this->certificaten(); 
-			
-			// Get rollen
-			include_once('Rollen_obj.php');
+    public function gebruikersUren($username = null)
+    {
+        if (isset($username)) {
+            $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
 
-			$rollen_obj = new Rollen($this->mysqli);
-			
-			try { 
-				$rollen_obj->read();
-			} catch(Exception $e) {
-				if ($e->getCode() != '404') {
-					http_response_code(400);
-					header('Content-Type: application/json');
-					echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 400));
-					exit;	
-				}
-			}
-			
-			$this->rollen = $rollen_obj->rollen;
-			
-			// Get activiteiten
-			include_once('Activiteiten_obj.php');
-			
-			$activiteiten_obj = new Activiteiten($this->mysqli);
-			
-			try { 
-				$activiteiten_obj->read();
-			} catch(Exception $e) {
-				if ($e->getCode() != '404') {
-					http_response_code(400);
-					header('Content-Type: application/json');
-					echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 400));
-					exit;	
-				}
-			}
-			
-			$this->activiteiten = $activiteiten_obj->activiteiten;
-		}
-	}
+            // Overzicht van de gebruiker, gegroepeerd op certificaat en alleen in huidige certificaat periode Uur objecten
+            include_once ('Uren_obj.php');
+
+            $uren_obj = new Uren($this->mysqli);
+
+            try {
+                $uren_obj->read($username, null, time());
+            } catch (Exception $e) {
+                if ($e->getCode() != '404') {
+                    http_response_code(400);
+                    header('Content-Type: application/json');
+                    echo json_encode(array(
+                        'success' => false,
+                        'message' => $e->getMessage(),
+                        'code' => 400
+                    ));
+                    exit();
+                }
+            }
+
+            $this->records = $uren_obj->uren;
+        } else {
+            // Overzicht van alle gebruikers, gegroeperd op certificaat en alleen in huidige certifcaat periode RapportageCertificaat objecten
+            $this->certificaten();
+
+            // Get rollen
+            include_once ('Rollen_obj.php');
+
+            $rollen_obj = new Rollen($this->mysqli);
+
+            try {
+                $rollen_obj->read();
+            } catch (Exception $e) {
+                if ($e->getCode() != '404') {
+                    http_response_code(400);
+                    header('Content-Type: application/json');
+                    echo json_encode(array(
+                        'success' => false,
+                        'message' => $e->getMessage(),
+                        'code' => 400
+                    ));
+                    exit();
+                }
+            }
+
+            $this->rollen = $rollen_obj->rollen;
+
+            // Get activiteiten
+            include_once ('Activiteiten_obj.php');
+
+            $activiteiten_obj = new Activiteiten($this->mysqli);
+
+            try {
+                $activiteiten_obj->read();
+            } catch (Exception $e) {
+                if ($e->getCode() != '404') {
+                    http_response_code(400);
+                    header('Content-Type: application/json');
+                    echo json_encode(array(
+                        'success' => false,
+                        'message' => $e->getMessage(),
+                        'code' => 400
+                    ));
+                    exit();
+                }
+            }
+
+            $this->activiteiten = $activiteiten_obj->activiteiten;
+        }
+    }
 }

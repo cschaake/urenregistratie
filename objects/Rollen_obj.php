@@ -20,25 +20,26 @@
  * @since      File available since Release 1.0.0
  * @version    1.0.9
  */
-
-include_once('Rol_obj.php');
+include_once ('Rol_obj.php');
 
 /**
  * Rollen object
  *
- * @package    Urenverantwoording
- * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @package Urenverantwoording
+ * @author Christiaan Schaake <chris@schaake.nu>
+ * @copyright 2017 Schaake.nu
+ * @license http://www.opensource.org/licenses/mit-license.html MIT License
  *
- * @since      File available since Release 1.0.0
+ * @since File available since Release 1.0.0
+ * @version 1.0.9
  */
 class Rollen
 {
+
     /**
      * Array met Rol objecten
      *
-     * @var    Rol[]
+     * @var Rol[]
      * @access public
      */
     public $rollen;
@@ -46,7 +47,7 @@ class Rollen
     /**
      * Mysqli object
      *
-     * @var    mysqli
+     * @var mysqli
      * @access private
      */
     private $mysqli;
@@ -55,13 +56,13 @@ class Rollen
      * Creeer rollen object
      *
      * @access public
-     * @param  mysqli     $mysqli
+     * @param mysqli $mysqli
      * @throws Exception
-     * @return bool       Success flag
+     * @return bool Success flag
      */
     public function __construct(mysqli $mysqli)
-	{
-        if (!is_a($mysqli, 'mysqli')) {
+    {
+        if (! is_a($mysqli, 'mysqli')) {
             throw new Exception('$mysqli is not a valid mysqli object', 500);
         } else {
             $this->mysqli = $mysqli;
@@ -69,13 +70,14 @@ class Rollen
         return true;
     }
 
-	/**
+    /**
      * Creeer rol
      *
      * @access public
-     * @param  Rol 		 $rol 	Rol object
+     * @param Rol $rol
+     *            Rol object
      * @throws Exception
-     * @return bool      		Succes vlag
+     * @return bool Succes vlag
      */
     public function create(Rol $record)
     {
@@ -99,22 +101,26 @@ class Rollen
                 $stmt->close();
                 throw new Exception('Fout bij updaten rol', 500);
             }
-			$stmt->close();
+            $stmt->close();
         } else {
             throw new Exception('Database error', 500);
         }
-		return true;
+        return true;
     }
 
-	/**
+    /**
      * Lees rollen
      *
      * @access public
      * @throws Exception
-     * @return bool       	Succes vlag
+     * @return bool Succes vlag
      */
     public function read($username = null)
-	{
+    {
+        if (isset($username)) {
+            $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        }
+
         $prep_stmt = "
             SELECT DISTINCT
                 ura_rollen.id,
@@ -122,24 +128,23 @@ class Rollen
             FROM
                 ura_rollen";
 
-		if (isset($username)) {
-			$prep_stmt .= "
+        if (isset($username)) {
+            $prep_stmt .= "
 				JOIN
 					ura_urenboeken ON ura_urenboeken.rol_id = ura_rollen.id
 				WHERE
 					ura_urenboeken.username = ?
 			";
+        }
 
-		}
-
-		$prep_stmt .= "
+        $prep_stmt .= "
 			ORDER BY
 				ura_rollen.rol
             ";
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-			if (isset($username)) {
+            if (isset($username)) {
                 $stmt->bind_param('s', $username);
             }
 
@@ -158,7 +163,7 @@ class Rollen
                 $stmt->close();
                 throw new Exception('Fout bij opvragen activiteit', 500);
             }
-			$stmt->close();
+            $stmt->close();
         } else {
             throw new Exception('Database error', 500);
         }
@@ -169,9 +174,10 @@ class Rollen
      * Update rol
      *
      * @access public
-     * @param  Rol 		  $activiteit  Rol object
+     * @param Rol $activiteit
+     *            Rol object
      * @throws Exception
-     * @return bool       Succes vlag
+     * @return bool Succes vlag
      */
     public function update(Rol $record)
     {
@@ -191,31 +197,34 @@ class Rollen
             $stmt->store_result();
 
             if ($stmt->affected_rows < 0) {
-   				$stmt->close();
+                $stmt->close();
                 throw new Exception('Rol niet gevonden', 404);
             }
-			$stmt->close();
+            $stmt->close();
         } else {
             throw new Exception('Database error', 500);
         }
-		$this->rollen[] = $record;
-		return true;
+        $this->rollen[] = $record;
+        return true;
     }
 
     /**
      * Delete rol
      *
      * @access public
-     * @param  int       $id   Rol id
+     * @param int $id
+     *            Rol id
      * @throws Exception
-     * @return bool            Succes vlag
+     * @return bool Succes vlag
      */
     public function delete($id)
     {
-		$result = false;
-		if (!$this->_canDelete($id)) {
-			throw new Exception('Kan rol niet verwijderen, nog in gebruik', 409);
-		}
+        $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
+
+        $result = false;
+        if (! $this->_canDelete($id)) {
+            throw new Exception('Kan rol niet verwijderen, nog in gebruik', 409);
+        }
 
         $prep_stmt = "
             DELETE FROM
@@ -236,21 +245,23 @@ class Rollen
             throw new Exception('Database error', 500);
         }
 
-		return true;
+        return true;
     }
 
-	/**
+    /**
      * Kan worden gedelete
-	 *
-	 * Controleer of rol nog in gebruik is
-	 *
-	 * @access private
-     * @param  int 	    $id 	Rol id
-     * @return bool     Succes vlag
+     *
+     * Controleer of rol nog in gebruik is
+     *
+     * @access private
+     * @param int $id
+     *            Rol id
+     * @return bool Succes vlag
      */
-	private function _canDelete($id) {
-		$result = false;
-		$prep_stmt = "SELECT COUNT(*) count
+    private function _canDelete($id)
+    {
+        $result = false;
+        $prep_stmt = "SELECT COUNT(*) count
 						FROM
 							ura_uren,
 							ura_certificaat,
@@ -276,19 +287,19 @@ class Rollen
             $stmt->store_result();
 
             if ($stmt->num_rows >= 0) {
-				$stmt->bind_result($count);
-				$stmt->fetch();
+                $stmt->bind_result($count);
+                $stmt->fetch();
 
-				$result = (!$count > 0);
+                $result = (! $count > 0);
             } else {
                 $stmt->close();
                 throw new Exception('Interne fout bij verwijderen rol', 500);
             }
-			$stmt->close();
+            $stmt->close();
         } else {
             throw new Exception('Database error', 500);
         }
 
-		return $result;
-	}
+        return $result;
+    }
 }
