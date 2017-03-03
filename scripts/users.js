@@ -46,7 +46,7 @@ angular.module('myApp')
         // Get all user information
         $http.get("authenticate.php")
         .then(function(response) {
-            $scope.users = response.data;
+            $scope.users = response.data.users;
             // Use cascading load to avoid timing problems
             $http.get("authenticate.php/groups")
             .then(function(response) {

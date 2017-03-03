@@ -6,9 +6,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -19,7 +19,7 @@
  * @version    1.0.7
  */
 ?>
-<div ng-app="myApp" ng-controller="usersCtrl"> 
+<div ng-app="myApp" ng-controller="usersCtrl">
 	<div id="userPanel" class="panel panel-default">
 		<div class="panel-body">
 			<div ng-show="spinner" class="spinner"></div>
@@ -36,7 +36,7 @@
 						<div class="form-group"><!-- Refresh data -->
 							<button class="btn btn-default" ng-click="refresh()" id="refreshData">Refresh tabel <span class="glyphicon glyphicon-refresh"></span></button>
 						</div>
-						
+
 					</form>
 				</div>
 				<!-- Global search -->
@@ -44,10 +44,10 @@
 					<form rol="form" ng-hide="search == '[object Object]'">
 						<div class="form-group">
 							<div class="input-group">
-								
+
 								<span class="input-group-addon" id="search"><span class="glyphicon glyphicon-search"></span></span>
 								<input type="search" ng-change="onSearch()" class="form-control" ng-model="search" aria-describedby="search" placeholder="Search..."/>
-								
+
 							</div>
 						</div>
 					</form>
@@ -55,7 +55,7 @@
 						<button class="btn btn-info btn-block" ng-click="search = ''"><span class="glyphicon glyphicon-search"></span> Reset filter</button><br/>
 					</div>
 				</div>
-				
+
 				<!-- for small displays -->
 				<div class="col-sm-12 hidden-lg hidden-md">
 					<form role="form">
@@ -65,7 +65,7 @@
 								<span class="input-group-btn">
 									<button class="btn btn-default" ng-click="refresh()" id="refreshData">Refresh tabel <span class="glyphicon glyphicon-refresh"></span></button>
 								</span>
-								
+
 							</div>
 						</div>
 					</form>
@@ -77,7 +77,7 @@
 							<div class="input-group">
 								<span class="input-group-addon" id="search"><span class="glyphicon glyphicon-search"></span></span>
 								<input type="search" class="form-control" ng-model="search" aria-describedby="search" placeholder="Search..."/>
-								
+
 							</div>
 						</div>
 					</form>
@@ -85,16 +85,16 @@
 						<button class="btn btn-info btn-block" ng-click="search = ''"><span class="glyphicon glyphicon-search"></span> Reset filter</button><br/>
 					</div>
 				</div>
-				
+
 			</div>
-			 
-			
+
+
 			<!-- ----------------------------------------------------------
 				Table
 				-->
 			<div class="table-responsive">
 				<!-- Table list -->
-				
+
 				<table class="table table-striped table-bordered">
 					<thead>
 						<!-- Table header -->
@@ -108,17 +108,17 @@
 								</a>
 							</th>
 							<th class="hidden-xs">
-								<a href="" ng-click="sortType = 'firstName'">First name</a>
+								<a href="" ng-click="sortType = 'firstname'">First name</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
-									<span ng-show="sortType == 'firstName' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
-									<span ng-show="sortType == 'firstName' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
+									<span ng-show="sortType == 'firstname' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
+									<span ng-show="sortType == 'firstname' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
 							<th>
-								<a href="" ng-click="sortType = 'lastName'">Last name</a>
+								<a href="" ng-click="sortType = 'lastname'">Last name</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
-									<span ng-show="sortType == 'lastName' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
-									<span ng-show="sortType == 'lastName' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
+									<span ng-show="sortType == 'lastname' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
+									<span ng-show="sortType == 'lastname' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
 							<th>
@@ -159,16 +159,16 @@
 							<th>Groups</th>
 							<th/>
 						</tr>
-						
-						
+
+
 					</thead>
-					
+
 					<!-- Table body -->
 					<tbody>
 						<tr ng-repeat="user in users | orderBy:sortType:sortReverse | filter:search:strict | limitTo:itemsPerPage:startItem">
 							<td>{{ user.username }}</td>
-							<td>{{ user.firstName }}</td>
-							<td>{{ user.lastName }}</td>
+							<td>{{ user.firstname }}</td>
+							<td>{{ user.lastname }}</td>
 							<td>{{ user.email }}</td>
 							<td>{{ user.failedLogin }}</td>
 							<td>{{ user.lastLogin }}</td>
@@ -179,20 +179,20 @@
 								<a ng-show="user.groups.indexOf('super') > -1" href="" data-toggle="tooltip" title="User has Super role"><span class="label label-info">S</span></a>
 							</td>
 							<td>
-								<a href="" data-toggle="modal" data-target="#deleterecord" ng-click="edit(users.indexOf(user))"><span class="glyphicon glyphicon glyphicon-trash"></span></a>&nbsp;    
+								<a href="" data-toggle="modal" data-target="#deleterecord" ng-click="edit(users.indexOf(user))"><span class="glyphicon glyphicon glyphicon-trash"></span></a>&nbsp;
 								<a href="" data-toggle="modal" data-target="#editrecord" ng-click="edit(users.indexOf(user))"><span class="glyphicon glyphicon glyphicon glyphicon-pencil"></span></a>
 							</td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
-			
+
 			<!-- ----------------------------------------------------------------------------------
 				Table controls below table
 				-->
 			<!-- Large devices -->
 			<!-- Number of records displayed - Large devices -->
-			<div class="row">                            
+			<div class="row">
 				<div class="col-sm-6 hidden-sm hidden-xs">
 					Show rows {{ startItem + 1 }} to {{ lastItemPage() }} of <span ng-show="totalItems != totalRecords">{{ totalItems }} filtered records. Total</span> {{ totalRecords }} records.
 				</div>
@@ -212,7 +212,7 @@
 					</ul>
 				</div>
 			</div>
-			
+
 			<!-- Small devices -->
 			<!-- Number of records displayed - Small devices -->
 			<div class="row">
@@ -237,7 +237,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<!-- ------------------------------------------------------------------------------------------
 		Modal for new and update record
 		-->
@@ -251,18 +251,18 @@
 						<h4 ng-show="form.edit" class="modal-title">Regel wijzigen</h4>
 						<h4 ng-hide="form.edit" class="modal-title">Nieuwe regel toevoegen</h4>
 					</div>
-				
+
 					<!-- Form -->
 					<div class="modal-body">
-					
+
 					<div ng-show="message" class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">�</a>{{ message }}</div>
-						
-						<input type="hidden" ng-model="form.edit" value="{{ form.edit }}"></input><br/> <!-- Hidden field to set the edit variable -->                                
-						
+
+						<input type="hidden" ng-model="form.edit" value="{{ form.edit }}"></input><br/> <!-- Hidden field to set the edit variable -->
+
 						<div ng-show="form.edit" class="form-group has-feedback" show-errors="{ showSuccess: true }">
 							<label class="control-label col-sm-2" for="username">Username</label>
 							<div class="col-sm-10">
-								
+
 								<input id="username" name="username" type="text" ng-model="form.username" errorText="Username must be at least 5 characters long." ng-minlength="5" class="form-control" readonly/>
 							</div>
 						</div>
@@ -270,21 +270,21 @@
 							<label class="control-label col-sm-2" for="username">Username</label>
 							<div class="col-sm-10">
 								<input  id="username" name="username" type="text" ng-model="form.username" errorText="Username must be at least 5 characters long." ng-minlength="5" class="form-control" required/>
-								
+
 							</div>
 						</div>
-						
+
 						<div ng-if="form.edit != true" class="form-group has-feedback" show-errors="{ showSuccess: true }">
 							<label class="control-label col-sm-2" for="password1">Password</label>
 							<div class="col-sm-10">
 								<div class="input-group">
-									<input 
-										id="password1" 
-										name="password1" 
-										type="{{ showPassword1 ? 'text' : 'password' }}" 
-										ng-model="form.password1" 
-										errorText="Valid password is required" 
-										class="form-control" 
+									<input
+										id="password1"
+										name="password1"
+										type="{{ showPassword1 ? 'text' : 'password' }}"
+										ng-model="form.password1"
+										errorText="Valid password is required"
+										class="form-control"
 										ng-required="true"
 										ng-pattern="/(?=^.{8,30}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$/"/>
 									<span class="input-group-btn">
@@ -296,19 +296,19 @@
 								</div>
 							</div>
 						</div>
-						
+
 						<div ng-if="form.edit != true" class="form-group has-feedback" show-errors="{ showSuccess: true }">
 							<label class="control-label col-sm-2" for="password2">Password (again)</label>
 							<div class="col-sm-10">
 								<div class="input-group">
-									<input 
-										id="password2" 
-										name="password2" 
-										type="{{ showPassword2 ? 'text' : 'password' }}" 
-										ng-model="form.password2" 
-										errorText="Passwords do not match" 
-										class="form-control" 
-										ng-minlength="8" 
+									<input
+										id="password2"
+										name="password2"
+										type="{{ showPassword2 ? 'text' : 'password' }}"
+										ng-model="form.password2"
+										errorText="Passwords do not match"
+										class="form-control"
+										ng-minlength="8"
 										required/>
 									<span class="input-group-btn">
 										<button  class="btn btn-default" type="button" ng-click="showPassword2 = !showPassword2">
@@ -319,35 +319,35 @@
 								</div>
 							</div>
 						</div>
-						
+
 						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
-							<label class="control-label col-sm-2" for="firstName">First&nbsp;Name</label>
+							<label class="control-label col-sm-2" for="firstname">First&nbsp;Name</label>
 							<div class="col-sm-10">
-								<input id="firstName" name="firstName" type="text" ng-model="form.firstName" errorText="First Name is required" class="form-control" required/>
+								<input id="firstname" name="firstname" type="text" ng-model="form.firstname" errorText="First Name is required" class="form-control" required/>
 							</div>
 						</div>
-						
+
 						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
-							<label class="control-label col-sm-2" for="lastName">Last&nbsp;Name</label>
+							<label class="control-label col-sm-2" for="lastname">Last&nbsp;Name</label>
 							<div class="col-sm-10">
-								<input id="lastName" name="lastName" type="text" ng-model="form.lastName" errorText="Last Name is required" class="form-control" required/>
+								<input id="lastname" name="lastname" type="text" ng-model="form.lastname" errorText="Last Name is required" class="form-control" required/>
 							</div>
 						</div>
-						
+
 						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
 							<label class="control-label col-sm-2" for="email">Email</label>
 							<div class="col-sm-10">
 								<input id="email" name="email" type="email" ng-model="form.email" errorText="A valid email adres is required" class="form-control" required/>
 							</div>
 						</div>
-						
+
 						<div ng-show="form.edit" class="form-group has-feedback" show-errors="{ showSuccess: true }">
 							<label class="control-label col-sm-2" for="status">Status</label>
 							<div class="col-sm-10">
 								<select id="status" name="status" class="form-control" ng-model="form.status" ng-options="status.id as status.name for status in statusses"></select>
 							</div>
 						</div>
-																		
+
 						<div  ng-show="form.edit" class="form-group has-feedback" show-errors="{ showSuccess: true }">
 							<label class="control-label col-sm-2" for="groups">Groups</label>
 							<div class="col-sm-10">
@@ -356,7 +356,7 @@
 								<div id="description-select" class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close">�</a>Use <kbd>ctrl</kbd> to select multiple groups</div>
 							</div>
 						</div>
-												
+
 						<button class="btn btn-default" ng-disabled="editForm.$invalid" ng-class="{'btn-success': editForm.$valid}" ng-click="insert(form.index)">Update</button>
 						<button class="btn btn-default" ng-click="reset()">Reset</button>
 						<button class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
@@ -365,7 +365,7 @@
 			</form>
 		</div>
 	</div>
-	
+
 	<!-- ------------------------------------------------------------------------------------------
 		Modal delete confirmation
 		-->
@@ -378,14 +378,14 @@
 				</div>
 				<div class="modal-body">
 					<p>Record voor {{ form.username }} wordt verwijderd.</p><br/>
-					
+
 					<button class="btn btn-danger" data-dismiss="modal" ng-click="delete(form.index)">Delete</button>
 					<button class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
 				</div>
 			</div>
 		</div>
 	</div>
-		
+
 	<!-- ------------------------------------------------------------------------------------------
 		Modal for help
 	-->
@@ -396,7 +396,7 @@
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
 					<h4 class="modal-title"><span class="glyphicon glyphicon-question-sign"></span> Help</h4>
 				</div>
-					
+
 				<div class="modal-body">
 					Deze pagina toont alle gebruikers van de urenregistratie applicatie. Gebruikers kunnen nog geen
 					uren boeken of goedkeuren.<br/>
@@ -411,11 +411,11 @@
 					</ul>
 					Normale gebruikers hebben geen groepen.<br/>
 					<br/>
-					
-					
+
+
 					<button class="btn btn-primary center-block" data-dismiss="modal">Sluiten</button>
 				</div>
-			</div>	
+			</div>
 		</div>
 	</div>
 </div>

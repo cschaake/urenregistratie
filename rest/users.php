@@ -242,7 +242,7 @@ function getUsers($input)
         $users_obj = new Users($mysqli);
 
         try {
-            $users = $users_obj->get();
+            $users = $users_obj->read();
         } catch (Exception $e) {
             http_response_code(404);
             header('Content-Type: application/json');

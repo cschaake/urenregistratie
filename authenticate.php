@@ -23,6 +23,7 @@
 include_once 'includes/db_connect.php';
 include_once 'includes/settings.php';
 include_once 'objects/Authenticate_obj.php';
+include_once 'objects/Users_obj.php';
 
 // Start or restart session
 include_once 'includes/login_functions.php';
@@ -366,6 +367,7 @@ function getConfirmReset()
 /**
  * Get Groups of user
  *
+ * @todo Groups verplaatsen naar groups rest service
  * @param object $authenticate
  *
  * @return bool
@@ -452,6 +454,7 @@ function getSelf($authenticate)
 /**
  * Get all information of users
  *
+ * @todo Verplaats naar rest users
  * @param object $authenticate
  *
  * @return bool
@@ -482,9 +485,9 @@ function getListUsers($authenticate)
 
                     }
 
-                    $user = new $authenticate ( $mysqli );
+                    $user = new Users($mysqli);
                     try {
-                        $userinfo = $user->get_user ( $request_user, true );
+                        $userinfo = $user->read( $request_user);
                     } catch ( Exception $e ) {
                         http_response_code ( 404 );
                         echo json_encode ( array (
@@ -510,7 +513,8 @@ function getListUsers($authenticate)
                     }
 
                     try {
-                        $usersinfo = $authenticate->get_users ();
+                        $users_obj = new Users($mysqli);
+                        $users_obj->read();
                     } catch ( Exception $e ) {
                         http_response_code ( 404 );
                         echo json_encode ( array (
@@ -521,7 +525,7 @@ function getListUsers($authenticate)
                         exit ();
                     }
 
-                    echo json_encode ( $usersinfo );
+                    echo json_encode($users_obj);
                 }
             }
 			return true;
@@ -530,6 +534,7 @@ function getListUsers($authenticate)
 /**
  * Update user information
  *
+ * @todo Verplaats naar rest users
  * @param object $request
  * @param object $authenticate
  *
@@ -537,7 +542,9 @@ function getListUsers($authenticate)
  */
 function putUser($request, $authenticate)
 {
-    if ($authenticate->authorisation_check ( false )) {
+    global $mysqli;
+
+    if ($authenticate->authorisation_check(false)) {
         // Check if we are a super or admin user
         if (is_array($authenticate->group) && (in_array ( 'admin', $authenticate->group ) || in_array ( 'super', $authenticate->group ))) {
             $super = true;
@@ -545,11 +552,12 @@ function putUser($request, $authenticate)
             $super = false;
         }
 
-        $user_obj = new User($request->username, $request->firstname, $request->lastname);
+        $users_obj = new Users($mysqli);
+        $user_obj = new User($request->username, $request->firstname, $request->lastname, $request->groepen, $request->rollen, $request->email, null, null, null, null, $request->status);
 
         // Update user information
         try {
-            $authenticate->update_user ( $user_obj, $super );
+            $users_obj->update($user_obj, $super);
         } catch ( Exception $e ) {
             echo json_encode ( array (
                     'success' => false,
@@ -577,12 +585,15 @@ function putUser($request, $authenticate)
 /**
  * Delete user information
  *
+ * @todo Verplaats naar rest users
  * @param object $authenticate
  *
  * @return bool
  */
 function deleteUser($authenticate)
 {
+    global $mysqli;
+
     // Delete user information
     if ($authenticate->authorisation_check ( true )) {
         // Check if we are called for one user or all users
@@ -592,7 +603,8 @@ function deleteUser($authenticate)
             $request_user = substr ( filter_var ( $_SERVER ['PATH_INFO'], FILTER_SANITIZE_STRING ), 1 );
 
             try {
-                $authenticate->delete_user ( $request_user );
+                $users = new Users($mysqli);
+                $users->delete($request_user);
             } catch ( Exception $e ) {
                 // Proberbly session mismatch (session hijacking?)
                 echo json_encode ( array (

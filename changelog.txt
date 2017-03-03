@@ -3,6 +3,8 @@ Versie 1.0.9
 
 	Bug-fix
 		Boekers pagina geeft nu alleen boekers weer en niet alle gebruikers
+		Sanitizing van alle input variabelen voor objecten
+		Herstructureren van methoden en objecten
 	
 	Known-bugs
 		Verversen van pagina met filter reset paging waardoor deze niet meer klopt
@@ -100,7 +102,7 @@ Nieuwe wensen
 	Feedback
 	
 	
-	In 2e instantie zou het mooi zijn als deze opmerking dan in het veldje “activiteit” te zien is. (Dit laatste heeft geen prioriteit, maar iets voor de toekomst?) 
+	In 2e instantie zou het mooi zijn als deze opmerking dan in het veldje ï¿½activiteitï¿½ te zien is. (Dit laatste heeft geen prioriteit, maar iets voor de toekomst?) 
 	
 	Goedkeuren, activiteit wijzigen.	
 

@@ -8,9 +8,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -20,12 +20,12 @@
  * @since      File available since Release 1.0.7
  * @version    1.0.7
  */
- 
+
 ?>
 
 <div class="container">
 	<div ng-app="myApp" ng-controller="loginCtrl">
-	
+
 		<!-- ------------------------------------------------------------------------------------------
 			Modal for changing password
 		-->
@@ -40,23 +40,23 @@
 					<div class="modal-body">
 						<div ng-show="message" class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">�</a>{{ message }}</div>
 						<div ng-show="spinner" class="spinner"></div>
-						
-						<div ng-init="password.username='<?php echo $authenticate->username; ?>'"></div>
-						<div ng-init="password.token='<?php echo $authenticate->resetToken; ?>'"></div>
-						
+
+						<div ng-init="password.username='<?php echo $user->username; ?>'"></div>
+						<div ng-init="password.token='<?php echo $user->getResetToken(); ?>'"></div>
+
 						<br/>
-									
+
 						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
 							<label class="control-label col-sm-4" for="password1">Nieuw wachtwoord <a href="" ng-click="passwordHelp = !passwordHelp"><span class="glyphicon glyphicon-info-sign"></span></a></label>
 							<div class="col-sm-6">
 								<div class="input-group">
-									<input 
-										id="password1" 
-										name="password1" 
-										type="{{ showPassword1 ? 'text' : 'password' }}" 
-										ng-model="password.password1" 
-										errorText="Valid password is required" 
-										class="form-control" 
+									<input
+										id="password1"
+										name="password1"
+										type="{{ showPassword1 ? 'text' : 'password' }}"
+										ng-model="password.password1"
+										errorText="Valid password is required"
+										class="form-control"
 										ng-required="true"
 										ng-pattern="/(?=^.{8,30}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$/"/>
 									<span class="input-group-btn">
@@ -68,20 +68,20 @@
 								</div>
 							</div>
 						</div>
-									
+
 						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
 							<label class="control-label col-sm-4" for="password2">Herhaal nieuw wachtwoord </label>
 							<div class="col-sm-6">
 								<div class="input-group">
-									<input 
-										id="password2" 
-										name="password2" 
-										type="{{ showPassword2 ? 'text' : 'password' }}" 
-										ng-model="password.password2" 
-										errorText="Wachtwoorden zijn niet gelijk" 
-										class="form-control" 
-										ng-minlength="8" 
-										required 
+									<input
+										id="password2"
+										name="password2"
+										type="{{ showPassword2 ? 'text' : 'password' }}"
+										ng-model="password.password2"
+										errorText="Wachtwoorden zijn niet gelijk"
+										class="form-control"
+										ng-minlength="8"
+										required
 										pw-check="password1"/>
 									<span class="input-group-btn">
 										<button  class="btn btn-default" type="button" ng-click="showPassword2 = !showPassword2">
@@ -112,13 +112,13 @@
 		-->
 		<div id="changePasswordSuccessModal" class="modal" role="dialog">
 			<div class="modal-dialog">
-				
+
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
 						<h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span> Wijzig Wachtwoord</h4>
 					</div>
-							
+
 					<div class="modal-body">
 						<p>Het wachtwoord is gewijzigd, u wordt doorverwezen naar de website.</p>
 						<br/>
@@ -126,6 +126,6 @@
 				</div>
 			</div>
 		</div>
-		
+
 	</div>
 </div>

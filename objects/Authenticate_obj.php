@@ -211,161 +211,6 @@ class Authenticate
     }
 
     /**
-     * Get all users information
-     *
-     * Get all the information of all user
-     *
-     * @return array Array containing all users
-     */
-    public function get_users()
-    {
-        $prep_stmt = "
-            SELECT
-                username,
-                firstName,
-                lastName,
-                email,
-                failedLogin,
-                lastLogin,
-                status,
-                created
-           FROM
-                users";
-        $stmt = $this->mysqli->prepare($prep_stmt);
-
-        if ($stmt) {
-
-            $stmt->execute();
-            $stmt->store_result();
-
-            if ($stmt->num_rows > 0) {
-                $stmt->bind_result($username, $firstName, $lastName, $email, $failedLogin, $lastLogin, $status, $created);
-
-                $groups = array();
-
-                while ($stmt->fetch()) {
-                    // Get user groups
-                    $prep_stmt2 = "
-                            SELECT
-                                groupname
-                            FROM
-                                users_groups
-                            WHERE
-                                username = ?";
-                    $stmt2 = $this->mysqli->prepare($prep_stmt2);
-
-                    if ($stmt2) {
-                        $stmt2->bind_param('s', $username);
-                        $stmt2->execute();
-                        $stmt2->store_result();
-
-                        if ($stmt2->num_rows > 0) {
-                            $stmt2->bind_result($groupname);
-
-                            while ($stmt2->fetch()) {
-                                $groups[] = $groupname;
-                            }
-                        }
-                        $stmt2->close();
-                    }
-
-                    $users[] = [
-                        'username' => $username,
-                        'firstName' => $firstName,
-                        'lastName' => $lastName,
-                        'email' => $email,
-                        'failedLogin' => $failedLogin,
-                        'lastLogin' => $lastLogin,
-                        'status' => $status,
-                        'created' => $created,
-                        'groups' => $groups
-                    ];
-                    $groups = null;
-                }
-            } else {
-                $stmt->close();
-                throw new Exception('No users found');
-            }
-        } else {
-            throw new Exception('Database error');
-        }
-
-        $stmt->close();
-        return $users;
-    }
-
-    /**
-     * Get user information
-     *
-     * Get all the information of a specific user
-     *
-     * @param
-     *            string username Username
-     * @param
-     *            bool optional Flag to return array (true) or update object (false)
-     *
-     * @return bool|array Success flag or array containing user info
-     */
-    public function get_user($username, $return_array = false)
-    {
-        $prep_stmt = "SELECT username, firstName, lastName, email, passwordHash, resetToken, failedLogin, lastLogin, status, created FROM users WHERE username = ?";
-        $stmt = $this->mysqli->prepare($prep_stmt);
-
-        if ($stmt) {
-            $stmt->bind_param('s', $username);
-            $stmt->execute();
-            $stmt->store_result();
-
-            if ($stmt->num_rows == 1) {
-                // If the user exists get variables from result.
-                if ($return_array) {
-                    $stmt->bind_result($array->username, $array->firstName, $array->lastName, $array->email, $dump, $dump, $array->failedLogin, $array->lastLogin, $array->status, $array->created);
-                } else {
-                    $stmt->bind_result($this->username, $this->firstName, $this->lastName, $this->email, $this->passwordHash, $this->resetToken, $this->failedLogin, $this->lastLogin, $this->status, $this->created);
-                }
-                $stmt->fetch();
-
-                // Get user groups
-                $groups = array();
-                $prep_stmt2 = "SELECT groupname FROM users_groups WHERE username = ?";
-                $stmt2 = $this->mysqli->prepare($prep_stmt2);
-
-                if ($stmt2) {
-                    $stmt2->bind_param('s', $username);
-                    $stmt2->execute();
-                    $stmt2->store_result();
-
-                    if ($stmt2->num_rows > 0) {
-                        $stmt2->bind_result($groupname);
-
-                        while ($stmt2->fetch()) {
-                            $groups[] = $groupname;
-                        }
-                    }
-                    $stmt2->close();
-                }
-
-                if ($return_array) {
-                    $array->groups = $groups;
-                }
-            } else {
-                $stmt->close();
-                throw new Exception('User not found');
-            }
-        } else {
-            throw new Exception('Database error');
-        }
-
-        $stmt->close();
-
-        if (isset($array)) {
-            return $array;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Check if username is current user
      *
      * @param string $username
@@ -391,140 +236,6 @@ class Authenticate
         } else {
             return false;
         }
-    }
-
-    /**
-     * Update user information
-     *
-     * Update the information of a specific user
-     *
-     * @param
-     *            User user User information
-     * @param
-     *            bool super Is super user, so can change user status
-     *
-     * @return bool Success flag
-     */
-    public function update_user(User $user, $super = false)
-    {
-        if ($super) {
-            $super = true;
-        } else {
-            $super = false;
-        }
-
-        // Update user
-        if ($super) {
-            // Update user record
-            $prep_stmt = "UPDATE users SET firstName = ?, lastName = ?, email = ?, status = ? WHERE username = ?";
-            $stmt = $this->mysqli->prepare($prep_stmt);
-
-            if ($stmt) {
-                $stmt->bind_param('sssis', $user->firstName, $user->lastName, $user->email, $user->status, $user->username);
-                if (! $stmt->execute()) {
-                    $stmt->close();
-                    throw new Exception('Failure updating user information');
-                }
-            } else {
-                throw new Exception('Failure preparing statement for updating user information');
-            }
-
-            // Check if we need to update the group information
-            if ($super && isset($user->groups)) {
-                // Delete all existing group information for the user
-                $prep_stmt = "DELETE FROM users_groups WHERE username = ?";
-                $stmt = $this->mysqli->prepare($prep_stmt);
-                if ($stmt) {
-                    $stmt->bind_param('s', $user->username);
-                    if (! $stmt->execute()) {
-                        $stmt->close();
-                        throw new Exception('Failure deleting group information');
-                    }
-                } else {
-                    throw new Exception('Failure preparing statement for deleting group information');
-                }
-
-                // Insert all the new group information for the user
-                foreach ($user->groups as $group) {
-                    $prep_stmt = "INSERT INTO users_groups (username, groupname) VALUES (?, ?)";
-                    $stmt = $this->mysqli->prepare($prep_stmt);
-                    if ($stmt) {
-                        $stmt->bind_param('ss', $user->username, $group);
-                        if (! $stmt->execute()) {
-                            $stmt->close();
-                            throw new Exception('Failure updating group information');
-                        }
-                    } else {
-                        throw new Exception('Failure preparing statement for updating group information');
-                    }
-                }
-            }
-        } else {
-            $prep_stmt = "UPDATE users SET firstName = ?, lastName = ?, email = ? WHERE username = ?";
-            $stmt = $this->mysqli->prepare($prep_stmt);
-
-            if ($stmt) {
-                $stmt->bind_param('ssss', $user->firstName, $user->lastName, $user->email, $user->username);
-                if (! $stmt->execute()) {
-                    $stmt->close();
-                    throw new Exception('Failure updating user information');
-                }
-            } else {
-                throw new Exception('Failure preparing statement for updating user information');
-            }
-        }
-
-        if ($stmt) {
-            $stmt->close();
-        }
-        return true;
-    }
-
-    /**
-     * Delete user
-     *
-     * Delete the specific user
-     *
-     * @param
-     *            string username
-     * @param
-     *            bool super Is super user, so can change user status
-     *
-     * @return bool Success flag
-     */
-    public function delete_user($username)
-    {
-        // Delete user
-        $prep_stmt = "DELETE FROM users WHERE username = ?";
-        $stmt = $this->mysqli->prepare($prep_stmt);
-
-        if ($stmt) {
-            $stmt->bind_param('s', $username);
-            if (! $stmt->execute()) {
-                $stmt->close();
-                throw new Exception('Failure deleting user');
-            }
-        } else {
-            throw new Exception('Failure preparing statement for deleting user');
-        }
-
-        $prep_stmt = "DELETE FROM users_groups WHERE username = ?";
-        $stmt = $this->mysqli->prepare($prep_stmt);
-
-        if ($stmt) {
-            $stmt->bind_param('s', $username);
-            if (! $stmt->execute()) {
-                $stmt->close();
-                throw new Exception('Failure deleting user');
-            }
-        } else {
-            throw new Exception('Failure preparing statement for deleting user');
-        }
-
-        if ($stmt) {
-            $stmt->close();
-        }
-        return true;
     }
 
     /**
@@ -587,7 +298,20 @@ class Authenticate
 
         // Check if all session variables are set
         if (isset($username, $sessionHash)) {
-            $prep_stmt = "SELECT username, sessionHash, browser, ip, hits, lastHit FROM sessions WHERE username = ? AND sessionHash = ?";
+            $prep_stmt = "
+                    SELECT
+                        username,
+                        sessionHash,
+                        browser,
+                        ip,
+                        hits,
+                        lastHit
+                    FROM
+                        sessions
+                    WHERE
+                        username = ?
+                    AND
+                        sessionHash = ?";
             $stmt = $this->mysqli->prepare($prep_stmt);
 
             if ($stmt) {

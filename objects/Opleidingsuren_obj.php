@@ -203,8 +203,6 @@ class Opleidingsuren
      *
      * Get all the users that have group_id 1
      *
-     * @todo parameterise group_id for opleidingen
-     *
      * @return array Users records
      */
     private function _getUsers()
