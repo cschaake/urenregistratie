@@ -144,7 +144,7 @@ function getGroepen(input $input = null)
 
         $groepen_obj = new Groepen($mysqli);
         try {
-            $groep = $groepen_obj->get(array_keys($input->get_pathParams())[0]);
+            $groep = $groepen_obj->read(array_keys($input->get_pathParams())[0]);
         } catch(Exception $e) {
             http_response_code(404);
             echo json_encode(array('success' => false, 'message' => 'Not found', 'code' => 404));

@@ -241,6 +241,7 @@ class Authenticate
     /**
      * Get groups
      *
+     * @todo verplaatsen naar groups object
      * Get a list of all known groups
      *
      * @return array groups

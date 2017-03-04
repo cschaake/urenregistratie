@@ -27,6 +27,7 @@ include_once '../objects/Authenticate_obj.php';
 include_once '../objects/Input_obj.php';
 
 include_once '../objects/Users_obj.php';
+include_once '../objects/Boekers_obj.php';
 
 // Start or restart session
 include_once '../includes/login_functions.php';
@@ -102,28 +103,21 @@ function postUser($input)
         exit();
     }
 
-    $boeker['username'] = $json->username;
+    $boeker_obj = new User($json->username, $json->firstname, $json->lastname);
 
     foreach ($json->rollen as $rol) {
+        $rol_obj = new Rol($rol->id, $rol->rol, $rol->gecertificeerd, $rol->verloopt);
+        $boeker_obj->addRollen($rol_obj);
 
-        $record['rol_id'] = $rol->rol_id;
-        $record['gecertificeerd'] = $rol->gecertificeerd;
-        $record['verloopt'] = $rol->verloopt;
         if (isset($rol->groep_id)) {
-            $record['groep_id'] = $rol->groep_id;
-        } else {
-            $record['groep_id'] = null;
+            $groep_obj = new Groep($rol->groep_id);
+            $boeker_obj->addGroepen($groep_obj);
         }
-        $boeker['rol'][] = $record;
     }
 
-    $response['username'] = $json->username;
-    $response['firstname'] = $json->firstname;
-    $response['lastname'] = $json->lastname;
-
-    $users_obj = new Users($mysqli);
+    $boekers_obj = new Boekers($mysqli);
     try {
-        $users_obj->setBoeker($boeker);
+        $boekers_obj->update($boeker_obj);
     } catch (Exception $e) {
         http_response_code(404);
         header('Content-Type: application/json');
@@ -138,7 +132,7 @@ function postUser($input)
 
     http_response_code(200);
     header('Content-Type: application/json');
-    echo json_encode($response);
+    echo json_encode($boekers_obj);
 
     return true;
 }
@@ -178,15 +172,15 @@ function getUsers($input)
 
             // We are called for a single record
 
-            $users_obj = new Users($mysqli);
+            $users = new Boekers($mysqli);
             try {
-                $users = $users_obj->getBoeker($username);
+                $users->read($username);
             } catch (Exception $e) {
                 http_response_code(404);
                 header('Content-Type: application/json');
                 echo json_encode(array(
                     'success' => false,
-                    'message' => 'Not found row 145',
+                    'message' => 'Boeker niet gevonden',
                     'code' => 404
                 ));
                 exit();
@@ -194,15 +188,15 @@ function getUsers($input)
         } else {
             // We are called for all records
 
-            $users_obj = new Users($mysqli);
+            $users = new Boekers($mysqli);
             try {
-                $users = $users_obj->getBoekers();
+                $users->read();
             } catch (Exception $e) {
                 http_response_code(404);
                 header('Content-Type: application/json');
                 echo json_encode(array(
                     'success' => false,
-                    'message' => 'Not found row 158',
+                    'message' => 'Geen boekers gevonden',
                     'code' => 404
                 ));
                 exit();
@@ -239,10 +233,10 @@ function getUsers($input)
         }
     } else {
 
-        $users_obj = new Users($mysqli);
+        $users = new Users($mysqli);
 
         try {
-            $users = $users_obj->read();
+            $users->read();
         } catch (Exception $e) {
             http_response_code(404);
             header('Content-Type: application/json');
@@ -305,9 +299,9 @@ function deleteUser($input)
 
     if ($input->hasPathParams() && (array_keys($input->get_pathParams())[0] == 'boeker') && $username != '') {
 
-        $users_obj = new Users($mysqli);
+        $users_obj = new Boekers($mysqli);
         try {
-            $users_obj->deleteBoeker($username);
+            $users_obj->delete($username);
         } catch (Exception $e) {
             http_response_code(404);
             header('Content-Type: application/json');

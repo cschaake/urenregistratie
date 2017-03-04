@@ -65,15 +65,19 @@ class Groep
      *
      * @param int $id
      *            Id van de groep
-     * @param string $groep
+     * @param string optional $groep
      *            Naam van de groep
      *
      * @return bool Succes vlag
      */
-    public function __construct($id, $groep)
+    public function __construct($id, $groep = null)
     {
         $this->id = (int) filter_var($id, FILTER_SANITIZE_STRING);
-        $this->groep = filter_var($groep, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        if (isset($groep)) {
+            $this->groep = filter_var($groep, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        } else {
+            $this->groep = null;
+        }
 
         if ($this->id == OPLEIDINGS_GROEP_ID) {
             $this->opleiding = true;

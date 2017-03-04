@@ -140,7 +140,7 @@ function getGoedkeurders()
 	global $mysqli;
 
 	$users_obj = new Users($mysqli);
-	$result['users'] = $users_obj->get();
+	$result['users'] = $users_obj->read();
 
 	$groepen_obj = new groepen($mysqli);
 	$groepen_obj->read();

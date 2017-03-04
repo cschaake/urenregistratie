@@ -199,6 +199,26 @@ class User
     }
 
     /**
+     * Add rollen
+     *
+     * @param Rol $rol
+     */
+    public function addRollen(Rol $rol)
+    {
+        $this->rollen[] = $rol;
+    }
+
+    /**
+     * Add groepen
+     *
+     * @param Groep $groep
+     */
+    public function addGroepen(Groep $groep)
+    {
+        $this->groepen[] = $groep;
+    }
+
+    /**
      * Return reset token for user
      *
      * @return string

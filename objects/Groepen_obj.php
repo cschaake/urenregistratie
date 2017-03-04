@@ -111,11 +111,15 @@ class Groepen
      * Lees alle groepen
      *
      * @access public
+     * @param int $id Groep id
      * @throws Exception
      * @return bool Succes vlag
      */
-    public function read()
+    public function read($id = null)
     {
+        if (isset($id)) {
+            $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
+        }
         $prep_stmt = "
 			SELECT
 				id, groep
@@ -124,9 +128,17 @@ class Groepen
 			ORDER BY
 				ura_groepen.groep";
 
+        if (isset($id)) {
+            $prep_stmt .= "WHERE
+                id = ?";
+        }
+
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
+            if (isset($id)) {
+                $stmt->bind_param('i', $record->id);
+            }
             $stmt->execute();
             $stmt->store_result();
 

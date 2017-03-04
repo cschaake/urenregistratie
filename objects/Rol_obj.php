@@ -53,24 +53,56 @@ class Rol
     public $rol;
 
     /**
+     * Gecertificeerd
+     *
+     * @var string
+     * @access public
+     */
+    public $gecertificeerd;
+
+    /**
+     * Verloopt
+     *
+     * @var string
+     * @access public
+     */
+    public $verloopt;
+
+    /**
      * Creeer rol object
      *
      * @access public
      * @param int $id
-     *            Rol id
+     *            optional Rol id
      * @param string $rol
-     *            Rol omschrijving
+     *            optional Rol omschrijving
+     * @param string $gecertificeerd
+     * @param string $verloopt
      *
      * @return bool Succes vlag
      */
-    public function __construct($id, $rol)
+    public function __construct($id, $rol = null, $gecertificeerd = null, $verloopt = null)
     {
-        if ($id) {
+        if (isset($id)) {
             $this->id = (int) filter_var($id, FILTER_SANITIZE_STRING);
         } else {
             $this->id = null;
         }
-        $this->rol = filter_var($rol, FILTER_SANITIZE_STRING);
+        if (isset($rol)) {
+            $this->rol = filter_var($rol, FILTER_SANITIZE_STRING);
+        } else {
+            $this->rol = null;
+        }
+        if (isset($gecertificeerd)) {
+            $this->gecertificeerd = filter_var($gecertificeerd, FILTER_SANITIZE_STRING);
+        } else {
+            $this->gecertificeerd = null;
+        }
+        if (isset($verloopt)) {
+            $this->verloopt = filter_var($verloopt, FILTER_SANITIZE_STRING);
+        } else {
+            $this->verloopt = null;
+        }
 
         return true;
     }
