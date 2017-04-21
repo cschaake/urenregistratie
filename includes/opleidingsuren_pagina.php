@@ -39,36 +39,36 @@
 				<div class="col-sm-9 hidden-sm hidden-xs">
 					<form role="form" class="form-inline">
 						<div class="form-group"><!-- Number of displayed rows -->
-							<select 
-								class="form-control" 
-								ng-model="itemsPerPage" 
-								id="numberOfRows" 
+							<select
+								class="form-control"
+								ng-model="itemsPerPage"
+								id="numberOfRows"
 								ng-options="'Toon ' + option + ' regels' for option in tableListOptions">
 							</select>
 						</div>
 
 						<div class="form-group"><!-- Refresh data -->
-							<button 
-								class="btn btn-default" 
-								ng-click="refresh()" 
+							<button
+								class="btn btn-default"
+								ng-click="refresh()"
 								id="refreshData">
 								Ververs tabel <span class="glyphicon glyphicon-refresh"></span>
 							</button>
 						</div>
 
 						<div class="form-group"><!-- Show filters -->
-							<button 
-								ng-hide="showFilter" 
-								class="btn btn-default" 
-								ng-click="showFilter = !showFilter" 
+							<button
+								ng-hide="showFilter"
+								class="btn btn-default"
+								ng-click="showFilter = !showFilter"
 								id="refreshData">
 								Toon filter <span class="glyphicon glyphicon-filter"></span>
 							</button>
 
-							<button 
-								ng-show="showFilter" 
-								class="btn btn-default" 
-								ng-click="showFilter = !showFilter" 
+							<button
+								ng-show="showFilter"
+								class="btn btn-default"
+								ng-click="showFilter = !showFilter"
 								id="refreshData">
 								Verberg filter <span class="glyphicon glyphicon-filter"></span>
 							</button>
@@ -81,19 +81,19 @@
 						<div class="form-group">
 							<div class="input-group">
 								<span class="input-group-addon" id="search"><span class="glyphicon glyphicon-search"></span></span>
-								<input 
-									type="search" 
-									ng-change="onSearch()" 
-									class="form-control" 
-									ng-model="search" 
-									aria-describedby="search" 
+								<input
+									type="search"
+									ng-change="onSearch()"
+									class="form-control"
+									ng-model="search"
+									aria-describedby="search"
 									placeholder="Zoek..."/>
 							</div>
 						</div>
 					</form>
 					<div ng-show="search == '[object Object]'">
-						<button 
-							class="btn btn-info btn-block" 
+						<button
+							class="btn btn-info btn-block"
 							ng-click="resetSearch()">
 							<span class="glyphicon glyphicon-search"></span> Reset filter
 						</button>
@@ -106,35 +106,35 @@
 					<form role="form">
 						<div class="form-group">
 							<div class="input-group"><!-- Number of displayed tables and refresh data -->
-								<select 
-									class="form-control" 
-									ng-model="itemsPerPage" 
-									id="numberOfRows" 
+								<select
+									class="form-control"
+									ng-model="itemsPerPage"
+									id="numberOfRows"
 									ng-options="'Toon ' + option + ' regels' for option in tableListOptions">
 								</select>
-								
+
 								<span class="input-group-btn">
-									<button 
-										class="btn btn-default" 
-										ng-click="refresh()" 
+									<button
+										class="btn btn-default"
+										ng-click="refresh()"
 										id="refreshData">
 										Ververs tabel <span class="glyphicon glyphicon-refresh"></span>
 									</button>
 								</span>
-								
+
 								<div class="input-group-btn"><!-- Show filters -->
-									<button 
-										ng-hide="showFilter" 
-										class="btn btn-default" 
-										ng-click="showFilter = !showFilter" 
+									<button
+										ng-hide="showFilter"
+										class="btn btn-default"
+										ng-click="showFilter = !showFilter"
 										id="refreshData">
 										Toon filter <span class="glyphicon glyphicon-filter"></span>
 									</button>
-									
-									<button 
-										ng-show="showFilter" 
-										class="btn btn-default" 
-										ng-click="showFilter = !showFilter" 
+
+									<button
+										ng-show="showFilter"
+										class="btn btn-default"
+										ng-click="showFilter = !showFilter"
 										id="refreshData">
 										Verberg filter <span class="glyphicon glyphicon-filter"></span>
 									</button>
@@ -151,18 +151,18 @@
 								<span class="input-group-addon" id="search">
 									<span class="glyphicon glyphicon-search"></span>
 								</span>
-								<input 
-									type="search" 
-									class="form-control" 
-									ng-model="search" 
-									aria-describedby="search" 
+								<input
+									type="search"
+									class="form-control"
+									ng-model="search"
+									aria-describedby="search"
 									placeholder="Zoek..."/>
 							</div>
 						</div>
 					</form>
 					<div ng-show="search == '[object Object]'">
-						<button 
-							class="btn btn-info btn-block" 
+						<button
+							class="btn btn-info btn-block"
 							ng-click="search = ''">
 							<span class="glyphicon glyphicon-search"></span> Reset filter
 						</button>
@@ -230,18 +230,18 @@
 								<form role="form" class="form-inline">
 									<div class="form-group" style="width:100%">
 										<div class="input-group" style="width:100%">
-											<span 
-												class="input-group-addon hidden-xs" 
-												id="search" 
+											<span
+												class="input-group-addon hidden-xs"
+												id="search"
 												style="width:2em">
 												<span class="glyphicon glyphicon-filter"></span>
 											</span>
-											
-											<select 
-												ng-change="onSearch()" 
-												class="form-control" 
-												ng-model="search.voornaam" 
-												id="filtervoornaam" 
+
+											<select
+												ng-change="onSearch()"
+												class="form-control"
+												ng-model="search.voornaam"
+												id="filtervoornaam"
 												ng-options="voornaam for voornaam in urenVoorNamen">
 											</select>
 										</div>
@@ -252,18 +252,18 @@
 								<form role="form" class="form-inline">
 									<div class="form-group" style="width:100%">
 										<div class="input-group" style="width:100%">
-											<span 
-												class="input-group-addon hidden-xs" 
-												id="search" 
+											<span
+												class="input-group-addon hidden-xs"
+												id="search"
 												style="width:2em">
 												<span class="glyphicon glyphicon-filter"></span>
 											</span>
-											
-											<select 
-												ng-change="onSearch()" 
-												class="form-control" 
-												ng-model="search.achternaam" 
-												id="filterachternaam" 
+
+											<select
+												ng-change="onSearch()"
+												class="form-control"
+												ng-model="search.achternaam"
+												id="filterachternaam"
 												ng-options="achternaam for achternaam in urenAchterNamen">
 											</select>
 										</div>
@@ -283,7 +283,7 @@
 							<td>{{ uur.voornaam }}</td>
 							<td class="hidden-xs">{{ uur.achternaam }}</td>
 							<td class="hidden-xs hidden-sm hidden-md">{{ uur.datum | date: "yyyy"}}</td>
-							<td>{{ uur.aantal }}</td>
+							<td>{{ uur.uren }}</td>
 							<td class="text-right" style="width:7em;">
 								<button
 									type="button"
@@ -384,13 +384,13 @@
 						<div ng-if="!form.edit" class="form-group has-feedback">
 							<label class="control-label col-sm-2" for="username">Username</label>
 							<div class="col-sm-10">
-								<select 
-									id="username" 
-									name="username" 
-									class="form-control" 
-									ng-model="form.username" 
-									ng-options="a.username as a.voornaam.concat(' ', a.achternaam, ' (', a.username, ')') for a in users" 
-									errorText="Username is verplicht" 
+								<select
+									id="username"
+									name="username"
+									class="form-control"
+									ng-model="form.username"
+									ng-options="a.username as a.firstname.concat(' ', a.lastname, ' (', a.username, ')') for a in users"
+									errorText="Username is verplicht"
 									required>
 								</select>
 							</div>
@@ -433,21 +433,21 @@
 						</div>
 						<br/>
 
-						<button 
-							class="btn btn-default" 
-							ng-disabled="editForm.$invalid" 
-							ng-class="{'btn-success': editForm.$valid}" 
+						<button
+							class="btn btn-default"
+							ng-disabled="editForm.$invalid"
+							ng-class="{'btn-success': editForm.$valid}"
 							ng-click="insert(form.index)">
 							Update
 						</button>
-						<button 
-							class="btn btn-default" 
+						<button
+							class="btn btn-default"
 							ng-click="reset()">
 							Reset
 						</button>
-						<button 
-							class="btn btn-default" 
-							data-dismiss="modal" 
+						<button
+							class="btn btn-default"
+							data-dismiss="modal"
 							ng-click="reset()">
 							Annuleer
 						</button>
@@ -464,13 +464,13 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button 
-						type="button" 
-						class="close" 
+					<button
+						type="button"
+						class="close"
 						data-dismiss="modal">
 						&times;
 					</button>
-					
+
 					<h4 class="modal-title">Regel verwijderen</h4>
 				</div>
 				<div class="modal-body">
@@ -480,16 +480,16 @@
 					</p>
 					<br/>
 
-					<button 
-						class="btn btn-danger" 
-						data-dismiss="modal" 
+					<button
+						class="btn btn-danger"
+						data-dismiss="modal"
 						ng-click="delete(form.index)">
 						Delete
 					</button>
-					
-					<button 
-						class="btn btn-default" 
-						data-dismiss="modal" 
+
+					<button
+						class="btn btn-default"
+						data-dismiss="modal"
 						ng-click="reset()">
 						Cancel
 					</button>
@@ -505,13 +505,13 @@
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<button 
-						type="button" 
-						class="close" 
+					<button
+						type="button"
+						class="close"
 						data-dismiss="modal">
 						&times;
 					</button>
-					
+
 					<h4 class="modal-title"><span class="glyphicon glyphicon-question-sign"></span> Help</h4>
 				</div>
 

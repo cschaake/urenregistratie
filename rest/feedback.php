@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.0.7
+ * @version    1.0.9
  */
 
 include_once '../includes/db_connect.php';
@@ -52,21 +52,6 @@ switch ($input->get_method()) {
         postFeedback($input);
         break;
 
-    // Read one or all records
-    case 'GET':
-        getFeedback($input);
-        break;
-
-    // Update an existing record
-    case 'PUT':
-        putFeedback($input);
-        break;
-
-     // delete an existing record
-    case 'DELETE':
-        deleteFeedback($input);
-        break;
-
     default:
         http_response_code(501);
 		header('Content-Type: application/json');
@@ -88,19 +73,19 @@ function postFeedback(input $input)
 	global $authenticate;
 
 	$json = $input->get_JSON();
-	
+
 	if (!isset($json->star)) {
 		$json->star = null;
 	}
-	
+
 	if (!isset($json->subject)) {
 		$json->subject = null;
 	}
-	
+
 	if (!isset($json->comment)) {
 		$json->comment = null;
 	}
-	
+
 	try {
 		$feedbackItem_obj = new FeedbackItem($authenticate->username, date("Y-m-d H:i:s"), $json->star, $json->subject, $json->comment);
 	} catch(Exception $e) {
@@ -111,8 +96,8 @@ function postFeedback(input $input)
 	}
 
 	$feedback_obj = new Feedback($mysqli);
-	
-	try { 
+
+	try {
         $feedback_obj->create($feedbackItem_obj);
     } catch(Exception $e) {
         http_response_code(400);
@@ -120,61 +105,10 @@ function postFeedback(input $input)
         echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 400));
         exit;
     }
-	
+
 	http_response_code(200);
 	header('Content-Type: application/json');
 	echo json_encode($feedback_obj);
 
     return true;
-}
-
-/**
- * Get Feedback
- *
- * Read one or all feedback
- *
- * @param 	input 	$input	Input object containing all input parameters (sanitized)
- *
- * @return 	bool	Successflag
- */
-function getFeedback(input $input)
-{
-    global $mysqli;
-	global $authenticate;
-
-    return true;
-}
-
-/**
- * Put Feedback
- *
- * Update an existing feedback
- *
- * @param 	input 	$input	Input object containing all input parameters (sanitized)
- *
- * @return 	bool	Successflag
- */
-function putFeedback(input $input)
-{
-	global $mysqli;
-	global $authenticate;
-
-    return true;
-}
-
-/**
- * Delete Feedback
- *
- * Delete an existing feedback
- *
- * @param 	input 	$input	Input object containing all input parameters (sanitized)
- *
- * @return 	bool	Successflag
- */
-function deleteFeedback(input $input)
-{
-	global $mysqli;
-	global $authenticate;
-	
-	return true;
 }

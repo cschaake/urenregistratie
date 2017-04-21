@@ -18,11 +18,12 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.7
+ * @version    1.0.9
  */
 include_once 'includes/db_connect.php';
 include_once 'includes/settings.php';
 include_once 'objects/Authenticate_obj.php';
+include_once 'objects/Users_obj.php';
 
 // Start or restart session
 include_once 'includes/login_functions.php';
@@ -112,7 +113,7 @@ if ($_SERVER ['REQUEST_METHOD'] == 'POST') {
 	putUser($request, $authenticate);
 
 } elseif ($_SERVER ['REQUEST_METHOD'] == 'DELETE') {
-	
+
 	deleteUser($authenticate);
 
 }
@@ -123,9 +124,9 @@ if ($_SERVER ['REQUEST_METHOD'] == 'POST') {
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
 */
-function doLogin($request, $authenticate) 
+function doLogin($request, $authenticate)
 {
     // Logon to application
     $username = filter_var ( $request->username, FILTER_SANITIZE_STRING );
@@ -156,7 +157,7 @@ function doLogin($request, $authenticate)
     }
 
 	// User is locked due to too many failed login attempts
-        if (! $session) { 
+        if (! $session) {
             echo json_encode ( array (
                 'succes' => false,
                 'message' => 'Gebruiker gelocked',
@@ -169,7 +170,7 @@ function doLogin($request, $authenticate)
             'message' => 'Gebruiker ingelogd'
             ) );
         $_SESSION = $session;
-			
+
 	return true;
 }
 
@@ -178,9 +179,9 @@ function doLogin($request, $authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
 */
-function doLogout($authenticate) 
+function doLogout($authenticate)
 {
     // Logout from application
     $username = filter_var ( $_SESSION ['username'], FILTER_SANITIZE_STRING );
@@ -201,7 +202,7 @@ function doLogout($authenticate)
         'success' => true,
         'message' => 'Gebruker uitgelogd'
         ) );
-		
+
 	return true;
 }
 
@@ -211,9 +212,9 @@ function doLogout($authenticate)
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
 */
-function doPasswordReset($request, $authenticate) 
+function doPasswordReset($request, $authenticate)
 {
     $email = filter_var ( $request->email, FILTER_SANITIZE_EMAIL );
 
@@ -231,7 +232,7 @@ function doPasswordReset($request, $authenticate)
         'success' => true,
         'message' => 'Wachtwoord reset verzonden'
         ) );
-	
+
 	return true;
 }
 
@@ -241,7 +242,7 @@ function doPasswordReset($request, $authenticate)
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
 */
 function doPasswordChange($request, $authenticate)
 {
@@ -274,7 +275,7 @@ function doPasswordChange($request, $authenticate)
                     'success' => true,
                     'message' => 'Wachtwoord gewijzigd'
             ) );
-			
+
 			return true;
 }
 
@@ -284,7 +285,7 @@ function doPasswordChange($request, $authenticate)
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function doRegister($request, $authenticate)
 {
@@ -293,12 +294,12 @@ function doRegister($request, $authenticate)
             $password1 = filter_var ( $request->password1, FILTER_SANITIZE_STRING );
             $password2 = filter_var ( $request->password2, FILTER_SANITIZE_STRING );
             $email = filter_var ( $request->email, FILTER_SANITIZE_EMAIL );
-            if (isset ( $request->firstname )) { 
+            if (isset ( $request->firstname )) {
                 $firstname = filter_var ( $request->firstname, FILTER_SANITIZE_STRING );
             } else {
                 $firstname = filter_var ( $request->firstName, FILTER_SANITIZE_STRING );
             }
-            if (isset ( $request->lastname )) { 
+            if (isset ( $request->lastname )) {
                 $lastname = filter_var ( $request->lastname, FILTER_SANITIZE_STRING );
             } else {
                 $lastname = filter_var ( $request->lastName, FILTER_SANITIZE_STRING );
@@ -318,7 +319,7 @@ function doRegister($request, $authenticate)
                     'success' => true,
                     'message' => 'Gebruiker aangemaakt'
             ) );
-			
+
 			return true;
 }
 
@@ -327,7 +328,7 @@ function doRegister($request, $authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getVerify($authenticate)
 {
@@ -346,29 +347,30 @@ function getVerify($authenticate)
             }
 
             include_once ('includes/validate_success.php');
-			
+
 			return true;
 }
 
 /**
  * Cofirm password reset
  *
- * @return bool 
+ * @return bool
  */
 function getConfirmReset()
 {
             // Execute password reset from email
             require_once ('confirmreset.php');
-			
+
 			return true;
 }
 
 /**
  * Get Groups of user
  *
+ * @todo Groups verplaatsen naar groups rest service
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getGroups($authenticate)
 {
@@ -386,7 +388,7 @@ function getGroups($authenticate)
                 }
                 echo json_encode ( $groups );
             }
-			
+
 			return true;
 }
 
@@ -395,7 +397,7 @@ function getGroups($authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getUnlock($authenticate)
 {
@@ -414,7 +416,7 @@ function getUnlock($authenticate)
             }
 
             include_once ('includes/unlock_success.php');
-			
+
 			return true;
 }
 
@@ -423,7 +425,7 @@ function getUnlock($authenticate)
  *
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getSelf($authenticate)
 {
@@ -445,16 +447,17 @@ function getSelf($authenticate)
                         'code' => 401
                 ) );
             }
-			
+
 			return true;
 }
 
 /**
  * Get all information of users
  *
+ * @todo Verplaats naar rest users
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function getListUsers($authenticate)
 {
@@ -470,7 +473,7 @@ function getListUsers($authenticate)
                     // Check if username is same or got the right permissions
                     $request_user = substr ( filter_var ( $_SERVER ['PATH_INFO'], FILTER_SANITIZE_STRING ), 1 );
 
-                    if ($request_user != $authenticate->username && 
+                    if ($request_user != $authenticate->username &&
 				    ((! is_array ( $authenticate->group )) || ! (in_array ( 'admin', $authenticate->group ) || in_array ( 'super', $authenticate->group )))) {
                         http_response_code ( 403 );
                         echo json_encode ( array (
@@ -479,12 +482,12 @@ function getListUsers($authenticate)
                             'code' => 403
                         ));
                         exit ();
-                        
+
                     }
 
-                    $user = new $authenticate ( $mysqli );
+                    $user = new Users($mysqli);
                     try {
-                        $userinfo = $user->get_user ( $request_user, true );
+                        $user->read($request_user);
                     } catch ( Exception $e ) {
                         http_response_code ( 404 );
                         echo json_encode ( array (
@@ -494,7 +497,7 @@ function getListUsers($authenticate)
                         ) );
                         exit ();
                     }
-                    echo json_encode ( $userinfo );
+                    echo json_encode($user);
                 } else {
                     // We are called for all users
 
@@ -510,7 +513,8 @@ function getListUsers($authenticate)
                     }
 
                     try {
-                        $usersinfo = $authenticate->get_users ();
+                        $users_obj = new Users($mysqli);
+                        $users_obj->read();
                     } catch ( Exception $e ) {
                         http_response_code ( 404 );
                         echo json_encode ( array (
@@ -521,7 +525,7 @@ function getListUsers($authenticate)
                         exit ();
                     }
 
-                    echo json_encode ( $usersinfo );
+                    echo json_encode($users_obj);
                 }
             }
 			return true;
@@ -530,14 +534,17 @@ function getListUsers($authenticate)
 /**
  * Update user information
  *
+ * @todo Verplaats naar rest users
  * @param object $request
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function putUser($request, $authenticate)
 {
-    if ($authenticate->authorisation_check ( false )) {
+    global $mysqli;
+
+    if ($authenticate->authorisation_check(false)) {
         // Check if we are a super or admin user
         if (is_array($authenticate->group) && (in_array ( 'admin', $authenticate->group ) || in_array ( 'super', $authenticate->group ))) {
             $super = true;
@@ -545,9 +552,12 @@ function putUser($request, $authenticate)
             $super = false;
         }
 
+        $users_obj = new Users($mysqli);
+        $user_obj = new User($request->username, $request->firstname, $request->lastname, $request->groepen, $request->rollen, $request->email, null, null, null, null, $request->status);
+
         // Update user information
         try {
-            $authenticate->update_user ( $request, $super );
+            $users_obj->update($user_obj, $super);
         } catch ( Exception $e ) {
             echo json_encode ( array (
                     'success' => false,
@@ -568,19 +578,22 @@ function putUser($request, $authenticate)
                 'code' => 401
         ) );
     }
-	
+
 	return true;
 }
 
 /**
  * Delete user information
  *
+ * @todo Verplaats naar rest users
  * @param object $authenticate
  *
- * @return bool 
+ * @return bool
  */
 function deleteUser($authenticate)
 {
+    global $mysqli;
+
     // Delete user information
     if ($authenticate->authorisation_check ( true )) {
         // Check if we are called for one user or all users
@@ -590,7 +603,8 @@ function deleteUser($authenticate)
             $request_user = substr ( filter_var ( $_SERVER ['PATH_INFO'], FILTER_SANITIZE_STRING ), 1 );
 
             try {
-                $authenticate->delete_user ( $request_user );
+                $users = new Users($mysqli);
+                $users->delete($request_user);
             } catch ( Exception $e ) {
                 // Proberbly session mismatch (session hijacking?)
                 echo json_encode ( array (
@@ -617,6 +631,6 @@ function deleteUser($authenticate)
             exit ();
         }
     }
-	
+
 	return true;
 }

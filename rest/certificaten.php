@@ -8,9 +8,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -18,12 +18,14 @@
  * @copyright  2015 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version       1.0.6
+ * @version    1.0.9
  */
 
 include_once '../includes/db_connect.php';
 include_once '../includes/settings.php';
 include_once '../objects/Authenticate_obj.php';
+include_once '../objects/Input_obj.php';
+
 include_once '../objects/Certificaten_obj.php';
 
 // Start or restart session
@@ -33,131 +35,89 @@ sec_session_start();
 $authenticate = new Authenticate($mysqli);
 
 // Check if we are authorized
-if (!$authenticate->authorisation_check(false)) {
+if (! $authenticate->authorisation_check(false)) {
     http_response_code(401);
-    echo json_encode(array('success' => false, 'message' => 'Unauthorized', 'code' => 401));
-    exit;
+    header('Content-Type: application/json');
+    echo json_encode(array(
+        'success' => false,
+        'message' => 'Unauthorized',
+        'code' => 401
+    ));
+    exit();
 }
 // We do have a valid user
 
+// Get all input (sanitized)
+$input = new Input();
 
-/**
- * POST method (CREATE)
- *
- * We need to insert a new record
- */
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Only admin or super may execute this method
-    if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-        http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
-    }
-	
-    // Get the post info from the json call
-    $postdata = file_get_contents('php://input');
-    $request = json_decode($postdata);
+switch ($input->get_method()) {
+    // Insert a new record
+    case 'POST':
+        postCertificaat($input);
+        break;
 
-	postCertificaat($request);
-    
-/**
- * GET method (READ)
- *
- * We need to retrieve one or more records
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    // Everyone may execute this method
-    
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        // Get the requested record
-        $request = substr(filter_var($_SERVER['PATH_INFO'], FILTER_SANITIZE_STRING),1);
-        
+        // Read one or all records
+    case 'GET':
+        getCertificaten();
+        break;
+
+        // Update an existing record
+    case 'PUT':
+        putCertificaat($input);
+        break;
+
+        // delete an existing record
+    case 'DELETE':
+        deleteCertificaten($input);
+        break;
+
+    default:
         http_response_code(501);
-        echo json_encode(array('success' => false, 'message' => 'Not implemented', 'code' => 501));
-    } else {
-        // We are called for all records
-        
-		getCertificaten();
-	
-    }
-
-
-/**
- * PUT method (UPDATE)
- *
- * We need to updata / replace an existing record
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-    // Only admin or super may execute this method
-    if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-        http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
-    }
-        
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        // Get the post info from the json call
-        $postdata = file_get_contents('php://input');
-        $request = json_decode($postdata);
-        
-        // Update record
-        
-        putCertificaat($request);
-        
-    } else {
-        // No user is specified, this is not allowed
-        http_response_code(400);
-        echo json_encode(array('success' => false, 'message' => 'Bad request', 'code' => 400));
-        exit;
-    } 
-    
-/**
- * DELETE method (DELETE)
- *
- * We need to delete an existing record
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-    // Only admin or super may execute this method
-    if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-        http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
-    }
-    
-	// Delete selected record
-    $request = substr(filter_var($_SERVER['PATH_INFO'], FILTER_SANITIZE_STRING),1);
-	
-    deleteCertificaten($request);
+        header('Content-Type: application/json');
+        echo json_encode(array(
+            'success' => false,
+            'message' => 'Not implemented',
+            'code' => 501
+        ));
 }
 
 /**
  * Post certificaat
  *
- * @param object $record
- *
+ * @param input $input
+ *            Input object containing all input parameters (sanitized)
  * @return bool
  */
-function postCertificaat($record)
+function postCertificaat($input)
 {
-    // Insert a new record
-    
     global $authenticate;
 	global $mysqli;
- 	
+
+	$json = $input->get_JSON();
+
+	// Only admin and super may update records of other users
+	if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
+	    http_response_code(403);
+	    echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
+	    exit;
+	}
+
+	$certificaat_obj = new Certificaat(null, $json->rol_id, null, $json->looptijd, $json->uren, $json->groep_id, null);
 	$certificaten_obj = new Certificaten($mysqli);
-		
+
 	try {
-		$certificaten_obj->create($record);
+		$certificaten_obj->create($certificaat_obj);
 	} catch(Exception $e) {
 		http_response_code(500);
         echo json_encode(array('success' => false, 'message' => 'Internal Server Error', 'code' => 500));
         exit;
     }
-	
-	echo json_encode($certificaten_obj->certificaten);
-	
-	return true;
-	
+
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo json_encode($certificaten_obj);
+
+    return true;
 }
 
 /**
@@ -170,7 +130,7 @@ function postCertificaat($record)
 function getCertificaten()
 {
 	global $mysqli;
-	
+
     $certificaten_obj = new Certificaten($mysqli);
     try {
         $certificaten_obj->read();
@@ -179,9 +139,12 @@ function getCertificaten()
         echo json_encode(array('success' => false, 'message' => 'Not found', 'code' => 404));
         exit;
     }
+
+    http_response_code(200);
+    header('Content-Type: application/json');
     echo json_encode($certificaten_obj);
-		
-	return true;
+
+    return true;
 }
 
 /**
@@ -193,15 +156,24 @@ function getCertificaten()
  *
  * @return bool
  */
-function putCertificaat($request)
+function putCertificaat($input)
 {
 	global $authenticate;
 	global $mysqli;
-	
+
+	$json = $input->get_JSON();
+
+	// Only admin and super may update records of other users
+	if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
+	    http_response_code(403);
+	    echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
+	    exit;
+	}
+
 	$certificaten_obj = new Certificaten($mysqli);
-	$certificaat = new Certificaat($request->id, $request->rol_id, $request->rol, $request->looptijd, $request->uren, 
-		$request->groep_id, $request->groep);
-	
+	$certificaat = new Certificaat($json->id, $json->rol_id, $json->rol, $json->looptijd, $json->uren,
+	    $json->groep_id, $json->groep);
+
 	try {
 		$certificaten_obj->update($certificaat);
 	} catch(Exception $e) {
@@ -209,9 +181,11 @@ function putCertificaat($request)
 		echo json_encode(array('success' => false, 'message' => 'Internal Server Error, ' . $e->getMessage(), 'code' => 500));
 		exit;
 	}
-	
-	echo json_encode($certificaten_obj->certificaten);
-	
+
+	http_response_code(200);
+	header('Content-Type: application/json');
+	echo json_encode($certificaten_obj);
+
 	return true;
 }
 
@@ -224,22 +198,35 @@ function putCertificaat($request)
  *
  * @return bool
  */
-function deleteCertificaten($request)
+function deleteCertificaten($input)
 {
 	global $authenticate;
 	global $mysqli;
-	
+
+	// Only admin and super may update records of other users
+	if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
+	    http_response_code(403);
+	    echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
+	    exit;
+	}
+
 	$certificaten_obj = new Certificaten($mysqli);
-	
+
 	try {
-		$certificaten_obj->delete($request);
+		$certificaten_obj->delete(array_keys($input->get_pathParams())[0]);
 	} catch(Exception $e) {
 		http_response_code($e->getCode());
         echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => $e->getCode()));
         exit;
 	}
-	
-	echo json_encode(array('success' => true));
-	
+
+	http_response_code(200);
+	header('Content-Type: application/json');
+	echo json_encode(array(
+	    'success' => true,
+	    'message' => 'Record successfully deleted',
+	    'code' => 200
+	));
+
 	return true;
-}      
+}

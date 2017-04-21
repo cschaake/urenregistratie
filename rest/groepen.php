@@ -8,9 +8,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -18,12 +18,14 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.7
+ * @version    1.0.9
  */
- 
+
 include_once '../includes/db_connect.php';
 include_once '../includes/settings.php';
 include_once '../objects/Authenticate_obj.php';
+include_once '../objects/Input_obj.php';
+
 include_once '../objects/Groepen_obj.php';
 
 // Start or restart session
@@ -33,124 +35,50 @@ sec_session_start();
 $authenticate = new Authenticate($mysqli);
 
 // Check if we are authorized
-if (!$authenticate->authorisation_check(false)) {
+if (! $authenticate->authorisation_check(false)) {
     http_response_code(401);
-    echo json_encode(array('success' => false, 'message' => 'Unauthorized', 'code' => 401));
-    exit;
+    header('Content-Type: application/json');
+    echo json_encode(array(
+        'success' => false,
+        'message' => 'Unauthorized',
+        'code' => 401
+    ));
+    exit();
 }
 // We do have a valid user
 
+// Get all input (sanitized)
+$input = new Input();
 
-/**
- * POST method (CREATE)
- *
- * We need to insert a new record
- */
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Only admin or super may execute this method
-    if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-        http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
-    }
-    
-    // Get the post info from the json call
-    $postdata = file_get_contents('php://input');
-    $record = json_decode($postdata);
+switch ($input->get_method()) {
+    // Insert a new record
+    case 'POST':
+        postGroep($input);
+        break;
 
-	postGroep($record);
+        // Read one or all records
+    case 'GET':
+        getGroepen($input);
+        break;
 
-/**
- * GET method (READ)
- *
- * We need to retrieve one or more records
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    // Everyone may execute this method
-	
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        // Get the requested record
-        $request = substr(filter_var($_SERVER['PATH_INFO'], FILTER_SANITIZE_STRING),1);
-        
-        $groepen_obj = new groepen($mysqli);
-        try {
-            $groep = $groepen_obj->get($request);
-        } catch(Exception $e) {
-            http_response_code(404);
-            echo json_encode(array('success' => false, 'message' => 'Not found', 'code' => 404));
-            exit;
-        }
-        echo json_encode($groep);
-    } else {
-        // We are called for all records
-			
-        $groepen_obj = new groepen($mysqli);
-        try {
-            $groepen_obj->read();
-        } catch(Exception $e) {
-            http_response_code(404);
-            echo json_encode(array('success' => false, 'message' => 'Not found', 'code' => 404));
-            exit;
-        }
-        echo json_encode($groepen_obj);
-    }
+        // Update an existing record
+    case 'PUT':
+        putGroep($input);
+        break;
 
+        // delete an existing record
+    case 'DELETE':
+        deleteGroep($input);
+        break;
 
-/**
- * PUT method (UPDATE)
- *
- * We need to updata / replace an existing record
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-    // Only admin or super may execute this method
-    if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-        http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
-    }
-        
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        // Get the post info from the json call
-        $postdata = file_get_contents('php://input');
-        $request = json_decode($postdata);
-        
-        // Update record
-        putGroep($request);
-        
-    } else {
-        // No input is provided
-        http_response_code(400);
-        echo json_encode(array('success' => false, 'message' => 'Bad request', 'code' => 400));
-        exit;
-    }    
-
-    
-/**
- * DELETE method (DELETE)
- *
- * We need to delete an existing record
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-    // Only admin or super may execute this method
-    if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-        http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
-    }
-    
-    // Check if we are called for one record or all records
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        // Delete selected record
-        $request = substr(filter_var($_SERVER['PATH_INFO'], FILTER_SANITIZE_STRING),1);
-        
-		deleteGroep($request);
-      
-    } else {
-        // No record provided
-        http_response_code(400);
-        echo json_encode(array('success' => false, 'message' => 'Bad request', 'code' => 400));
-        exit;
-    }
+    default:
+        http_response_code(501);
+        header('Content-Type: application/json');
+        echo json_encode(array(
+            'success' => false,
+            'message' => 'Not implemented',
+            'code' => 501
+        ));
 }
 
 /**
@@ -162,14 +90,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
  *
  * @return bool
  */
-function postGroep($record)
+function postGroep($input)
 {
 	global $authenticate;
 	global $mysqli;
- 	
-	$groepen_obj = new groepen($mysqli);
-	$groep = new groep(null, $record->groep);
-	
+
+	$json = $input->get_JSON();
+
+	// Only admin and super may update records
+	if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
+	    http_response_code(403);
+	    header('Content-Type: application/json');
+	    echo json_encode(array(
+	        'success' => false,
+	        'message' => 'Forbidden',
+	        'code' => 403
+	    ));
+	    exit();
+	}
+
+	$groepen_obj = new Groepen($mysqli);
+	$groep = new Groep(null, $json->groep);
+
 	try {
 		$groepen_obj->create($groep);
 	} catch(Exception $e) {
@@ -177,10 +119,57 @@ function postGroep($record)
         echo json_encode(array('success' => false, 'message' => 'Internal Server Error', 'code' => 500));
         exit;
     }
-	
-	echo json_encode($groepen_obj->groepen);
-	
-	return true;
+
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo json_encode($groepen_obj);
+
+    return true;
+}
+
+/**
+ * Get Groepen
+ *
+ * @param input $input
+ *            Input object containing all input parameters (sanitized)
+ * @return bool Successflag
+ */
+function getGroepen(input $input = null)
+{
+    global $mysqli;
+    global $authenticate;
+
+    if ($input->hasPathParams()) {
+        // We are called for one record
+
+        $groepen_obj = new Groepen($mysqli);
+        try {
+            $groep = $groepen_obj->read(array_keys($input->get_pathParams())[0]);
+        } catch(Exception $e) {
+            http_response_code(404);
+            echo json_encode(array('success' => false, 'message' => 'Not found', 'code' => 404));
+            exit;
+        }
+        http_response_code(200);
+        header('Content-Type: application/json');
+        echo json_encode($groep);
+    } else {
+        // We are called for all records
+
+        $groepen_obj = new Groepen($mysqli);
+        try {
+            $groepen_obj->read();
+        } catch(Exception $e) {
+            http_response_code(404);
+            echo json_encode(array('success' => false, 'message' => 'Not found', 'code' => 404));
+            exit;
+        }
+        http_response_code(200);
+        header('Content-Type: application/json');
+        echo json_encode($groepen_obj);
+    }
+
+    return true;
 }
 
 /**
@@ -192,25 +181,50 @@ function postGroep($record)
  *
  * @return bool
  */
-function deleteGroep($request)
+function deleteGroep($input)
 {
 	global $authenticate;
 	global $mysqli;
-	
-	$groepen_obj = new groepen($mysqli);
-	
+
+	// No record to delete was provided
+	if (! $input->get_pathParams()) {
+	    http_response_code(400);
+	    header('Content-Type: application/json');
+	    echo json_encode(array(
+	        'success' => false,
+	        'message' => 'Bad Request',
+	        'code' => 400
+	    ));
+	    exit();
+	}
+
+	// Only admin and super may update records of other users
+	if (! $authenticate->checkGroup('admin') || ! $authenticate->checkGroup('super')) {
+	    $username = $authenticate->username;
+	} else {
+	    $username = null;
+	}
+
+	$groepen_obj = new Groepen($mysqli);
+
 	try {
-		$groepen_obj->delete($request);
+		$groepen_obj->delete(array_keys($input->get_pathParams())[0]);
 	} catch(Exception $e) {
 		http_response_code($e->getCode());
         echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => $e->getCode()));
         exit;
 	}
-	
-	echo json_encode(array('success' => true));
-	
+
+	http_response_code(200);
+	header('Content-Type: application/json');
+	echo json_encode(array(
+	    'success' => true,
+	    'message' => 'Record successfully deleted',
+	    'code' => 200
+	));
+
 	return true;
-}       
+}
 
 /**
  * Put groep
@@ -221,22 +235,39 @@ function deleteGroep($request)
  *
  * @return bool
  */
-function putGroep($request)
+function putGroep($input)
 {
 	global $authenticate;
 	global $mysqli;
-	
-	$groepen_obj = new groepen($mysqli);
-	
+
+	$json = $input->get_JSON();
+
+	// Only admin and super may update records
+	if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
+	    http_response_code(403);
+	    header('Content-Type: application/json');
+	    echo json_encode(array(
+	        'success' => false,
+	        'message' => 'Forbidden',
+	        'code' => 403
+	    ));
+	    exit();
+	}
+
+	$groep_obj = new Groep($json->id, $json->groep);
+	$groepen_obj = new Groepen($mysqli);
+
 	try {
-		$groepen_obj->update($request);
+		$groepen_obj->update($groep_obj);
 	} catch(Exception $e) {
 		http_response_code(500);
 		echo json_encode(array('success' => false, 'message' => 'Internal Server Error, ' . $e->getMessage(), 'code' => 500));
 		exit;
 	}
-	
-	echo json_encode($groepen_obj->groepen);
-	
+
+	http_response_code(200);
+	header('Content-Type: application/json');
+	echo json_encode($groepen_obj);
+
 	return true;
 }

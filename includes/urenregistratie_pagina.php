@@ -6,9 +6,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -243,7 +243,7 @@ $enddate = $enddate->format('Y-m-d');
 												style="width: 2em"> <span class="glyphicon glyphicon-filter"></span>
 											</span> <select ng-change="onSearch()" class="form-control"
 												ng-model="search.akkoord" id="filterAkkoord">
-												<option value="0"></option>
+												<option value="0">Ntd</option>
 												<option value="1">Ja</option>
 												<option value="2">Nee</option>
 											</select>
@@ -386,5 +386,5 @@ $enddate = $enddate->format('Y-m-d');
 	<?php include_once 'modals/urenregistratie_editrecord_modal.php';?>
 	<?php include_once 'modals/urenregistratie_deleteconfirmation_modal.php';?>
 	<?php include_once 'modals/urenregistratie_help_modal.php';?>
-	
+
 </div>

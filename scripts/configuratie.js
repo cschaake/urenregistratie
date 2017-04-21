@@ -17,7 +17,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.6
- * @version    1.0.7
+ * @version    1.0.9
  */
 // --------------------------------------------------------------------
 // Custom App
@@ -153,7 +153,7 @@ angular.module('myApp')
 						$scope.messageGroepen = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.groepen[index] = response.data[0];
+						$scope.groepen[index] = response.data.groepen[0];
 						// Destroy temporary objects
 						$scope.groepen.form = null;
 						$scope.groepen.original = null;
@@ -178,7 +178,7 @@ angular.module('myApp')
 						$scope.messageGroepen = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.groepen.push(response.data);
+						$scope.groepen.push(response.data.groepen[0]);
 						// Destroy temporary objects
 						$scope.groepen.form = null;
 						$scope.groepen.original = null;
@@ -207,7 +207,7 @@ angular.module('myApp')
 			url : 'rest/groepen.php/' + $scope.groepen.form.id,
 			headers : { 'Content-Type': 'application/json' }
 		}).then(function(response) {
-			if (response.data.message) {
+			if (!response.data.success) {
 				$scope.messageGroepen = response.data.message;
 				$scope.spinner = false;
 			} else {
@@ -252,7 +252,7 @@ angular.module('myApp')
 						$scope.messageRollen = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.rollen[index] = response.data;
+						$scope.rollen[index] = response.data.rollen[0];
 						$scope.rollen.form = null;
 						$scope.rollen.original = null;
 						$('#editrol').modal('hide'); // Close the modal
@@ -273,7 +273,7 @@ angular.module('myApp')
 						$scope.messageRollen = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.rollen.push(response.data[0]);
+						$scope.rollen.push(response.data.rollen[0]);
 						$scope.rollen.form = null;
 						$scope.rollen.original = null;
 						$('#editrol').modal('hide'); // Close the modal
@@ -317,7 +317,7 @@ angular.module('myApp')
 	// Function for certificaat editing 
 	$scope.editcertificaat = function(index) {
 
-		$scope.certificaten.form = angular.copy($scope.certificaten[index]); 
+	$scope.certificaten.form = angular.copy($scope.certificaten[index]); 
         $scope.certificaten.form.index = index; 
         $scope.certificaten.form.edit = true; 
 
@@ -345,7 +345,7 @@ angular.module('myApp')
 						$scope.messageCertificaten = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.certificaten[index] = response.data[0];
+						$scope.certificaten[index] = response.data.certificaten[0];
 						$scope.certificaten.form = null;
 						$scope.certificaten.original = null;
 						$scope.spinner = false;
@@ -367,7 +367,7 @@ angular.module('myApp')
 						$scope.messageCertificaten = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.certificaten.push(response.data[0]);
+						$scope.certificaten.push(response.data.certificaten[0]);
 						$scope.certificaten.form = null;
 						$scope.certificaten.original = null;
 						$scope.spinner = false;

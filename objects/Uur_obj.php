@@ -9,9 +9,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    Urenverantwoording
@@ -19,7 +19,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.0.7
+ * @version    1.0.9
  */
 
 /**
@@ -31,8 +31,9 @@
  * @author Christiaan Schaake <chris@schaake.nu>
  * @copyright 2017 Schaake.nu
  * @license http://www.opensource.org/licenses/mit-license.html MIT License
- *         
+ *
  * @since File available since Release 1.0.7
+ * @version 1.0.9
  */
 class Uur
 {
@@ -184,18 +185,18 @@ class Uur
     /**
      * Creeer uren object
      *
-     * @param string $username            
-     * @param int $activiteit_id            
-     * @param int $rol_id            
-     * @param string $datum            
-     * @param string $start            
-     * @param string $eind            
-     * @param float $uren            
-     * @param string $opmerking            
-     * @param int $akkoord            
-     * @param string $reden            
-     * @param bool $flag            
-     * @param int $id            
+     * @param string $username
+     * @param int $activiteit_id
+     * @param int $rol_id
+     * @param string $datum
+     * @param string $start
+     * @param string $eind
+     * @param float $uren
+     * @param string $opmerking
+     * @param int $akkoord
+     * @param string $reden
+     * @param bool $flag
+     * @param int $id
      * @throws Exception
      * @return bool Succes vlag
      */
@@ -219,22 +220,22 @@ class Uur
         if ($flag) {
             $this->flag = true;
         }
-        
+
         if ($this->eind < $this->start) {
             throw new Exception('Eindtijd ligt voor starttijd');
         }
         if ($this->akkoord != 2) {
             $this->reden = '';
         }
-        
+
         return true;
     }
 
     /**
      * Voeg activiteit toe
      *
-     * @param int $activiteit_id            
-     * @param string $activiteit            
+     * @param int $activiteit_id
+     * @param string $activiteit
      * @throws Exception
      * @return bool Succes vlag
      */
@@ -244,15 +245,15 @@ class Uur
             throw new Exception('Geen juiste activiteit');
         }
         $this->activiteit = filter_var($activiteit, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
-        
+
         return true;
     }
 
     /**
      * Voeg rol toe
      *
-     * @param int $rol_id            
-     * @param string $rol            
+     * @param int $rol_id
+     * @param string $rol
      * @throws Exception
      * @return bool Succes vlag
      */
@@ -262,37 +263,37 @@ class Uur
             throw new Exception('Geen juiste rol');
         }
         $this->rol = filter_var($rol, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
-        
+
         return true;
     }
 
     /**
      * Voeg groep toe
      *
-     * @param int $groep_id            
-     * @param string $groep            
+     * @param int $groep_id
+     * @param string $groep
      * @return bool Succes vlag
      */
     public function addGroep($groep_id, $groep)
     {
         $this->groep_id = (int) filter_var($groep_id, FILTER_SANITIZE_STRING);
         $this->groep = filter_var($groep, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
-        
+
         return true;
     }
 
     /**
      * Voor voor en achternaam toe
      *
-     * @param string $firstname            
-     * @param string $lastname            
+     * @param string $firstname
+     * @param string $lastname
      * @return bool Succes vlag
      */
     public function addName($firstname, $lastname)
     {
         $this->voornaam = filter_var($firstname, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         $this->achternaam = filter_var($lastname, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
-        
+
         return true;
     }
 }

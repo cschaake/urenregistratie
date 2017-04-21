@@ -20,26 +20,26 @@
  * @since      File available since Release 1.0.0
  * @version    1.0.7
  */
-
-include_once('Activiteit_obj.php');
+include_once ('Activiteit_obj.php');
 
 /**
  * Activiteiten object
  *
- * @package    Urenverantwoording
- * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
- * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
+ * @package Urenverantwoording
+ * @author Christiaan Schaake <chris@schaake.nu>
+ * @copyright 2017 Schaake.nu
+ * @license http://www.opensource.org/licenses/mit-license.html MIT License
  *
- * @since      Object available since Release 1.0.0
+ * @since Object available since Release 1.0.0
+ * @version 1.0.7
  */
-
 class Activiteiten
 {
+
     /**
      * Array met Activiteit objecten
      *
-     * @var    Activiteit[]	
+     * @var Activiteit[]
      * @access public
      */
     public $activiteiten;
@@ -47,7 +47,7 @@ class Activiteiten
     /**
      * Mysqli object
      *
-     * @var    mysqli	
+     * @var mysqli
      * @access private
      */
     private $mysqli;
@@ -56,13 +56,13 @@ class Activiteiten
      * Creeer activtiteiten object
      *
      * @access public
-     * @param  mysqli     $mysqli 
-     * @throws Exception  
-     * @return bool       Success flag
+     * @param mysqli $mysqli
+     * @throws Exception
+     * @return bool Success flag
      */
     public function __construct(mysqli $mysqli)
     {
-        if (!is_a($mysqli, 'mysqli')) {
+        if (! is_a($mysqli, 'mysqli')) {
             throw new Exception('$mysqli is not a valid mysqli object', 500);
         } else {
             $this->mysqli = $mysqli;
@@ -70,26 +70,27 @@ class Activiteiten
         return true;
     }
 
-	/**
+    /**
      * Creeer activiteit
      *
      * @access public
-     * @param  Activiteit $activiteit 	Activiteit object
-     * @throws Exception  				
-     * @return bool      				Succes vlag
+     * @param Activiteit $activiteit
+     *            Activiteit object
+     * @throws Exception
+     * @return bool Succes vlag
      */
     public function create(Activiteit $activiteit)
     {
-		// Controleer of groep_id bestaat en geef groepnaam terug
-		if (!$this->_groepExists($activiteit)) {
-			throw new Exception('Niet bestaande groep geselecteerd', 400);
-		}
+        // Controleer of groep_id bestaat en geef groepnaam terug
+        if (! $this->_groepExists($activiteit)) {
+            throw new Exception('Niet bestaande groep geselecteerd', 400);
+        }
 
         // Insert de nieuwe activiteit
         $prep_stmt = "
             INSERT INTO
                 ura_activiteiten (activiteit, groep_id)
-            VALUES 
+            VALUES
 				(?,?)";
 
         $stmt = $this->mysqli->prepare($prep_stmt);
@@ -116,17 +117,22 @@ class Activiteiten
     /**
      * Lees activiteit of activiteiten
      *
-     *        De functie bevat één parameter met 2 functies:
-     *            + integer - Selecteer een speficieke activiteit
-     *            + string - Selecteer alle activiteiten voor een specifieke gebruiker
+     * De functie bevat één parameter met 2 functies:
+     * + integer - Selecteer een speficieke activiteit
+     * + string - Selecteer alle activiteiten voor een specifieke gebruiker
      *
      * @access public
-     * @param  int|string $id optional  Integer is activiteit_id, string is username
-     * @throws Exception  				
-     * @return bool       				Succes vlag
+     * @param int|string $id
+     *            optional Integer is activiteit_id, string is username
+     * @throws Exception
+     * @return bool Succes vlag
      */
     public function read($id = null)
     {
+        if (isset($id)) {
+            $id = filter_var($id, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        }
+
         $prep_stmt = "
             SELECT
                 distinct (ura_activiteiten.id),
@@ -140,7 +146,6 @@ class Activiteiten
 
         if (isset($id) && is_numeric($id)) {
             $prep_stmt .= " WHERE ura_activiteiten.id = ?";
-
         } elseif (isset($id) && is_string($id)) {
             $prep_stmt .= " JOIN ura_urenboeken ON ura_activiteiten.groep_id = ura_urenboeken.groep_id";
             $prep_stmt .= " WHERE ura_urenboeken.username = ?";
@@ -173,7 +178,7 @@ class Activiteiten
         } else {
             throw new Exception('Database error', 500);
         }
-		
+
         return true;
     }
 
@@ -181,16 +186,17 @@ class Activiteiten
      * Update activiteit
      *
      * @access public
-     * @param  Activiteit $activiteit  Activiteit object
-     * @throws Exception               
-     * @return bool                    Succes vlag
+     * @param Activiteit $activiteit
+     *            Activiteit object
+     * @throws Exception
+     * @return bool Succes vlag
      */
     public function update(Activiteit $activiteit)
     {
-		// Controleer of groep_id bestaat en geef groepnaam terug
-		if (!$this->_groepExists($activiteit)) {
-			throw new Exception('Niet bestaande groep geselecteerd', 400);
-		}
+        // Controleer of groep_id bestaat en geef groepnaam terug
+        if (! $this->_groepExists($activiteit)) {
+            throw new Exception('Niet bestaande groep geselecteerd', 400);
+        }
 
         $prep_stmt = "
             UPDATE ura_activiteiten
@@ -208,7 +214,7 @@ class Activiteiten
             $stmt->store_result();
 
             if ($stmt->affected_rows < 0) {
-				$stmt->close();
+                $stmt->close();
                 throw new Exception('Activiteit niet gevonden', 404);
             }
             $stmt->close();
@@ -216,7 +222,7 @@ class Activiteiten
             throw new Exception('Database error', 500);
         }
 
-		$this->activiteiten[] = $activiteit;
+        $this->activiteiten[] = $activiteit;
         return true;
     }
 
@@ -224,17 +230,22 @@ class Activiteiten
      * Delete activiteit
      *
      * @access public
-     * @param  int       $id   Activiteit id
-     * @throws Exception       
-     * @return bool            Succes vlag
+     * @param int $id
+     *            Activiteit id
+     * @throws Exception
+     * @return bool Succes vlag
      */
     public function delete($id)
     {
-		$result = false;
-		if (!$this->_canDelete($id)) {
-			throw new Exception('Kan activiteit niet verwijderen, nog in gebruik', 409);
-		}
-		
+        if (isset($id)) {
+            $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
+        }
+
+        $result = false;
+        if (! $this->_canDelete($id)) {
+            throw new Exception('Kan activiteit niet verwijderen, nog in gebruik', 409);
+        }
+
         $prep_stmt = "
             DELETE FROM
                 ura_activiteiten
@@ -247,8 +258,8 @@ class Activiteiten
             $stmt->bind_param('i', $id);
             $stmt->execute();
             $stmt->store_result();
-			
-			$result = ($stmt->affected_rows >= 1);
+
+            $result = ($stmt->affected_rows >= 1);
             $stmt->close();
         } else {
             throw new Exception('Database error', 500);
@@ -257,59 +268,62 @@ class Activiteiten
         return $result;
     }
 
-	/**
+    /**
      * Kan worden gedelete
-	 *
-	 * Controleer of activiteit nog in gebruik is
-	 *
-	 * @access private
-     * @param  int 	    $id 	Activiteit_id
-     * @return bool     Succes vlag
+     *
+     * Controleer of activiteit nog in gebruik is
+     *
+     * @access private
+     * @param int $id
+     *            Activiteit_id
+     * @return bool Succes vlag
      */
-	private function _canDelete($id) {
-		$result = false;
-		$prep_stmt = "SELECT COUNT(*) count
-						FROM 
+    private function _canDelete($id)
+    {
+        $result = false;
+        $prep_stmt = "SELECT COUNT(*) count
+						FROM
 							ura_uren,
 							ura_urenboeken
 						WHERE
 							ura_uren.activiteit_id = ?
-						OR 
+						OR
 							ura_urenboeken.activiteit_id = ?";
 
         $stmt = $this->mysqli->prepare($prep_stmt);
-        
+
         if ($stmt) {
             $stmt->bind_param('ii', $id, $id);
             $stmt->execute();
             $stmt->store_result();
-            
+
             if ($stmt->num_rows >= 0) {
-				$stmt->bind_result($count);
-				$stmt->fetch();
-				
-				$result = (!$count > 0);
+                $stmt->bind_result($count);
+                $stmt->fetch();
+
+                $result = (! $count > 0);
             } else {
                 $stmt->close();
                 throw new Exception('Interne fout bij verwijderen activiteit', 500);
             }
-			$stmt->close();
+            $stmt->close();
         } else {
             throw new Exception('Database error', 500);
         }
-        
-		return $result;
-	}
-	
-	/**
+
+        return $result;
+    }
+
+    /**
      * Controleer of groep bestaat
-	 *
-	 * @access private
-     * @param  Activiteit  $activiteit 
+     *
+     * @access private
+     * @param Activiteit $activiteit
      * @return bool Succes vlag
      */
-	private function _groepExists($activiteit) {
-		$result = false;
+    private function _groepExists($activiteit)
+    {
+        $result = false;
         $prep_stmt = "
             SELECT
                 groep
@@ -330,13 +344,13 @@ class Activiteiten
                 $stmt->bind_result($groep);
                 $stmt->fetch();
                 $activiteit->groep = $groep;
-				$result = true;
+                $result = true;
             }
-			$stmt->close();
+            $stmt->close();
         } else {
             throw new Exception('Database error');
         }
 
-		return $result;
-	}
+        return $result;
+    }
 }

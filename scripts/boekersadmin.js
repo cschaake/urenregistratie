@@ -129,7 +129,7 @@ angular.module('myApp')
 		$scope.message = response.data.message;
 		$scope.spinner = false;
 	    } else {
-		$scope.boekers = response.data;
+		$scope.boekers = response.data.boekers;
 
 		if ($scope.boekers.length > 0) {
 		    $scope.startItem = 0;
@@ -221,7 +221,7 @@ angular.module('myApp')
 		$scope.message = response.data.message;
 		$scope.spinner = false;
 	    } else {
-		$scope.users = response.data;                                        
+		$scope.users = response.data.users;                                        
 	    }
 	}, function(response) {
 	    $scope.message = response.data.message;
@@ -276,7 +276,7 @@ angular.module('myApp')
 		$scope.message = response.data.message;
 		$scope.spinner = false;
 	    } else {
-		$scope.boeker = response.data;
+		$scope.boeker = response.data.boekers[0];
 
 		$scope.form = angular.copy($scope.boeker); 
 		$scope.form.edit = true;     
@@ -345,9 +345,9 @@ angular.module('myApp')
 		} else {
 		    // Update the local boekers object
 		    if (edit === true) {
-			$scope.boekers[index] = response.data;
+			$scope.boekers[index] = response.data.boekers[0];
 		    } else {
-			$scope.boekers.push(response.data);
+			$scope.boekers.push(response.data.boekers[0]);
 		    }
 
 		    $scope.totalItems = $scope.boekers.length; // Get initial total records
@@ -384,7 +384,7 @@ angular.module('myApp')
     $scope.calcCertificaat = function() {
 	var l = $scope.certificaten.length;
 	for (var k=0; k<l; k++) {
-	    if ($scope.certificaten[k].rol_id === $scope.certificaat.rol_id) {
+	    if ($scope.certificaten[k].id === $scope.certificaat.id) {
 
 		if ($scope.certificaat.gecertificeerd) {
 		    var jaar = $scope.certificaat.gecertificeerd.getFullYear(); // Current yeara
@@ -421,7 +421,7 @@ angular.module('myApp')
     $scope.addCertificaat = function(certificaat) {
 	var l = $scope.rollen.length;
 	for (var k=0; k<l; k++) {
-	    if ($scope.rollen[k].id===certificaat.rol_id) {
+	    if ($scope.rollen[k].id===certificaat.id) {
 		certificaat.rol = $scope.rollen[k].rol;
 	    }
 	}

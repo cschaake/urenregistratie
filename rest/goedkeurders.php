@@ -18,16 +18,18 @@
  * @copyright  2015 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version    1.0.6
+ * @version    1.0.9
  */
 
 include_once '../includes/db_connect.php';
 include_once '../includes/settings.php';
 include_once '../objects/Authenticate_obj.php';
+include_once '../objects/Input_obj.php';
+
 include_once '../objects/Groepen_obj.php';
 include_once '../objects/Rollen_obj.php';
 include_once '../objects/Users_obj.php';
-include_once '../objects/goedkeurders_obj.php';
+include_once '../objects/Goedkeurders_obj.php';
 
 
 // Start or restart session
@@ -37,87 +39,50 @@ sec_session_start();
 $authenticate = new Authenticate($mysqli);
 
 // Check if we are authorized
-if (!$authenticate->authorisation_check(false)) {
+if (! $authenticate->authorisation_check(false)) {
     http_response_code(401);
-    echo json_encode(array('success' => false, 'message' => 'Unauthorized', 'code' => 401));
-    exit;
+    header('Content-Type: application/json');
+    echo json_encode(array(
+        'success' => false,
+        'message' => 'Unauthorized',
+        'code' => 401
+    ));
+    exit();
 }
 // We do have a valid user
 
-/**
- * POST method (CREATE)
- *
- * We need to insert a new record
- */
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get the post info from the json call
-    $postdata = file_get_contents('php://input');
-    $record = json_decode($postdata);
-	
-	postGoedkeurder($record);
+// Get all input (sanitized)
+$input = new Input();
 
-/**
- * GET method (READ)
- *
- * We need to retrieve one or more records
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    // Everyone may execute this method
+switch ($input->get_method()) {
+    // Insert a new record
+    case 'POST':
+        postGoedkeurder($input);
+        break;
 
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
+        // Read one or all records
+    case 'GET':
+        getGoedkeurders();
+        break;
+
+        // Update an existing record
+    case 'PUT':
+        putGoedkeurder($input);
+        break;
+
+        // delete an existing record
+    case 'DELETE':
+        deleteGoedkeurder($input);
+        break;
+
+    default:
         http_response_code(501);
-        echo json_encode(array('success' => false, 'message' => 'Not implemented', 'code' => 501));
-        exit;
-
-    } else {
-        // We are called for all records
-		
-		getGoedkeurders();
-
-	}
-
-/**
- * PUT method (UPDATE)
- *
- * We need to updata / replace an existing record
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        // Get the requested record
-        $request = substr(filter_var($_SERVER['PATH_INFO'], FILTER_SANITIZE_STRING),1);
-        // Get the post info from the json call
-        $postdata = file_get_contents('php://input');
-        $record = json_decode($postdata);
-		
-		putGoedkeurder($record);
-
-    } else {
-        // No uren record is specified
-        http_response_code(400);
-        echo json_encode(array('success' => false, 'message' => 'Bad request', 'code' => 400));
-        exit;
-    }
-
-
-/**
- * DELETE method (DELETE)
- *
- * We need to delete an existing record
- */
-} elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-    if (isset($_SERVER['PATH_INFO']) && (strlen($_SERVER['PATH_INFO']) > 1)) {
-        // Get the requested record
-        $request = substr(filter_var($_SERVER['PATH_INFO'], FILTER_SANITIZE_STRING),1);
-		
-		deleteGoedkeurder($request); 
-
-	} else {
-        // No uren record is specified
-        http_response_code(400);
-        echo json_encode(array('success' => false, 'message' => 'Bad request', 'code' => 400));
-        exit;
-    }
+        header('Content-Type: application/json');
+        echo json_encode(array(
+            'success' => false,
+            'message' => 'Not implemented',
+            'code' => 501
+        ));
 }
 
 /**
@@ -127,21 +92,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
  *
  * @return bool
  */
-function postGoedkeurder($record)
+function postGoedkeurder($input)
 {
 	global $authenticate;
 	global $mysqli;
-	
-	// Only admin and super may update records of other users
-    if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-        http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
-    }
-	
+
+	$json = $input->get_JSON();
+
+	// Only admin and super may update records
+	if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
+	    http_response_code(403);
+	    header('Content-Type: application/json');
+	    echo json_encode(array(
+	        'success' => false,
+	        'message' => 'Forbidden',
+	        'code' => 403
+	    ));
+	    exit();
+	}
+
     $goedkeurders_obj = new Goedkeurders($mysqli);
-	$goedkeurder = new Goedkeurder($record->username, $record->firstname, $record->lastname, $record->groepen, $record->rollen);
-	
+	$goedkeurder = new Goedkeurder($json->username, $json->firstname, $json->lastname, $json->groepen, $json->rollen);
+
     try {
         $goedkeurders_obj->create($goedkeurder);
     } catch(Exception $e) {
@@ -150,9 +122,11 @@ function postGoedkeurder($record)
         exit;
     }
 
+    http_response_code(200);
+    header('Content-Type: application/json');
     echo json_encode($goedkeurders_obj->goedkeurders[0]);
-	
-	return true;
+
+    return true;
 }
 
 /**
@@ -164,24 +138,26 @@ function getGoedkeurders()
 {
 	global $authenticate;
 	global $mysqli;
-	
+
 	$users_obj = new Users($mysqli);
-	$result['users'] = $users_obj->get();
-	
+	$result['users'] = $users_obj->read();
+
 	$groepen_obj = new groepen($mysqli);
 	$groepen_obj->read();
 	$result['groepen'] = $groepen_obj->groepen;
-	
+
 	$rollen_obj = new rollen($mysqli);
 	$rollen_obj->read();
 	$result['rollen'] = $rollen_obj->rollen;
-	
+
 	$goedkeurders_obj = new Goedkeurders($mysqli);
 	$goedkeurders_obj->read();
 	$result['goedkeurders'] = $goedkeurders_obj->goedkeurders;
-	
-    echo json_encode($result);
-	
+
+	http_response_code(200);
+	header('Content-Type: application/json');
+	echo json_encode($result);
+
 	return true;
 }
 
@@ -192,33 +168,42 @@ function getGoedkeurders()
  *
  * @return bool
  */
-function putGoedkeurder($record)
+function putGoedkeurder($input)
 {
 	global $authenticate;
 	global $mysqli;
-	
-    // Only admin and super may update records of other users
-    if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-        http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
-    }
+
+	$json = $input->get_JSON();
+
+	// Only admin and super may update records
+	if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
+	    http_response_code(403);
+	    header('Content-Type: application/json');
+	    echo json_encode(array(
+	        'success' => false,
+	        'message' => 'Forbidden',
+	        'code' => 403
+	    ));
+	    exit();
+	}
 
     $goedkeuren_obj = new goedkeuren($mysqli);
 
     // Update record
 	//Get uren by user (if not admin or super only show own uren)
-    try { 
-        $goedkeuren_obj->update($record);
+    try {
+        $goedkeuren_obj->update($json);
     } catch(Exception $e) {
         http_response_code(404);
         echo json_encode(array('success' => false, 'message' => 'Not found', 'code' => 404));
         exit;
     }
 
-    echo json_encode($record);
-		
-	return true;
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo json_encode($json);
+
+    return true;
 }
 
 /**
@@ -228,30 +213,41 @@ function putGoedkeurder($record)
  *
  * @return bool
  */
-function deleteGoedkeurder($request)
+function deleteGoedkeurder($input)
 {
 	global $mysqli;
 	global $authenticate;
-	
-	// Only admin and super may update records of other users
-    if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-        http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-        exit;
-    }
+
+	// Only admin and super may update records
+	if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
+	    http_response_code(403);
+	    header('Content-Type: application/json');
+	    echo json_encode(array(
+	        'success' => false,
+	        'message' => 'Forbidden',
+	        'code' => 403
+	    ));
+	    exit();
+	}
 
     $goedkeurders_obj = new Goedkeurders($mysqli);
 
     // Update record
     try {
-        $goedkeurders_obj->delete($request);
+        $goedkeurders_obj->delete(array_keys($input->get_pathParams())[0]);
     } catch(Exception $e) {
         http_response_code(404);
         echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 404));
         exit;
     }
 
-    echo json_encode(array('success' => true));
-		
-	return true;
+    http_response_code(200);
+    header('Content-Type: application/json');
+    echo json_encode(array(
+        'success' => true,
+        'message' => 'Record successfully deleted',
+        'code' => 200
+    ));
+
+    return true;
 }

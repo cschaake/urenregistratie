@@ -18,7 +18,7 @@
  * @copyright  2015 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.6
+ * @version    1.0.9
  */
 
 include_once '../includes/db_connect.php';
@@ -103,14 +103,14 @@ function postActiviteit($input)
 {
     global $mysqli;
 	global $authenticate;
-	
+
 	// Only admin or super may execute this method
     if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
         http_response_code(403);
         echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
         exit;
     }
-	
+
     $json = $input->get_JSON();
 
     $activiteit_obj = new Activiteit(null, $json->activiteit, $json->groep_id);
@@ -124,7 +124,9 @@ function postActiviteit($input)
     }
 
 	http_response_code(200);
+	header('Content-Type: application/json');
     echo json_encode($activiteiten_obj);
+
     return true;
 }
 
@@ -163,10 +165,11 @@ function getActiviteiten($input)
         }
 
     }
-	
+
 	http_response_code(200);
+	header('Content-Type: application/json');
     echo json_encode($activiteiten_obj);
-	
+
     return true;
 }
 
@@ -183,7 +186,7 @@ function putActiviteit($input)
 {
 	global $mysqli;
 	global $authenticate;
-	
+
 	// Only admin or super may execute this method
     if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
         http_response_code(403);
@@ -207,7 +210,7 @@ function putActiviteit($input)
 
 	$activiteit_obj = new Activiteit($json->id, $json->activiteit, $json->groep_id, $json->groep);
 	$activiteiten_obj = new Activiteiten($mysqli);
-	
+
 	try {
 		$activiteiten_obj->update($activiteit_obj);
 	} catch(Exception $e) {
@@ -222,8 +225,9 @@ function putActiviteit($input)
 	}
 
 	http_response_code(200);
+	header('Content-Type: application/json');
     echo json_encode($activiteiten_obj);
-	
+
 	return true;
 }
 
@@ -240,7 +244,7 @@ function deleteActiviteit($input)
 {
 	global $mysqli;
 	global $authenticate;
-	
+
 	// Only admin or super may execute this method
     if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
         http_response_code(403);
@@ -265,7 +269,12 @@ function deleteActiviteit($input)
 	}
 
 	http_response_code(200);
-    echo json_encode(array('success' => true));
-	
+	header('Content-Type: application/json');
+	echo json_encode(array(
+	    'success' => true,
+	    'message' => 'Record successfully deleted',
+	    'code' => 200
+	));
+
 	return true;
 }
