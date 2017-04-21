@@ -82,7 +82,7 @@ class Uren
     public function create(Uur $uur_obj)
     {
         // Controleer overlap in tijd
-        $time = $this->_checkTime($uur_obj->username, $uur_obj->datum, $uur_obj->start, $uur_obj->eind);
+        $time = $this->_checkTime($uur_obj->username, $uur_obj->datum, $uur_obj->start, $uur_obj->eind, $uur_obj->rol_id);
         if ($time) {
             throw new Exception('Reeds uren geboekt tussen ' . $time->start . ' en ' . $time->eind);
         }
@@ -498,7 +498,7 @@ class Uren
      *            End tijd
      * @return bool Succes vlag
      */
-    private function _checkTime($username, $date, $start, $end)
+    private function _checkTime($username, $date, $start, $end, $rol_id)
     {
         $result = false;
 
@@ -514,12 +514,14 @@ class Uren
 			AND
 				eind > ?
 			AND
-				start < ?";
+				start < ?
+            AND
+                rol_id = ?";
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('ssss', $username, $date, $start, $end);
+            $stmt->bind_param('ssssi', $username, $date, $start, $end, $rol_id);
 
             $stmt->execute();
             $stmt->store_result();
