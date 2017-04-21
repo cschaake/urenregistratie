@@ -109,7 +109,7 @@ function checkRol($username, $rol_id)
 {
 	global $mysqli;
 
-	include_once('../objects/goedkeurders_obj.php');
+	include_once('../objects/Goedkeurders_obj.php');
 
 	$rollen = new Goedkeurders($mysqli);
 	return (in_array($rol_id, $rollen->getRolId($username)));

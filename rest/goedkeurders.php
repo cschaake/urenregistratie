@@ -29,7 +29,7 @@ include_once '../objects/Input_obj.php';
 include_once '../objects/Groepen_obj.php';
 include_once '../objects/Rollen_obj.php';
 include_once '../objects/Users_obj.php';
-include_once '../objects/goedkeurders_obj.php';
+include_once '../objects/Goedkeurders_obj.php';
 
 
 // Start or restart session

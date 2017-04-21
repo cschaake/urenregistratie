@@ -241,7 +241,7 @@ class Users
             $stmt = $this->mysqli->prepare($prep_stmt);
 
             if ($stmt) {
-                $stmt->bind_param('ssss', $user->firstName, $user->lastName, $user->email, $user->username);
+                $stmt->bind_param('ssss', $user->firstname, $user->lastname, $user->email, $user->username);
                 if (! $stmt->execute()) {
                     $stmt->close();
                     throw new Exception('Failure updating user information');

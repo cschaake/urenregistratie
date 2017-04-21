@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.7
+ * @version    1.0.9
  */
 include_once 'includes/db_connect.php';
 include_once 'includes/settings.php';
@@ -487,7 +487,7 @@ function getListUsers($authenticate)
 
                     $user = new Users($mysqli);
                     try {
-                        $userinfo = $user->read( $request_user);
+                        $userinfo = $user->read($request_user);
                     } catch ( Exception $e ) {
                         http_response_code ( 404 );
                         echo json_encode ( array (
@@ -497,7 +497,7 @@ function getListUsers($authenticate)
                         ) );
                         exit ();
                     }
-                    echo json_encode ( $userinfo );
+                    echo json_encode($user);
                 } else {
                     // We are called for all users
 

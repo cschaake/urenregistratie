@@ -137,7 +137,7 @@ class Groepen
 
         if ($stmt) {
             if (isset($id)) {
-                $stmt->bind_param('i', $record->id);
+                $stmt->bind_param('i', $id);
             }
             $stmt->execute();
             $stmt->store_result();

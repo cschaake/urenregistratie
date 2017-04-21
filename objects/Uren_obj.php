@@ -257,20 +257,18 @@ class Uren
 			JOIN
 				ura_rollen ON ura_uren.rol_id = ura_rollen.id
 			JOIN
-				ura_activiteiten ON ura_uren.activiteit_id = ura_activiteiten.id";
-
-        if ($username) {
-            $prep_stmt .= "
-				JOIN
-					ura_urengoedkeuren ON ura_uren.rol_id = ura_urengoedkeuren.rol_id";
-        }
-
-        $prep_stmt .= "
+				ura_activiteiten ON ura_uren.activiteit_id = ura_activiteiten.id
             WHERE akkoord < 1 ";
 
         if ($username) {
             $prep_stmt .= "
-                AND ura_urengoedkeuren.username = ?";
+                AND ura_uren.rol_id IN (
+                    SELECT
+                        ura_urengoedkeuren.rol_id
+                    FROM
+                        ura_urengoedkeuren
+                    WHERE ura_urengoedkeuren.username = ?
+                )";
         }
 
         $stmt = $this->mysqli->prepare($prep_stmt);

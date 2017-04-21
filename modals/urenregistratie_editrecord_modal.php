@@ -109,9 +109,7 @@
 							style="text-align: left">Reden van afkeur</label>
 						<div class="col-sm-12">
 							<textarea id="reden" name="reden" type="time" readonly
-								class="form-control">
-									{{ form.reden }}
-								</textarea>
+								class="form-control">{{ form.reden }}</textarea>
 						</div>
 					</div>
 

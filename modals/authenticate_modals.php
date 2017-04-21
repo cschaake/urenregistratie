@@ -6,9 +6,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    authenticate
@@ -16,7 +16,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version	   1.0.5
+ * @version	   1.0.9
  */
 ?>
     <div id="loginModal" class="modal" role="dialog">
@@ -31,7 +31,7 @@
                     <div class="modal-body">
                         <div ng-show="message" class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>{{ message }}</div>
                         <div ng-show="spinner" class="spinner"></div>
-                        
+
                         <div class="form-group has-feedback" show-errors="{ showSuccess: true }">
                             <label class="control-label col-sm-4" for="username">Gebruikersnaam of email</label>
                             <div class="col-sm-6">
@@ -41,7 +41,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-group has-feedback" show-errors="{ showSuccess: true }">
                             <label class="control-label col-sm-4" for="password">Wachtwoord</label>
                             <div class="col-sm-6">
@@ -56,7 +56,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!--<div class="form-group">
                             <div class="col-sm-4"></div>
                             <div class="col-sm-6">
@@ -79,7 +79,7 @@
             </form>
         </div>
     </div>
-                
+
 <?php
     /**
      * Login Success Modal
@@ -94,7 +94,7 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title"><span class="glyphicon glyphicon-log-in"></span> Login succesvol</h4>
                 </div>
-                        
+
                 <div class="modal-body">
                     <p>Login was succesvol, u wordt terug verwezen naar de pagina waar u vandaan kwam.</p>
                     <br/>
@@ -102,7 +102,7 @@
             </div>
         </div>
     </div>
-    
+
 <?php
     /**
      * Account Locked Modal
@@ -117,7 +117,7 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span> Account locked</h4>
                 </div>
-                        
+
                 <div class="modal-body">
                     <p>Uw account is gelocked vanwege te veel foutieve login pogingen.</p>
                     <p>Er is een email verstuurd naar uw geregistreerde email adres met daarin instructies om uw account weer vrij te geven.</p>
@@ -174,15 +174,15 @@
                                 <input id="email" name="email" type="email" ng-model="register.email" errorText="Een valide email adres is vereist." class="form-control" required/>
                             </div>
                         </div>
-                        
+
                         <div class="form-group has-feedback" show-errors="{ showSuccess: true }">
                             <label class="control-label col-sm-4" for="password1">Nieuw wachtwoord <a href="" ng-click="passwordHelp = !passwordHelp"><span class="glyphicon glyphicon-info-sign"></span></a></label>
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <input id="passworda" name="password1" type="{{ showPassword1 ? 'text' : 'password' }}" 
-                                        ng-model="register.password1" 
-                                        errorText="Een valide wachtwoord is vereist." 
-                                        class="form-control" 
+                                    <input id="passworda" name="password1" type="{{ showPassword1 ? 'text' : 'password' }}"
+                                        ng-model="register.password1"
+                                        errorText="Een valide wachtwoord is vereist."
+                                        class="form-control"
                                         ng-required="true"
                                         ng-pattern="/(?=^.{8,30}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$/"/></input>
                                     <span class="input-group-btn">
@@ -194,7 +194,7 @@
                                 </div>
                             </div>
                         </div>
-                                    
+
                         <div class="form-group has-feedback" show-errors="{ showSuccess: true }">
                             <label class="control-label col-sm-4" for="password2">Herhaal nieuw wachtwoord</label>
                             <div class="col-sm-6">
@@ -216,8 +216,8 @@
                         </div>
                         <br/>
 
-                        
-                        
+
+
                         <br/>
 
                         <button class="btn btn-default" ng-disabled="registerForm.$invalid" ng-class="{'btn-success': registerForm.$valid}" ng-click="processRegisterForm(register)">Registreer</button>
@@ -243,7 +243,7 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title"><span class="glyphicon glyphicon-user"></span> Registreer</h4>
                 </div>
-                        
+
                 <div class="modal-body">
                     <p>Er is een email verstuurd naar {{ register.email }} om uw account te activeren.</p>
                     <br/>
@@ -290,7 +290,7 @@
             </form>
         </div>
     </div>
-                
+
 <?php
     /**
      * Forgot Password Succes Modal
@@ -305,7 +305,7 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span> Wachtwoord vergeten</h4>
                 </div>
-                        
+
                 <div class="modal-body">
                     <p>Er is een email verstuurd naar {{ forgotPassword.email }} met instructies om het wachtwoord te wijzigen.</p>
                     <br/>
@@ -315,16 +315,16 @@
         </div>
     </div>
 
-	
+
 <?php
 	/**
 	 * Modals for succesfully logged in users only
 	 */
-	
+
 	if(isset($authenticate)) {
 ?>
 
-<?php 
+<?php
     /**
      * Logout Modal
      *
@@ -338,7 +338,7 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title"><span class="glyphicon glyphicon-log-out"></span> Logout</h4>
                 </div>
-            
+
                 <div class="modal-body">
                     <div ng-show="spinner" class="spinner"></div>
                     <p>Weet u zeker dat uw wilt uitloggen?</p>
@@ -350,7 +350,7 @@
             </div>
         </div>
     </div>
-                
+
 <?php
     /**
      * Logout Success Modal
@@ -365,7 +365,7 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title"><span class="glyphicon glyphicon-log-out"></span> Logout succesvol</h4>
                 </div>
-                            
+
                 <div class="modal-body">
                     <p>Logout was succesvol, u wordt doorverwezen naar de begin pagina.</p>
                     <br/>
@@ -373,7 +373,7 @@
             </div>
         </div>
     </div>
-                
+
 <?php
     /**
      * ChangePasswordModal
@@ -394,7 +394,7 @@
                         <div ng-show="message" class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>{{ message }}</div>
                         <div ng-show="spinner" class="spinner"></div>
                         <div ng-init="password.username='<?php echo $authenticate->username; ?>'"></div>
-                                    
+
                         <br/>
                         <div class="form-group has-feedback" show-errors="{ showSuccess: true }">
                             <label class="control-label col-sm-4" for="password">Oud wachtwoord</label>
@@ -410,15 +410,15 @@
                                 </div>
                             </div>
                         </div>
-                                    
+
                         <div class="form-group has-feedback" show-errors="{ showSuccess: true }">
                             <label class="control-label col-sm-4" for="password1">Nieuw wachtwoord <a href="" ng-click="passwordHelp = !passwordHelp"><span class="glyphicon glyphicon-info-sign"></span></a></label>
                             <div class="col-sm-6">
                                 <div class="input-group">
-                                    <input id="password1" name="password1" type="{{ showPassword1 ? 'text' : 'password' }}" 
-                                        ng-model="password.password1" 
-                                        errorText="Een valide wachtwoord is vereist" 
-                                        class="form-control" 
+                                    <input id="password1" name="password1" type="{{ showPassword1 ? 'text' : 'password' }}"
+                                        ng-model="password.password1"
+                                        errorText="Een valide wachtwoord is vereist"
+                                        class="form-control"
                                         ng-required="true"
                                         ng-pattern="/(?=^.{8,30}$)(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$/"/></input>
                                     <span class="input-group-btn">
@@ -430,7 +430,7 @@
                                 </div>
                             </div>
                         </div>
-                                    
+
                         <div class="form-group has-feedback" show-errors="{ showSuccess: true }">
                             <label class="control-label col-sm-4" for="password2">Herhaal nieuw wachtwoord</label>
                             <div class="col-sm-6">
@@ -460,7 +460,7 @@
             </form>
         </div>
     </div>
-                
+
 <?php
     /**
      * changePasswordSucessModal
@@ -470,13 +470,13 @@
 ?>
     <div id="changePasswordSuccessModal" class="modal" role="dialog">
         <div class="modal-dialog">
-            
+
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title"><span class="glyphicon glyphicon-lock"></span> Wijzig wachtwoord</h4>
                 </div>
-                        
+
                 <div class="modal-body">
                     <p>Uw wachtwoord is gewijzigd, u wordt doorgestuurd naar de pagina waar u vandaan komt.</p>
                     <br/>
@@ -504,7 +504,7 @@
                     <div class="modal-body">
                         <div ng-show="message" class="alert alert-danger"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>{{ message }}</div>
                         <div ng-show="spinner" class="spinner"></div>
-    
+
                         <div class="form-group">
                             <label class="control-label col-sm-4" for="username">Gebruikersnaam</label>
                             <div class="col-sm-6">
@@ -515,14 +515,14 @@
                         <div class="form-group has-feedback" show-errors="{ showSuccess: true }">
                             <label class="control-label col-sm-4" for="firstname">Voornaam</label>
                             <div class="col-sm-6">
-                                <input id="firstname" name="firstname" type="text" ng-model="profile.firstName" class="form-control"/>
+                                <input id="firstname" name="firstname" type="text" ng-model="profile.firstname" class="form-control"/>
                             </div>
                         </div>
 
                         <div class="form-group has-feedback" show-errors="{ showSuccess: true }">
                             <label class="control-label col-sm-4" for="lastname">Achternaam</label>
                             <div class="col-sm-6">
-                                <input id="lastname" name="lastname" type="text" ng-model="profile.lastName" class="form-control"/>
+                                <input id="lastname" name="lastname" type="text" ng-model="profile.lastname" class="form-control"/>
                             </div>
                         </div>
 
@@ -531,16 +531,17 @@
                             <div class="col-sm-6">
                                 <input id="email" name="email" type="email" ng-model="profile.email" errorText="Valid email address required" class="form-control" required/>
                             </div>
-                        </div>                                
+                        </div>
 
                         <button class="btn btn-default" ng-disabled="profileForm.$invalid" ng-class="{'btn-success': profileForm.$valid}" ng-click="processProfileForm(profile)">Update</button>
                         <button class="btn btn-default" data-dismiss="modal" ng-click="reset()">Annuleer</button>
                     </div>
+                    {{ profile }}
                 </div>
             </form>
         </div>
     </div>
-                
+
 
 <?php
     /**
@@ -556,7 +557,7 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title"><span class="glyphicon glyphicon-user"></span> Mijn profiel</h4>
                 </div>
-                        
+
                 <div class="modal-body">
                     <p>Uw profiel is geupdate.</p>
                     <br/>
@@ -565,7 +566,6 @@
             </div>
         </div>
     </div>
-    
-<?php 
+
+<?php
 	}
-	
