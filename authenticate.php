@@ -487,7 +487,7 @@ function getListUsers($authenticate)
 
                     $user = new Users($mysqli);
                     try {
-                        $userinfo = $user->read($request_user);
+                        $user->read($request_user);
                     } catch ( Exception $e ) {
                         http_response_code ( 404 );
                         echo json_encode ( array (

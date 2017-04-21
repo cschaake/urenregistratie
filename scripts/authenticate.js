@@ -258,7 +258,7 @@ angular.module('myApp')
             
             } else {
                 $scope.profile = response.data.users[0];
-                console.log($scope.profile);
+
                 $('#profileModal').modal('show');
             }
         }, function(response) {
