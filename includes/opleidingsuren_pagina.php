@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version    1.0.8
+ * @version    1.1.0
  */
 ?>
 
@@ -216,7 +216,7 @@
 								</a>
 							</th>
 
-							<th class="hidden-xs hidden-sm hidden-md">
+							<th>
 								Aantal
 							</th>
 							<th>
@@ -271,8 +271,8 @@
 								</form>
 							</th>
 
-							<th class="hidden-xs hidden-sm hidden-md"/>
-							<th class="hidden-xs hidden-sm hidden-md"/>
+							<th/>
+							<th/>
 							<th/>
 						</tr>
 					</thead>
@@ -282,7 +282,7 @@
 						<tr ng-repeat="uur in uren | orderBy:sortType:sortReverse | filter:search:strict | limitTo:itemsPerPage:startItem">
 							<td>{{ uur.voornaam }}</td>
 							<td class="hidden-xs">{{ uur.achternaam }}</td>
-							<td class="hidden-xs hidden-sm hidden-md">{{ uur.datum | date: "yyyy"}}</td>
+							<td>{{ uur.datum | date: "yyyy"}}</td>
 							<td>{{ uur.uren }}</td>
 							<td class="text-right" style="width:7em;">
 								<button

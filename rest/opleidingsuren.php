@@ -18,7 +18,7 @@
  * @copyright  2015 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version    1.0.9
+ * @version    1.1.0
  */
 
 include_once '../includes/db_connect.php';
@@ -143,7 +143,7 @@ function postOpleidingsuren($input)
 	    exit;
 	}
 
-	$uur_obj = new Uur($json->username, $json->activiteit, $json->rol, $json->datum, "00:00", "00:00", $json->uren);
+	$uur_obj = new Uur($json->username, $json->activiteit, $json->rol, "1-1-" . $json->datum, "00:00", "00:00", $json->uren);
     $opleidingsuren_obj = new Opleidingsuren($mysqli);
 
     // Update record

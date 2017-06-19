@@ -6,9 +6,9 @@
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
- * http://www.opensource.org/licenses/mit-license.html  MIT License.  
- * If you did not receive a copy of the MIT License and are unable to 
- * obtain it through the web, please send a note to license@php.net so 
+ * http://www.opensource.org/licenses/mit-license.html  MIT License.
+ * If you did not receive a copy of the MIT License and are unable to
+ * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
  * @package    authenticate
@@ -33,7 +33,7 @@ define("MINIMUM_PASSWORD_LENGTH", 8);
 
 // Application name
 define("TITLE", "Urenregistratie Reddingsbrigade Apeldoorn");
-define("APPLICATION_VERSION", "1.0.9");
+define("APPLICATION_VERSION", "1.1.0");
 define("FILTER_CUSTOM", FILTER_FLAG_NO_ENCODE_QUOTES);
 
 // Mail settings
