@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.1.1
  */
 require_once ('Uur_obj.php');
 
@@ -132,7 +132,7 @@ class Uren
      *            optional Username
      * @param int $id
      *            optional Uur id
-     * @param date $pijldatum
+     * @param datetime $pijldatum
      *            optional Toon alleen uren voor certificaat dat actief is tijdens pijldatum
      * @throws Exception
      * @return bool Succes vlag

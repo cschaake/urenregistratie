@@ -15,7 +15,7 @@
  * @copyright  2015 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version	   1.0.9
+ * @version	   1.1.1
  */
 
 /**

@@ -108,11 +108,22 @@ switch ($input->get_method()) {
 function checkRol($username, $rol_id)
 {
 	global $mysqli;
+	global $authenticate;
 
 	include_once('../objects/Goedkeurders_obj.php');
 
 	$rollen = new Goedkeurders($mysqli);
-	return (in_array($rol_id, $rollen->getRolId($username)));
+	if (in_array($rol_id, $rollen->getRolId($username))) {
+		return true;
+	} else {
+		if (is_array($authenticate->group)) {
+			if ((in_array('admin',$authenticate->group) || (in_array('super', $authenticate->group)))) {
+				return true;
+			}
+		}
+	}
+	
+	return false;
 }
 
 /**
@@ -132,15 +143,8 @@ function postOpleidingsuren($input)
 	// Check if we have the correct role to insert opleidingsuren
 	if (!checkRol($authenticate->username,$json->rol)) {
 		http_response_code(403);
-        echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
+        echo json_encode(array('success' => false, 'message' => 'Onjuiste rol of geen super of admin (146)', 'code' => 403));
         exit;
-	}
-
-	// Only admin or super may execute this method
-	if ((!checkRol($authenticate->username,$json->rol)) || (!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
-	    http_response_code(403);
-	    echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
-	    exit;
 	}
 
 	$uur_obj = new Uur($json->username, $json->activiteit, $json->rol, "1-1-" . $json->datum, "00:00", "00:00", $json->uren);
@@ -210,17 +214,14 @@ function putOpleidingsuren($input)
 	global $authenticate;
 	global $mysqli;
 
-    // Only admin and super may update records
-    if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
-        http_response_code(403);
-        header('Content-Type: application/json');
-        echo json_encode(array(
-            'success' => false,
-            'message' => 'Forbidden',
-            'code' => 403
-        ));
-        exit();
-    }
+	$json = $input->get_JSON();
+	
+	// Check if we have the correct role to insert opleidingsuren
+	if (!checkRol($authenticate->username,$json->rol)) {
+		http_response_code(403);
+		echo json_encode(array('success' => false, 'message' => 'Onjuiste rol of geen super of admin (222)', 'code' => 403));
+		exit;
+	}
 
     $json = $input->get_JSON();
 
@@ -251,19 +252,14 @@ function putOpleidingsuren($input)
  */
 function deleteOpleidingsuren($input)
 {
-    global $authenticate;
+	global $authenticate;
     global $mysqli;
 
-    // Only admin and super may update records
-    if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
-        http_response_code(403);
-        header('Content-Type: application/json');
-        echo json_encode(array(
-            'success' => false,
-            'message' => 'Forbidden',
-            'code' => 403
-        ));
-        exit();
+    // Check if we have the correct role to insert opleidingsuren
+    if (!checkRol($authenticate->username,3)) {
+    	http_response_code(403);
+    	echo json_encode(array('success' => false, 'message' => 'Onjuiste rol of geen super of admin (263)', 'code' => 403));
+    	exit;
     }
 
     $opleidingsuren_obj = new Opleidingsuren($mysqli);

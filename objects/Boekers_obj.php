@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.9
- * @version    1.0.9
+ * @version    1.1.1
  */
 include_once 'User_obj.php';
 include_once 'Rol_obj.php';
@@ -134,9 +134,7 @@ class Boekers
                     $stmt->execute();
                     $stmt->store_result();
 
-                    if ($stmt->num_rows >= 0) {
-                        $user = null;
-                    } else {
+                    if ($stmt->num_rows < 0) {
                         $stmt->close();
                         throw new Exception('Fout bij updaten boeker (fout 3)', 500);
                     }
@@ -162,9 +160,7 @@ class Boekers
                 $stmt->execute();
                 $stmt->store_result();
 
-                if ($stmt->num_rows >= 0) {
-                    $user = null;
-                } else {
+                if ($stmt->num_rows < 0) {
                     $stmt->close();
                     throw new Exception('Fout bij updaten boeker (fout 4)', 500);
                 }
@@ -350,7 +346,7 @@ class Boekers
     /**
      * Geeft de index van de geselecteerde username in de boekers array
      *
-     * @param unknown $username
+     * @param string $username
      * @return NULL|int
      */
     private function _getIndexOf($username)

@@ -19,7 +19,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.8
- * @version    1.0.9
+ * @version    1.1.1
  */
 
 /**
@@ -71,7 +71,7 @@ class RaportageCertificaat
     /**
      * LaatsteLogin
      *
-     * @var date
+     * @var datetime
      * @access public
      */
     public $laatstelogin;
@@ -79,7 +79,7 @@ class RaportageCertificaat
     /**
      * Gecertificeerd
      *
-     * @var date
+     * @var datetime
      * @access public
      */
     public $gecertificeerd;
@@ -87,7 +87,7 @@ class RaportageCertificaat
     /**
      * Verloopt
      *
-     * @var date
+     * @var datetime
      * @access public
      */
     public $verloopt;
@@ -164,8 +164,8 @@ class RaportageCertificaat
      * @param string $voornaam
      * @param string $achternaam
      * @param string $laatstelogin
-     * @param date $gecertificeerd
-     * @param date $verloopt
+     * @param datetime $gecertificeerd
+     * @param datetime $verloopt
      * @param int $rol_id
      * @param string $rol
      * @param int $looptijd

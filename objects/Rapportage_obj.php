@@ -19,7 +19,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.1.1
  */
 
 /**
@@ -151,7 +151,6 @@ class Rapport
 				LEFT JOIN users ON users.username = ura_certificaat.username ";
         if ($username) {
             $prep_stmt .= " WHERE ura_certificaat.username = ? ";
-            $prep_stmt .= " GROUP BY ura_certificaat.rol_id ";
         } else {
             $prep_stmt .= " ORDER BY ura_certificaat.rol_id ";
         }

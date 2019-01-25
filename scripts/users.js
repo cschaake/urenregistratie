@@ -188,13 +188,13 @@ angular.module('myApp')
                         }
                     }, function(response) {
                         $scope.message = response.data.message;
-                    });
-                };
+                    })
+                }
                 
                 $scope.totalItems = $scope.users.length; // Get initial total records
                 $scope.totalRecords = $scope.users.length; // Get total unfiltered records
-            };
-        };
+            }
+        }
                                 
         // Function to reset the form for a new record
         $scope.new = function() {

@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.1.1
  */
 include_once 'User_obj.php';
 
@@ -311,7 +311,7 @@ class Users
      *
      * @todo verplaats naar goedkeurders object
      * @throws Exception
-     * @return NULL|unknown[][]
+     * @return NULL
      */
     public function getGoedkeurders()
     {
