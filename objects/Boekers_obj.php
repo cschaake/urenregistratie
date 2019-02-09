@@ -1,10 +1,8 @@
 <?php
 /**
- * Boekers Object
+ * Class Boekers | objects/Boekers_obj.php
  *
- * Object voor users tabel
- *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,29 +13,27 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.9
- * @version    1.1.1
+ * @version    1.2.0
+ */
+
+/**
+ * Required files
  */
 include_once 'User_obj.php';
 include_once 'Rol_obj.php';
 include_once 'Groep_obj.php';
 
 /**
- * Rollen object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class Boekers - Collectie van gebruikers die kunnen boeken
  *
  * @since Class available since Release 1.0.9
  * @version 1.0.9
  */
 class Boekers
 {
-
     /**
      * Boekers
      *
@@ -55,7 +51,7 @@ class Boekers
     private $mysqli;
 
     /**
-     * Create the activtiteiten object
+     * Method constructor - Create the activtiteiten object
      *
      * Creates the activiteiten object that will contain all activiteiten stuff
      *
@@ -75,14 +71,22 @@ class Boekers
     }
 
     /**
-     * Creeer nieuwe boeker
+     * Method create - Creeer nieuwe boeker
      *
      * @param User $boeker
      * @throws Exception
      * @return boolean
+     * 
+     * @var string $user
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function create(User $boeker)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         if (isset($boeker->rollen)) {
             foreach ($boeker->rollen as $rol) {
                 // Insert records
@@ -103,9 +107,7 @@ class Boekers
                     $stmt->execute();
                     $stmt->store_result();
 
-                    if ($stmt->num_rows >= 0) {
-                        $user = null;
-                    } else {
+                    if ($stmt->num_rows < 0) {
                         $stmt->close();
                         throw new Exception('Fout bij updaten boeker (fout 2)', 500);
                     }
@@ -175,15 +177,34 @@ class Boekers
     }
 
     /**
-     * Lees boeker(s)
+     * Method read - Lees boeker(s)
      *
      * @param
      *            string optional $username
      * @throws Exception
      * @return bool Success flag
+     * 
+     * @var string $firstname
+     * @var string $lastname
+     * @var int $groep_id
+     * @var int $rol_id
+     * @var string $rol
+     * @var string $gecertificeerd
+     * @var string $verloopt
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function read($username = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $firstname = null;
+        $lastname = null;
+        $groep_id = null;
+        $rol_id = null;
+        $gecertificeerd = null;
+        $verloopt = null;
+
         if (isset($username)) {
             $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         }
@@ -263,7 +284,7 @@ class Boekers
     }
 
     /**
-     * Update een bestaande boeker
+     * Method update - Update een bestaande boeker
      *
      * @param User $boeker
      * @throws Exception
@@ -287,14 +308,20 @@ class Boekers
     }
 
     /**
-     * Delete een bestaande boeker
+     * Method delete - Delete een bestaande boeker
      *
      * @param string $username
      * @throws Exception
      * @return boolean
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function delete($username)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
 
         // Delete all records
@@ -344,7 +371,7 @@ class Boekers
     }
 
     /**
-     * Geeft de index van de geselecteerde username in de boekers array
+     * Method _getIndexOf - Geeft de index van de geselecteerde username in de boekers array
      *
      * @param string $username
      * @return NULL|int

@@ -1,10 +1,10 @@
 <?php
 /**
- * Certificaten
+ * Service certificaten | rest/certificaten.php
  *
  * Rest service voor Certificaten
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,21 +15,28 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2015 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var Input $input
  */
 
-include_once '../includes/db_connect.php';
-include_once '../includes/settings.php';
-include_once '../objects/Authenticate_obj.php';
-include_once '../objects/Input_obj.php';
+/**
+ * Required files
+ */
+require_once '../includes/db_connect.php';
+require_once '../includes/settings.php';
+require_once '../objects/Authenticate_obj.php';
+require_once '../objects/Input_obj.php';
 
-include_once '../objects/Certificaten_obj.php';
+require_once '../objects/Certificaten_obj.php';
 
 // Start or restart session
-include_once '../includes/login_functions.php';
+require_once '../includes/login_functions.php';
 sec_session_start();
 
 $authenticate = new Authenticate($mysqli);
@@ -82,11 +89,14 @@ switch ($input->get_method()) {
 }
 
 /**
- * Post certificaat
+ * Function postCertificaat
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param input $input Input object containing all input parameters (sanitized)
  * @return bool
+ * 
+ * @var string $json
+ * @var Certificaat $certificaat_obj
+ * @var Certificaten $certificaten_obj
  */
 function postCertificaat($input)
 {
@@ -121,11 +131,13 @@ function postCertificaat($input)
 }
 
 /**
- * Get certificaten
+ * Function getCertificaten
  *
  * @param object $request
  *
  * @return bool
+ * 
+ * @var Certificaten $certificaten_obj
  */
 function getCertificaten()
 {
@@ -148,13 +160,17 @@ function getCertificaten()
 }
 
 /**
- * Put certificaat
+ * Function putCertificaat
  *
  * Replace a record
  *
- * @param object $request
+ * @param Input $input
  *
  * @return bool
+ * 
+ * @var string $json
+ * @var Certificaat $certificaat_obj
+ * @var Certificaten $certificaten_obj
  */
 function putCertificaat($input)
 {
@@ -190,13 +206,15 @@ function putCertificaat($input)
 }
 
 /**
- * Delete certificaat
+ * Function deleteCertificaten
  *
  * Delete a record
  *
- * @param object $request
+ * @param Input $input
  *
  * @return bool
+ * 
+ * @var Certificaten $certificaten_obj
  */
 function deleteCertificaten($input)
 {

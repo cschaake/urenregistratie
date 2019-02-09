@@ -1,11 +1,11 @@
 <?php
 
 /**
- * RapportageCertificaat Object
+ * Class RaportageCertificaat | objects/RaportageCertificaat
  *
  * Object voor RapportageCertificaat
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -16,26 +16,20 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.8
- * @version    1.1.1
+ * @version    1.2.0
  */
 
 /**
- * RaportageRecord object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class RaportageCertificaat
  *
  * @since File available since Release 1.0.8
- * @version 1.0.9
+ * @version 1.2.0
  */
 class RaportageCertificaat
 {
-
     /**
      * Id
      *
@@ -157,7 +151,7 @@ class RaportageCertificaat
     public $nodig;
 
     /**
-     * Creeer uren object
+     * Method contructor - Creeer uren object
      *
      * @param int $id
      * @param string $username

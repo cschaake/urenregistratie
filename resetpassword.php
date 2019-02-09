@@ -1,10 +1,10 @@
 <?php
 /**
- * Authenticate
+ * Page resetpassword | resetpassword.php
  *
  * Full functional authentication module
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,14 +15,22 @@
  *
  * @package    authenticate
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Users $users
+ * @var User $user
+ * @var string $token
  */
 
-include_once 'includes/login_functions.php';
-include_once 'includes/db_connect.php';
+/**
+ * Required files
+ */
+require_once 'includes/login_functions.php';
+require_once 'includes/db_connect.php';
 
 // Start session from login_functions.php
 sec_session_start();
@@ -30,11 +38,9 @@ sec_session_start();
 $username = filter_input(INPUT_GET, 'user', FILTER_SANITIZE_STRING);
 $token = filter_input(INPUT_GET, 'token', FILTER_SANITIZE_STRING);
 
-
 include_once('objects/Users_obj.php');
 
 ?>
-
 <!DOCTYPE html>
 <html>
     <head>

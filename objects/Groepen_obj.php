@@ -1,10 +1,10 @@
 <?php
 /**
- * Groepen Object
+ * Class Groepen | objects/Groepen_obj.php
  *
  * Object voor Groepen tabel
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,23 +15,18 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
  */
 include_once ('Groep_obj.php');
 
 /**
- * Groepen object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class Groepen
  *
  * @since File available since Release 1.0.0
- * @version 1.0.9
+ * @version 1.2.0
  */
 class Groepen
 {
@@ -53,7 +48,7 @@ class Groepen
     private $mysqli;
 
     /**
-     * Creeer nieuw groepen object
+     * Method constructor - Creeer nieuw groepen object
      *
      * @param mysqli $mysqli
      * @throws Exception
@@ -70,16 +65,21 @@ class Groepen
     }
 
     /**
-     * Create a new groepen record
+     * Method create - Create a new groepen record
      *
      * @access public
-     * @param Groep $Groep
-     *            Groep object
+     * @param Groep $groep Groep object
      * @throws Exception
      * @return bool Success flag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function create(Groep $groep)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             INSERT INTO
 				ura_groepen
@@ -108,15 +108,23 @@ class Groepen
     }
 
     /**
-     * Lees alle groepen
+     * Method read - Lees alle groepen
      *
      * @access public
      * @param int $id Groep id
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $groep
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function read($id = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $groep = null;
+        
         if (isset($id)) {
             $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
         }
@@ -162,16 +170,21 @@ class Groepen
     }
 
     /**
-     * Update groep record
+     * Method update - Update groep record
      *
      * @access public
-     * @param Groep $record
-     *            Groep object
+     * @param Groep $record Groep object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function update(Groep $record)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             UPDATE
 				ura_groepen
@@ -201,16 +214,24 @@ class Groepen
     }
 
     /**
-     * Delete groep
+     * Method delete - Delete groep
      *
      * @access public
      * @param int $id
      *            Groep id
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     * @var bool $result
      */
     public function delete($id)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $result = null;
+        
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
 
         $result = false;
@@ -241,15 +262,23 @@ class Groepen
     }
 
     /**
-     * Controleer of groep verwijderd mag worden
+     * Method _canDelete - Controleer of groep verwijderd mag worden
      *
      * @access private
      * @param int $id
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var int $count
+     * @var bool $result
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     private function _canDelete($id)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $result = false;
         $prep_stmt = "SELECT COUNT(*) count
 						FROM

@@ -1,10 +1,10 @@
 <?php
 /**
- * Boekers admin pagina
+ * Template boekersPanel | includes/boekersadmin_pagina.php
  *
  * Pagina voor het beheren van boekers
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -13,15 +13,17 @@
  * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
- * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.7
+ * @version    1.2.0
+ */
+
+/**
+ * boekersPanel
  */
 ?>
-
 <div ng-app="myApp" ng-controller="gebuikersCtrl"> <!-- Angular container, within this element the myApp application is active -->
 	<div id="boekersPanel" class="panel panel-default">
 		<div class="panel-body">
@@ -189,10 +191,11 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- ------------------------------------------------------------------------------------------
-		Modal for new and update record
-	-->
+<?php
+/**
+ * editrecord
+ */
+?>
 	<div id="editrecord" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Edit form -->
@@ -285,9 +288,11 @@
 		</div>
 	</div>
 
-	<!-- ------------------------------------------------------------------------------------------
-		Modal for adding certificaat
-	-->
+<?php
+/**
+ * addcertificaat
+ */
+?>
 	<div id="addcertificaat" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Edit form -->
@@ -348,9 +353,11 @@
 		</div>
 	</div>
 
-	<!-- ------------------------------------------------------------------------------------------
-		Modal delete confirmation
-	-->
+<?php
+/**
+ * deleterecord
+ */
+?>
 	<div id="deleterecord" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -369,9 +376,11 @@
 		</div>
 	</div>
 
-	<!-- ------------------------------------------------------------------------------------------
-		Modal for help
-	-->
+<?php
+/**
+ * helpModal
+ */
+?>
 	<div id="helpModal" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">

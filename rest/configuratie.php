@@ -1,10 +1,10 @@
 <?php
 /**
- * Configuratie
+ * Service configuratie | rest/configuratie.php
  *
  * Rest service voor Configuratie
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,25 +15,33 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2015 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.6
- * @version       1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var Input $input
  */
 
-include_once '../includes/db_connect.php';
-include_once '../includes/settings.php';
-include_once '../objects/Authenticate_obj.php';
-include_once '../objects/Input_obj.php';
+/**
+ * Required files
+ */
+require_once '../includes/db_connect.php';
+require_once '../includes/settings.php';
+require_once '../objects/Authenticate_obj.php';
+require_once '../objects/Input_obj.php';
 
-include_once '../objects/Groepen_obj.php';
-include_once '../objects/Rollen_obj.php';
-include_once '../objects/Activiteiten_obj.php';
-include_once '../objects/Certificaten_obj.php';
+require_once '../objects/Groepen_obj.php';
+require_once '../objects/Rollen_obj.php';
+require_once '../objects/Certificaten_obj.php';
 
 // Start or restart session
-include_once '../includes/login_functions.php';
+require_once '../includes/login_functions.php';
 sec_session_start();
+
+global $mysqli;
 
 $authenticate = new Authenticate($mysqli);
 
@@ -53,36 +61,45 @@ if (! $authenticate->authorisation_check(false)) {
 // Get all input (sanitized)
 $input = new Input();
 
-switch ($input->get_method()) {
-        // Read one or all records
-    case 'GET':
-        getConfiguratie();
-        break;
-
-    default:
-        http_response_code(501);
-        header('Content-Type: application/json');
-        echo json_encode(array(
-            'success' => false,
-            'message' => 'Not implemented',
-            'code' => 501
-        ));
+if ($input->get_method()) {
+    // Read one or all records
+    getConfiguratie();
+} else {
+    http_response_code(501);
+    header('Content-Type: application/json');
+    echo json_encode(array(
+        'success' => false,
+        'message' => 'Not implemented',
+        'code' => 501
+    ));
 }
 
 /**
- * Get configuratie
+ * fucntion getConfiguratie 
  *
  * Get all configuratie records
  *
  * @param object $request
  *
  * @return bool
+ * 
+ * @var array $result
+ *      @param Groepen "groepen"
+ *      @param Rollen "rollen"
+ *      @param Certificaten "certificaten"
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var Groepen $groepen_obj
+ * @var Rollen $rollen_obj
+ * @var Certificaten $certificaten_obj
  */
 function getConfiguratie()
 {
     global $authenticate;
 	global $mysqli;
 
+	$result = null;
+	
 	if (! ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
 	    http_response_code(403);
 	    header('Content-Type: application/json');
@@ -94,7 +111,7 @@ function getConfiguratie()
 	    exit();
 	}
 
-    $groepen_obj = new groepen($mysqli);
+    $groepen_obj = new Groepen($mysqli);
     try {
         $groepen_obj->read();
     } catch(Exception $e) {
@@ -103,7 +120,7 @@ function getConfiguratie()
         exit;
     }
 
-	$rollen_obj = new rollen($mysqli);
+	$rollen_obj = new Rollen($mysqli);
     try {
         $rollen_obj->read();
     } catch(Exception $e) {
@@ -112,16 +129,7 @@ function getConfiguratie()
         exit;
     }
 
-	$activiteiten_obj = new Activiteiten($mysqli);
-    try {
-        $activiteiten_obj->read();
-    } catch(Exception $e) {
-        http_response_code(404);
-        echo json_encode(array('success' => false, 'message' => 'Activiteiten not found', 'code' => 404));
-        exit;
-    }
-
-	$certificaten_obj = new certificaten($mysqli);
+	$certificaten_obj = new Certificaten($mysqli);
     try {
         $certificaten_obj->read();
     } catch(Exception $e) {
@@ -132,7 +140,6 @@ function getConfiguratie()
 
 	$result['groepen'] = $groepen_obj->groepen;
 	$result['rollen'] = $rollen_obj->rollen;
-	$result['activiteiten'] = $activiteiten_obj->activiteiten;
 	$result['certificaten'] = $certificaten_obj->certificaten;
 
 	http_response_code(200);

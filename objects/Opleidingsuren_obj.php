@@ -1,10 +1,10 @@
 <?php
 /**
- * Opleidingsuren Object
+ * Class Opleidingsuren | objects/Opleidingsuren_obj.php
  *
  * Object voor opleidingsuren tabel
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,23 +15,19 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2015 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version       1.0.9
+ * @version    1.2.0
  */
 include_once ('Uur_obj.php');
 include_once ('User_obj.php');
 
 /**
- * Opleidingsuren object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2015 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class Opleidingsuren
  *
  * @since File available since Release 1.0.0
+ * @version 1.2.0
  */
 class Opleidingsuren
 {
@@ -61,12 +57,11 @@ class Opleidingsuren
     private $mysqli;
 
     /**
-     * Create the opleidingsuren object
+     * Method constructor - Create the opleidingsuren object
      *
      * Creates the opleidingsuren object that will contain all uren stuff
      *
-     * @param mysqli $mysqli
-     *            Valid mysqli object
+     * @param mysqli $mysqli Valid mysqli object
      *
      * @return bool Success flag
      */
@@ -81,18 +76,23 @@ class Opleidingsuren
     }
 
     /**
-     * Update the opleidingsuren object
+     * Method update - Update the opleidingsuren object
      *
      * Update a opleidingsuren record
      * Wordt vermoedelijk niet gebruikt!
      *
-     * @param Uur $record
-     *            opleidingsuur object
+     * @param Uur $record opleidingsuur object
      *
      * @return array Urenrecord
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function update(Uur $record)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             UPDATE ura_uren
             SET
@@ -129,15 +129,46 @@ class Opleidingsuren
     }
 
     /**
-     * Get uren for opleidingsuren
+     * Method _getUren - Get uren for opleidingsuren
      *
-     * @param string $username
-     *            Username of the current loggedin user
+     * @param string $username Username of the current loggedin user
      *
      * @return array Uren records
+     * 
+     * @var int $id
+     * @var string $firstname
+     * @var string $lastname
+     * @var int $activiteit_id
+     * @var string $activiteit
+     * @var int $rol_id
+     * @var string $rol
+     * @var string $datum
+     * @var string $start
+     * @var string $eind
+     * @var string $uren
+     * @var string $opmerking
+     * @var Uur $uur
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     private function _getUren($username = null)
     {
+        $id = null;
+        $firstname = null;
+        $lastname = null;
+        $activiteit_id = null;
+        $activiteit = null;
+        $rol_id = null;
+        $rol = null;
+        $datum = null;
+        $start = null;
+        $eind = null;
+        $uren = null;
+        $opmerking = null;
+        $uur = null;
+        $prep_stmt = null;
+        $stmt = null;
+        
         if (isset($username)) {
             $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         }
@@ -199,14 +230,21 @@ class Opleidingsuren
     }
 
     /**
-     * Get users for opleidingsuren
+     * Method _getUsers - Get users for opleidingsuren
      *
      * Get all the users that have group_id 1
      *
      * @return array Users records
+     * 
+     * @var string $username
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     private function _getUsers()
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             SELECT ura_urenboeken.username, users.firstname, users.lastname
             FROM ura_urenboeken
@@ -242,12 +280,9 @@ class Opleidingsuren
     }
 
     /**
-     * Get the combined uren and users
+     * Method read - Get the combined uren and users
      *
-     * @param string $username
-     *            Username of the current loggedin user
-     * @param int $id
-     *            Record id
+     * @param string $username Username of the current loggedin user
      *
      * @return array Records
      */
@@ -263,15 +298,20 @@ class Opleidingsuren
     }
 
     /**
-     * Insert a new uren record
+     * Method create - Insert a new uren record
      *
-     * @param Uur $record
-     *            Uur object
+     * @param Uur $record Uur object
      *
      * @return array Record
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function create(Uur $record)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             INSERT ura_uren
             SET
@@ -306,15 +346,22 @@ class Opleidingsuren
     }
 
     /**
-     * Delete an uren record
+     * Method delete - Delete an uren record
      *
-     * @param string $id
-     *            Id of the record to be deleted
+     * @param string $id Id of the record to be deleted
      *
      * @return bool
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     * @var bool $result
      */
     public function delete($id)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $result = null;
+        
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
 
         $prep_stmt = "

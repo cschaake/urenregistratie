@@ -3,7 +3,7 @@
  *
  * AngularJS application for configuratie pagina
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -17,7 +17,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.6
- * @version    1.0.9
+ * @version    1.2.0
  */
 // --------------------------------------------------------------------
 // Custom App
@@ -53,10 +53,6 @@ angular.module('myApp')
 	$scope.certificaten.form = null; 
 	$scope.certificaten.original = null; 
 	
-	$scope.activiteiten = {};
-	$scope.activiteiten.form = null; 
-	$scope.activiteiten.original = null; 
-	
 	// ------------------------------------------------------------
 	// Initiate sort
 	$scope.groepen.sortType = ''; // Field to be sorted
@@ -79,7 +75,6 @@ angular.module('myApp')
 				// We got a good response
 				$scope.groepen = response.data.groepen;
 				$scope.rollen = response.data.rollen;
-				$scope.activiteiten = response.data.activiteiten;
 				$scope.certificaten = response.data.certificaten;
 				$scope.spinner = false;
 			}
@@ -106,12 +101,10 @@ angular.module('myApp')
 		$scope.messageGroepen = '';
 		$scope.messageRollen = '';
 		$scope.messageCertificaten = '';
-		$scope.messageActiviteiten = '';
 		
 		$scope.groepen.form = angular.copy($scope.groepen.original);
 		$scope.rollen.form = angular.copy($scope.rollen.original);
 		$scope.certificaten.form = angular.copy($scope.certificaten.original);
-		$scope.activiteiten.form = angular.copy($scope.activiteiten.original);
 	}
 	
 	$scope.new = function() {
@@ -119,7 +112,6 @@ angular.module('myApp')
 		$scope.groepen.form = null;
 		$scope.rollen.form = null;
 		$scope.certificaten.form = null;
-		$scope.activiteiten.form = null;
 	}
 	
 	// Function fot editing groep
@@ -403,99 +395,6 @@ angular.module('myApp')
 			}
 		}, function(response) {
 			$scope.messageCertificaten = response.data.message;
-			$scope.spinner = false;
-		});
-	};
-	
-	// Function for activiteit editing 
-	$scope.editactiviteit = function(index) {
-	$scope.activiteiten.form = angular.copy($scope.activiteiten[index]); 
-        $scope.activiteiten.form.index = index; 
-        $scope.activiteiten.form.edit = true; 
-        $scope.activiteiten.original = angular.copy($scope.activiteiten.form); // Copy the current form to the temporary original object
-	}
-	
-	// Function to add a new record
-	$scope.insertactiviteit = function(index) {
-		$scope.$broadcast('show-errors-check-validity');
-		$scope.$broadcast('show-errors-reset');
-		$scope.spinner = true;
-		
-		if ($scope.editactiviteitForm.$valid) {
-			
-			if ($scope.activiteiten.form.edit === true) {
-				// The true value is set in the $scope.edit function
-				$http({
-					method : 'PUT',
-					url : 'rest/activiteiten.php/' + $scope.activiteiten.form.id,
-					data : $scope.activiteiten.form,
-					headers : { 'Content-Type': 'application/json' }
-				}).then(function(response) {
-					if (response.data.message) {
-						$scope.messageActiviteiten = response.data.message;
-						$scope.spinner = false;
-					} else {
-						$scope.activiteiten[index] = response.data.activiteiten[0];
-						$scope.activiteiten.form = null;
-						$scope.activiteiten.original = null;
-						$scope.spinner = false;
-						$('#editactiviteit').modal('hide'); // Close the modal
-					}
-				}, function(response) {
-					$scope.messageActiviteiten = response.data.message;
-					$scope.spinner = false;
-				});
-				
-			} else {
-				
-				$http({
-					method : 'POST',
-					url : 'rest/activiteiten.php',
-					data : $scope.activiteiten.form,
-					headers : { 'Content-Type': 'application/json' }
-				}).then(function(response) {
-					if (response.data.message) {
-						$scope.messageActiviteiten = response.data.message;
-						$scope.spinner = false;
-					} else {
-						$scope.activiteiten.push(response.data.activiteiten[0]);
-						$scope.activiteiten.form = null;
-						$scope.activiteiten.original = null;
-						$scope.spinner = false;
-						$('#editactiviteit').modal('hide'); // Close the modal
-					}
-				}, function(response) {
-					$scope.messageActiviteiten = response.data.message;
-					$scope.spinner = false;
-				});
-				
-			}
-		}
-	};
-	
-	// Function to delete a single row based on index
-	$scope.deleteactiviteit = function(index) {
-		$scope.$broadcast('show-errors-check-validity');
-		$scope.$broadcast('show-errors-reset');
-		$scope.spinner = true;
-		
-		$http({
-			method : 'DELETE',
-			url : 'rest/activiteiten.php/' + $scope.activiteiten.form.id,
-			headers : { 'Content-Type': 'application/json' }
-		}).then(function(response) {
-			if (!response.data.success) {
-				$scope.messageActiviteiten = response.data.message;
-				$scope.spinner = false;
-			} else {
-				$scope.activiteiten.splice(index,1);
-				$scope.activiteiten.form = null;
-				$scope.activiteiten.original = null;
-				$('#deleteactiviteit').modal('hide'); // Close the modal
-				$scope.spinner = false;
-			}
-		}, function(response) {
-			$scope.messageActiviteiten = response.data.message;
 			$scope.spinner = false;
 		});
 	};

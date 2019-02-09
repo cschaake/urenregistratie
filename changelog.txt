@@ -1,3 +1,13 @@
+Versie 1.1.1
+	Feature
+
+	Bug-fix
+		Overzicht scherm toont geen uren overzicht.
+	
+	Known-bugs
+		Verversen van pagina met filter reset paging waardoor deze niet meer klopt
+		Configuratie pagina werkt verwijderen van rol niet
+
 Versie 1.0.9
 	Feature
 

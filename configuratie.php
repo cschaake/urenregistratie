@@ -1,10 +1,10 @@
 <?php
 /**
- * Configuratie pagina
+ * Page configuratie | configuratie.php
  *
  * Pagina voor het beheren van vaste opleidingsuren
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,14 +15,22 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.8
+ * @version    1.2.0
+ * 
+ * @var Authenticate $authenticate
+ * @var mysqli $mysqli
+ * @var string $javaScript
+ * @var string $pagina
  */
 
-include_once 'includes/login_functions.php';
-include_once 'includes/db_connect.php';
+/**
+ * Required files
+ */
+require_once 'includes/login_functions.php';
+require_once 'includes/db_connect.php';
 
 $authenticate = checkAuthenticate($mysqli);
 

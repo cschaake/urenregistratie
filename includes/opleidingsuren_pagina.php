@@ -1,6 +1,6 @@
 <?php
 /**
- * Opleidingsuren pagina
+ * Template opleidingsPanel | includes/opleidingsuren_pagina.php
  *
  * Pagina voor het beheren van vaste opleidingsuren
  *
@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version    1.1.0
+ * @version    1.2.0
  */
 ?>
 

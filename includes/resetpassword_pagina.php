@@ -1,10 +1,10 @@
 <?php
 /**
- * Reset password pagina
+ * Template changePasswordModal | includes/resetpassword_pagina.php
  *
  * Pagina voor het beheren van boekers
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,10 +15,12 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.0.7
+ * @version    1.2.0
+ * 
+ * @var User $user
  */
 
 ?>

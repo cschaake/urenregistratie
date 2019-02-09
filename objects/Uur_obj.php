@@ -1,11 +1,8 @@
 <?php
-
 /**
- * Uur Object
+ * Class Uur | objects/Uur_obj.php
  *
- * Object voor een uur record
- *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -16,24 +13,22 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.0.9
+ * @version    1.2.0
  */
 
 /**
- * Uur object
- *
- * Single uur
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Required files
+ */
+require_once ('Activiteiten_obj.php');
+
+/**
+ * Class Uur - Enkel uur record
  *
  * @since File available since Release 1.0.7
- * @version 1.0.9
+ * @version 1.2.0
  */
 class Uur
 {
@@ -85,6 +80,22 @@ class Uur
      * @access public
      */
     public $activiteit;
+    
+    /**
+     * Activiteit begintijd
+     * 
+     * @var string _activiteit_begintijd
+     * @access private
+     */
+    private $_activiteit_begintijd;
+    
+    /**
+     * Activiteit eindtijd
+     * 
+     * @var string _activiteit_eindtijd
+     * @access private
+     */
+    private $_activiteit_eindtijd;
 
     /**
      * Rol ID verplicht numeriek 5 lang
@@ -183,7 +194,7 @@ class Uur
     public $flag;
 
     /**
-     * Creeer uren object
+     * Method constructor
      *
      * @param string $username
      * @param int $activiteit_id
@@ -220,7 +231,7 @@ class Uur
         if ($flag) {
             $this->flag = true;
         }
-
+        
         if ($this->eind < $this->start) {
             throw new Exception('Eindtijd ligt voor starttijd');
         }
@@ -232,7 +243,7 @@ class Uur
     }
 
     /**
-     * Voeg activiteit toe
+     * Method addActiviteit - Voeg activiteit toe
      *
      * @param int $activiteit_id
      * @param string $activiteit
@@ -250,7 +261,7 @@ class Uur
     }
 
     /**
-     * Voeg rol toe
+     * Method addRol - Voeg rol toe
      *
      * @param int $rol_id
      * @param string $rol
@@ -268,7 +279,7 @@ class Uur
     }
 
     /**
-     * Voeg groep toe
+     * Method addGroep - Voeg groep toe
      *
      * @param int $groep_id
      * @param string $groep
@@ -283,7 +294,7 @@ class Uur
     }
 
     /**
-     * Voor voor en achternaam toe
+     * Method addName - Voor voor en achternaam toe
      *
      * @param string $firstname
      * @param string $lastname
@@ -294,6 +305,48 @@ class Uur
         $this->voornaam = filter_var($firstname, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         $this->achternaam = filter_var($lastname, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
 
+        return true;
+    }
+    
+    /**
+     * Method getActiviteitTijden - Haal de tijden voor activiteit op
+     *
+     * @access public
+     * @param Uur $uur_obj Uur object
+     * @throws Exception
+     * @return bool Succes vlag
+     */
+    public function getActiviteitTijden(Uur $uur_obj)
+    {
+        global $mysqli;
+        
+        $activiteit_obj = new Activiteiten($mysqli);
+        $activiteit_obj->read($uur_obj->activiteit_id);
+        
+        $this->_activiteit_begintijd = date('H:i', strtotime($activiteit_obj->activiteiten[0]->begintijd));
+        $this->_activiteit_eindtijd = date('H:i', strtotime($activiteit_obj->activiteiten[0]->eindtijd));
+        
+        return true;
+    }
+
+    /**
+     * Method calculateUren - Bereken uren
+     * 
+     * @access public
+     * @todo Extra uren uit configuratie ophalen
+     * @return bool Succes vlag
+     */
+    public function calculateUren() {
+        $this->uren = round((strtotime($this->eind) - strtotime($this->start)) / 3600,2);
+        
+        if ($this->start == $this->_activiteit_begintijd) {
+            $this->uren = $this->uren + 0.5; 
+        }
+        
+        if ($this->eind == $this->_activiteit_eindtijd) {
+            $this->uren = $this->uren + 0.5;
+        }
+        
         return true;
     }
 }

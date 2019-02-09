@@ -1,8 +1,8 @@
 <?php
 /**
- * Urenregistratie pagina
+ * Template urenPanel | includes\urenregistratie_pagina.php
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -13,10 +13,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.7
+ * @version    1.2.0
  */
 
 // Calculate date range for input (P3M means 3 months)
@@ -163,6 +163,14 @@ $enddate = $enddate->format('Y-m-d');
 						<!-- Table header -->
 						<!-- Header -->
 						<tr>
+							<th><a href="" ng-click="sortType = 'datum'">Datum</a> <a href=""
+								ng-click="sortReverse = !sortReverse"> <span
+									ng-show="sortType == 'datum' && !sortReverse"> <span
+										class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span>
+								</span> <span ng-show="sortType == 'datum' && sortReverse"> <span
+										class="glyphicon glyphicon-sort-by-alphabet pull-right"></span>
+								</span>
+							</a></th>
 							<th><a href="" ng-click="sortType = 'activiteit'">Activiteit</a>
 								<a href="" ng-click="sortReverse = !sortReverse"> <span
 									ng-show="sortType == 'activiteit' && !sortReverse"> <span
@@ -176,14 +184,6 @@ $enddate = $enddate->format('Y-m-d');
 									ng-show="sortType == 'rol' && !sortReverse"> <span
 										class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span>
 								</span> <span ng-show="sortType == 'rol' && sortReverse"> <span
-										class="glyphicon glyphicon-sort-by-alphabet pull-right"></span>
-								</span>
-							</a></th>
-							<th><a href="" ng-click="sortType = 'datum'">Datum</a> <a href=""
-								ng-click="sortReverse = !sortReverse"> <span
-									ng-show="sortType == 'datum' && !sortReverse"> <span
-										class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span>
-								</span> <span ng-show="sortType == 'datum' && sortReverse"> <span
 										class="glyphicon glyphicon-sort-by-alphabet pull-right"></span>
 								</span>
 							</a></th>
@@ -203,6 +203,7 @@ $enddate = $enddate->format('Y-m-d');
 
 						<!--- Filters -->
 						<tr ng-show="showFilter">
+							<th />
 							<th>
 								<form role="form" class="form-inline">
 									<div class="form-group" style="width: 100%">
@@ -231,7 +232,6 @@ $enddate = $enddate->format('Y-m-d');
 									</div>
 								</form>
 							</th>
-							<th />
 							<th class="hidden-xs hidden-sm hidden-md" />
 							<th class="hidden-xs hidden-sm hidden-md" />
 							<th />
@@ -259,12 +259,13 @@ $enddate = $enddate->format('Y-m-d');
 					<tbody>
 						<tr
 							ng-repeat="uur in uren | orderBy:sortType:sortReverse | filter:search:strict | limitTo:itemsPerPage:startItem">
+							<td ng-class="{'danger': uur.akkoord == '2'}">{{ uur.datum |
+								date: "yyyy-MM-dd"}}</td>
 							<td ng-class="{'danger': uur.akkoord == '2'}">{{ uur.activiteit
 								}}</td>
 							<td class="hidden-xs" ng-class="{'danger': uur.akkoord == '2'}">{{
 								uur.rol }}</td>
-							<td ng-class="{'danger': uur.akkoord == '2'}">{{ uur.datum |
-								date: "yyyy-MM-dd"}}</td>
+							
 							<td class="hidden-xs hidden-sm hidden-md"
 								ng-class="{'danger': uur.akkoord == '2'}">{{ uur.start }}</td>
 							<td class="hidden-xs hidden-sm hidden-md"

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * User Object
+ * Class User | objects/user_obj.php
  *
  * Object voor een User record
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -19,26 +19,20 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.9
- * @version    1.0.9
+ * @version    1.2.0
  */
 
 /**
- * User object
+ * Class User
  *
  * Single user
  *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
- *
  * @since File available since Release 1.0.9
- * @version 1.0.9
+ * @version 1.2.0
  *
  */
 class User
 {
-
     /**
      * Gebruikernaam verplicht alfanumeriek 10 lang
      *
@@ -135,6 +129,7 @@ class User
      */
     public $rollen;
 
+
     /**
      * Groups
      *
@@ -143,6 +138,22 @@ class User
      */
     public $groups;
 
+    /**
+     * Method constructor - Groups
+     *
+     * @param string $username
+     * @param string $firstname
+     * @param string $lastname
+     * @param array|[int] $groepen
+     * @param array|[int] $rollen
+     * @param string $email
+     * @param string $passwordHash
+     * @param string $resetToken
+     * @param int $failedLogin
+     * @param string $lastLogin
+     * @param int $status
+     * @param string $created
+     */
     public function __construct($username, $firstname, $lastname, $groepen = null, $rollen = null, $email = null, $passwordHash = null, $resetToken = null, $failedLogin = null, $lastLogin = null, $status = null, $created = null)
     {
         $this->username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
@@ -184,7 +195,7 @@ class User
     }
 
     /**
-     * Add groups
+     * Method addGroups - Add groups
      *
      * @param string[] $groups
      * @return boolean
@@ -199,7 +210,7 @@ class User
     }
 
     /**
-     * Add rollen
+     * Method addRollen - Add rollen
      *
      * @param Rol $rol
      */
@@ -209,7 +220,7 @@ class User
     }
 
     /**
-     * Add groepen
+     * Method addGroepen - Add groepen
      *
      * @param Groep $groep
      */
@@ -219,7 +230,7 @@ class User
     }
 
     /**
-     * Return reset token for user
+     * Method getResetToken - Return reset token for user
      *
      * @return string
      */

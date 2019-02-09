@@ -1,0 +1,45 @@
+rest/activiteiten.php - DONE
+		compleet
+
+rest/certificaten.php - DONE
+		Gebruikt geen input - DONE 
+		Authenticatie op verkeerde plek - DONE
+
+rest/configuratie.php - DONE
+		Gebruikt geen input - DONE
+		Alleen GET methode actief
+	
+rest/feedback.php - DONE
+		Alleen POST methode actief
+
+rest/goedkeurders.php - DONE
+		Gebruikt geen input - DONE
+	
+rest/goedkeuren.php - DONE
+	PRIO! 	POST geen authorisatie - DONE
+
+rest/groepen.php - DONE
+		Gebruikt geen input - DONE 
+		GET geen functie, rest wel - DONE
+		Authenticatie op verkeerde plek - DONE
+
+rest/opleidingsuren.php - DONE
+		Gebruikt geen input	- DONE
+		Authencticatie op verkeerde plek - DONE
+	PRIO! 	DELETE geen authorisatie - DONE
+	BUG? 	POST en PUT verschillende authorisaties - DONE
+
+rest/rapportage.php - DONE
+		compleet
+
+rest/rollen.php - DONE
+		Gebruikt geen input - DONE		
+	PRIO!	DELETE geen authorisatie - DONE
+	PRIO!	PUT geen authorisatie - DONE
+
+rest/urenboeken.php - DONE
+		compleet
+
+rest/users.php - DONE
+		Gebruikt geen input - DONE
+		Geen functies - DONE

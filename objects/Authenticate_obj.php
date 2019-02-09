@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Authentication object
+ * Class Authenticate | objects/Authenticate_obj.php
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -10,24 +10,19 @@
  * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
- * @package    authenticate
+ * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2015 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version	   1.1.1
+ * @version	   1.2.0
  */
 
 /**
- * Authenticate object
- *
- * @package authenticate
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2015 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * class Authenticate - Authentificeren van gebruiker
  *
  * @since File available since Release 1.0.0
- * @version 1.0.9
+ * @version 1.2.0
  */
 class Authenticate
 {
@@ -177,12 +172,11 @@ class Authenticate
     private $mysqli;
 
     /**
-     * Create the authenticate object
+     * Method _constructor - Create the authenticate object
      *
      * Creates the authenticate object that will contain all authorisation stuff
      *
-     * @param mysqli $mysqli
-     *            Valid mysqli object
+     * @param mysqli $mysqli Valid mysqli object
      *
      * @return bool Success flag
      */
@@ -197,7 +191,7 @@ class Authenticate
     }
 
     /**
-     * Distroys authenticate object
+     * Method _destuctor - Distroys authenticate object
      *
      * Destroys the authenticate object and cleanup some stuff
      */
@@ -211,7 +205,7 @@ class Authenticate
     }
 
     /**
-     * Check if username is current user
+     * Method checkUsername - Check if username is current user
      *
      * @param string $username
      *
@@ -223,7 +217,7 @@ class Authenticate
     }
 
     /**
-     * Check if user is member of group
+     * Method checkGroup - Check if user is member of group
      *
      * @param string $group
      *
@@ -239,15 +233,25 @@ class Authenticate
     }
 
     /**
-     * Get groups
+     * Method get_groups - Get groups
      *
      * @todo verplaatsen naar groups object
      * Get a list of all known groups
      *
      * @return array groups
+     * 
+     * @var string $groupname
+     * @var array $groups
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function get_groups()
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $groupname = null;
+        $groups = null;
+        
         $prep_stmt = "SELECT groupname FROM groups";
         $stmt = $this->mysqli->prepare($prep_stmt);
 
@@ -274,27 +278,31 @@ class Authenticate
     }
 
     /**
-     * Check the login credentials
+     * Method login_check - Check the login credentials
      *
      * Checks the login credentials from the users session and fill the object
      *
-     * @param
-     *            string username Username
-     * @param
-     *            string password1 First password input
-     * @param
-     *            string password2 Second password intput
-     * @param
-     *            string email Email address
-     * @param
-     *            string firstname [optional] firstname of user
-     * @param
-     *            string lastname [optional] lastname of user
+     * @param   string username Username
+     * @param   string password1 First password input
+     * @param   string password2 Second password intput
+     * @param   string email Email address
+     * @param   string firstname [optional] firstname of user
+     * @param   string lastname [optional] lastname of user
      *
      * @return array Sessions array
+     * 
+     * @var array $session
+     * @var string $result
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     function login_check($username, $sessionHash, $remember)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $session = null;
+        $result = null;
+        
         $this->remember = $remember;
 
         // Check if all session variables are set
@@ -420,7 +428,7 @@ class Authenticate
     }
 
     /**
-     * Authorisation check
+     * Method authorisation_check - Authorisation check
      *
      * Checks the authorisation of the user. Is login successfull, and optionally check admin rights
      *
@@ -428,9 +436,17 @@ class Authenticate
      *            bool admin [optional] If true check admin rights
      *
      * @return bool success flag
+     * 
+     * @var string $username
+     * @var string $sessionHash
+     * @var string $remember
      */
     public function authorisation_check($admin = false)
     {
+        $username = null;
+        $sessionHash = null;
+        $remember = null;
+        
         // Get the session information
         if (isset($_SESSION['username'], $_SESSION['sessionHash'])) {
             $username = filter_var($_SESSION['username'], FILTER_SANITIZE_STRING);
@@ -483,24 +499,21 @@ class Authenticate
     }
 
     /**
-     * Register a new user
+     * Method register - Register a new user
      *
      * Tries to register a new user. First check input, when input is valid submit new user to database and send confirmation email
      *
-     * @param
-     *            string username Username
-     * @param
-     *            string password1 First password input
-     * @param
-     *            string password2 Second password intput
-     * @param
-     *            string email Email address
-     * @param
-     *            string firstname [optional] firstname of user
-     * @param
-     *            string lastname [optional] lastname of user
+     * @param   string username Username
+     * @param   string password1 First password input
+     * @param   string password2 Second password intput
+     * @param   string email Email address
+     * @param   string firstname [optional] firstname of user
+     * @param   string lastname [optional] lastname of user
      *
      * @return bool success flag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function register($username, $password1, $password2, $email, $firstname = null, $lastname = null)
     {
@@ -592,17 +605,33 @@ class Authenticate
     }
 
     /**
-     * Send confirmation mail
+     * Method sendConfirmationMail - Send confirmation mail
      *
      * Send a confirmation mail to the new registered user
      *
      * @return bool success flag
+     * 
+     * @var array $headers
+     *      @param string "MIME-Version"
+     *      @param string "Content-type"
+     *      @param string "From"
+     *      @param string "Reply-To"
+     *      @param string "Subject"
+     *      @param string "X-Mailer"
+     *      @param string "Date"
+     * @var string $address
+     * @var string $message
      */
     private function sendConfirmationMail()
     {
+        $headers = null;
+        $address = null;
+        $message = null;
+        
         // Prepaire email
         $address = 'https://' . $_SERVER['HTTP_HOST'] . str_replace('/register', '', $_SERVER['REQUEST_URI']) . '/verify/' . $this->username . '?token=' . $this->resetToken;
-
+        $headers = null;
+        
         $headers["MIME-Version"] = "1.0";
         $headers["Content-type"] = "text/plain; charset=iso-8859-1";
         $headers["From"] = EMAILFROM;
@@ -634,19 +663,23 @@ class Authenticate
     }
 
     /**
-     * Validate new user account
+     * Method validate - Validate new user account
      *
      * Response on the validation mail to validate a new user account
      *
-     * @param
-     *            string username Username of the user to be validated
-     * @param
-     *            string token Stored resetToken
+     * @param   string username Username of the user to be validated
+     * @param   string token Stored resetToken
      *
      * @return bool success flag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function validate($username, $token)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         // Check if username and token exists
         $prep_stmt = "SELECT username FROM users WHERE username = ? AND resetToken = ?";
         $stmt = $this->mysqli->prepare($prep_stmt);
@@ -685,17 +718,22 @@ class Authenticate
     }
 
     /**
-     * Passwordreset
+     * Method passwordreset - Passwordreset
      *
      * Send password reset email
      *
-     * @param
-     *            string email User email
+     * @param   string email User email
      *
      * @return bool Success flag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function passwordreset($email)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $this->resetToken = md5(uniqid(rand(), true));
         $this->email = $email;
 
@@ -756,17 +794,35 @@ class Authenticate
     }
 
     /**
-     * Send password reset mail
+     * Method sendPasswordResetMail - Send password reset mail
      *
      * Send a password reset mail to the registered user
      *
      * @return bool success flag
+     * 
+     * @var array $headers
+     *      @param string "MIME-Version"
+     *      @param string "Content-type"
+     *      @param string "From"
+     *      @param string "Reply-To"
+     *      @param string "Subject"
+     *      @param string "X-Mailer"
+     *      @param string "Date"
+     * @var string $address
+     * @var string $message
+     * @var string $to
      */
     private function sendPasswordResetMail()
     {
+        $headers = null;
+        $address = null;
+        $message = null;
+        $to = null; 
+        
         // Prepaire email
         $address = 'https://' . $_SERVER['HTTP_HOST'] . str_replace('/authenticate.php/passwordreset', '', $_SERVER['REQUEST_URI']) . '/resetpassword.php?user=' . $this->username . '&token=' . $this->resetToken;
-
+        $headers = null;
+        
         $headers["MIME-Version"] = "1.0";
         $headers["Content-type"] = "text/plain; charset=iso-8859-1";
         $headers["From"] = EMAILFROM;
@@ -797,14 +853,31 @@ class Authenticate
         return true;
     }
 
+    /**
+     * Method _sendMail - Send mail
+     *
+     * Private function to send mail
+     *
+     * @param   string to
+     * @param   string headers
+     * @param   string message
+     *
+     * @return bool Success flag
+     * 
+     * @var array $smtp_params
+     *      @param string "host"
+     *      @param string "port"
+     *      @param string "auth"
+     */
     private function _sendMail($to, $headers, $message)
     {
         include_once ('Mail.php');
+        $smtp_params = null;
 
         $smtp_params["host"] = SMTP_HOST;
         $smtp_params["port"] = SMTP_PORT;
         $smtp_params["auth"] = SMTP_AUTH;
-
+ 
         $smtp = @Mail::factory("smtp", $smtp_params);
         $mail = @$smtp->send($to, $headers, $message);
 
@@ -816,25 +889,26 @@ class Authenticate
     }
 
     /**
-     * Change password
+     * Method change_password - Change password
      *
      * Change the users password in the database. Can be called with old password or token
      *
-     * @param
-     *            string username Username
-     * @param
-     *            string oldpassword Old password, or null if token is used
-     * @param
-     *            string password1 New password
-     * @param
-     *            string password2 New password again
-     * @param
-     *            string token optional Password reset token send by email
+     * @param   string username Username
+     * @param   string oldpassword Old password, or null if token is used
+     * @param   string password1 New password
+     * @param   string password2 New password again
+     * @param   string token optional Password reset token send by email
      *
      * @return bool Success flag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function change_password($username, $password, $password1, $password2, $token = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         if (strlen($password1) < MINIMUM_PASSWORD_LENGTH) {
             throw new Exception('Password to short, minimum of ' . MINIMUM_PASSWORD_LENGTH . ' characters required');
         }
@@ -899,21 +973,29 @@ class Authenticate
     }
 
     /**
-     * Login
+     * Method login - Login
      *
      * Do login validation and set session when login succesfull
      *
-     * @param
-     *            string username Username
-     * @param
-     *            string password Password
-     * @param
-     *            bool remember Boolean to specify if login needs to be remembered
+     * @param  string username Username
+     * @param  string password Password
+     * @param  bool remember Boolean to specify if login needs to be remembered
+     * @param string $sessionHash
      *
-     *            @session array Session information
+     * @var array $session
+     *      @param string "username"
+     *      @param string "sessionHash"
+     *      @param string "remember"
+     * @var string $username
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function login($loginname, $password, $remember, $sessionHash)
     {
+        $session = null;
+        $prep_stmt = null;
+        $stmt = null;
+        
         $this->remember = $remember;
 
         // Get user information
@@ -1030,14 +1112,18 @@ class Authenticate
     }
 
     /**
-     * Lock account
+     * Method lock_account - Lock account
      *
      * Lock the account and send an unlock email
      *
      * @return bool Success flag
+     * 
+     * @var mysqli_stmt $stmt
      */
     private function lock_account()
     {
+        $stmt = null;
+        
         $this->resetToken = md5(uniqid(rand(), true));
         $this->sendUnlockMail();
 
@@ -1058,14 +1144,28 @@ class Authenticate
     }
 
     /**
-     * Send account unlock mail
+     * Method sendUnlockMail - Send account unlock mail
      *
      * Send an account unlock mail to the registered user
      *
      * @return bool success flag
+     * 
+     * @var array $headers
+     *      @param string "MIME-Version"
+     *      @param string "Content-type"
+     *      @param string "From"
+     *      @param string "Reply-To"
+     *      @param string "Subject"
+     *      @param string "X-Mailer"
+     *      @param string "Date"
+     * @var string $address
+     * @var string $to
+     * @var string $message
      */
     public function sendUnlockMail()
     {
+        $headers = null;
+        
         // Prepaire email
         $address = 'https://' . $_SERVER['HTTP_HOST'] . str_replace('/login', '', $_SERVER['REQUEST_URI']) . '/unlock/' . $this->username . '?token=' . $this->resetToken;
 
@@ -1100,19 +1200,23 @@ class Authenticate
     }
 
     /**
-     * Unlock user account
+     * Method unlock - Unlock user account
      *
      * Unlock a locked user account
      *
-     * @param
-     *            string username
-     * @param
-     *            string token
+     * @param   string username
+     * @param   string token
      *
      * @return bool success flag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function unlock($username, $token)
     {
+        $prep_stmt = null;
+        $stmt = null;
+       
         // Check if username and token exists
         $prep_stmt = "SELECT username FROM users WHERE username = ? AND resetToken = ?";
         $stmt = $this->mysqli->prepare($prep_stmt);
@@ -1151,22 +1255,24 @@ class Authenticate
     }
 
     /**
-     * Login
+     * Method logout - Logout
      *
-     * Do login validation and set session when login succesfull
+     * Do logout and reset usersession
      *
-     * @param
-     *            string username Username
-     * @param
-     *            string password Password
-     * @param
-     *            bool remember Boolean to specify if login needs to be remembered
+     * @param   string username Username
+     * @param   string password Password
+     * @param   bool remember Boolean to specify if login needs to be remembered
      *
      * @return bool Success flag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function logout($username, $sessionHash)
     {
-
+        $prep_stmt = null;
+        $stmt = null;
+        
         // Destroy old session record in database
         if (isset($sessionHash)) {
             // Get session information

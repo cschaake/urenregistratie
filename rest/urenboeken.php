@@ -1,10 +1,10 @@
 <?php
 /**
- * Urenboeken composit rest service
+ * Service urenboeken | rest/urenboeken.php
  *
  * Rest service voor de uren boeken (registeren) pagina.
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,23 +15,32 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var input $input
  */
-include_once '../includes/db_connect.php';
-include_once '../includes/settings.php';
-include_once '../objects/Authenticate_obj.php';
-include_once '../objects/Input_obj.php';
 
-include_once '../objects/Activiteiten_obj.php';
-include_once '../objects/Rollen_obj.php';
-include_once '../objects/Uren_obj.php';
+/**
+ * Requred files
+ */
+require_once '../includes/db_connect.php';
+require_once '../includes/settings.php';
+require_once '../objects/Authenticate_obj.php';
+require_once '../objects/Input_obj.php';
+
+require_once '../objects/Activiteiten_obj.php';
+require_once '../objects/Rollen_obj.php';
+require_once '../objects/Uren_obj.php';
 
 // Start or restart session
-include_once '../includes/login_functions.php';
+require_once '../includes/login_functions.php';
 sec_session_start();
+global $mysqli;
 
 $authenticate = new Authenticate($mysqli);
 
@@ -83,11 +92,14 @@ switch ($input->get_method()) {
 }
 
 /**
- * Post Urenboeken
+ * Function postUrenboeken
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param Input $input Input object containing all input parameters (sanitized)
  * @return bool Successflag
+ * 
+ * @var string $json
+ * @var Uur $uur_obj
+ * @var Uren $uren_obj
  */
 function postUrenboeken(input $input)
 {
@@ -152,16 +164,26 @@ function postUrenboeken(input $input)
 }
 
 /**
- * Get Urenboeken
+ * Function getUrenboeken
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param Input $input Input object containing all input parameters (sanitized)
  * @return bool Successflag
+ * 
+ * @var string $username
+ * @var int $id
+ * @var Uren $uren_obj
+ * @var Activiteiten $activiteiten_obj
+ * @var Rollen $rollen_obj
+ * @var array $result
+ *      @param Activiteit[] "activiteiten"
+ *      @param Rol[] "rollen"
+ *      @param Uur[] "uren"
  */
 function getUrenboeken(input $input)
 {
     global $mysqli;
     global $authenticate;
+    $result = null;
     /*
      * Check how we are called.
      * 1. /urenboeken.php -> gives all uren of current user
@@ -278,11 +300,14 @@ function getUrenboeken(input $input)
 }
 
 /**
- * Put Urenboeken
+ * Function putUrenboeken
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param Input $input Input object containing all input parameters (sanitized)
  * @return bool Successflag
+ * 
+ * @var string $json
+ * @var Uur $uur_obj
+ * @var Uren $uren_obj
  */
 function putUrenboeken(input $input)
 {
@@ -357,11 +382,13 @@ function putUrenboeken(input $input)
 }
 
 /**
- * Delete Urenboeken
+ * Function detelUrenboeken
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param Input $input Input object containing all input parameters (sanitized)
  * @return bool Successflag
+ * 
+ * @var string $username
+ * @var Uren $uren_obj
  */
 function deleteUrenboeken(input $input)
 {

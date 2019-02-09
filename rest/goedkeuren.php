@@ -1,10 +1,10 @@
 <?php
 /**
- * Goedkeuren
+ * Service goedkeuren | rest/goedkeuren.php
  *
  * Rest service voor goedkeuren van uren
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,10 +15,14 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var Input @input
  */
 
 include_once '../includes/db_connect.php';
@@ -65,19 +69,25 @@ switch ($input->get_method()) {
 }
 
 /**
- * Post Urengoedkeuren
+ * Function postUrengoedkeuren
  *
  * Goedkeuren van uren
  *
- * @param 	input 	$input	Input object containing all input parameters (sanitized)
+ * @param 	Input 	$input	Input object containing all input parameters (sanitized)
  *
  * @return 	bool	Successflag
+ * 
+ * @var string $username
+ * @var string $json
+ * @var Uren $goedkeuren_obj
+ * 
  */
 function postUrengoedkeuren($input) {
 	global $mysqli;
 	global $authenticate;
 
 	// Admin of Super mag alle uren af/goedkeuren. Anders geldend de goedkeurders rollen, wordt doorgegeven via eigen username
+	// @todo waarom wordt $username niet gebruikt, geen security??
 	if ((is_array($authenticate->group)) && (in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
 	    $username = null;
 	} else {
@@ -85,7 +95,7 @@ function postUrengoedkeuren($input) {
 	}
 
 	$json = $input->get_JSON();
-	$goedkeuren_obj = new uren($mysqli);
+	$goedkeuren_obj = new Uren($mysqli);
 
 	if (array_key_exists('afkeuren', $input->get_pathParams())) {
         try {
@@ -124,17 +134,26 @@ function postUrengoedkeuren($input) {
 }
 
 /**
- * Get Urengoedkeuren
+ * Function getUrengoedkeuren
  *
  * Lees alle goed te keuren uren
  *
  * @param 	input 	$input	Input object containing all input parameters (sanitized)
  *
  * @return 	bool	Successflag
+ * 
+ * @var array $result
+ *      @param Uur[] "uren"
+ *      @param Activiteit[] "activiteiten"
+ * @var string $username
+ * @var Uren $goedkeuren_obj
+ * @var Activiteiten $activiteiten
  */
 function getUrengoedkeuren() {
 	global $mysqli;
 	global $authenticate;
+	
+	$result = null;
 
 	// Admin of Super mag alle uren af/goedkeuren. Anders geldend de goedkeurders rollen, wordt doorgegeven via eigen username
     if ((is_array($authenticate->group)) && (in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
@@ -143,7 +162,7 @@ function getUrengoedkeuren() {
 		$username = $authenticate->username;
 	}
 
-    $goedkeuren_obj = new uren($mysqli);
+    $goedkeuren_obj = new Uren($mysqli);
     try {
         $goedkeuren_obj->readGoedTeKeuren($username);
     } catch(Exception $e) {
@@ -154,7 +173,7 @@ function getUrengoedkeuren() {
     }
 	$result['uren'] = $goedkeuren_obj->uren;
 
-	$activiteiten = new activiteiten($mysqli);
+	$activiteiten = new Activiteiten($mysqli);
 	try {
 		$activiteiten->read();
 	} catch(Exception $e) {

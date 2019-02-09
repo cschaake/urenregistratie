@@ -1,0 +1,6 @@
+projectKey=schaake:urenregistratie1_0
+serverUrl=http://localhost:9000
+serverVersion=7.5.0.20543
+dashboardUrl=http://localhost:9000/dashboard?id=schaake%3Aurenregistratie1_0
+ceTaskId=AWjUAy3FfwXUbnKAw98v
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AWjUAy3FfwXUbnKAw98v

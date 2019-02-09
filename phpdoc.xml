@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpdoc>
+   <parser>
+      <target>/var/www/html/doc/urenregistratie</target>
+   </parser>
+   <transformation>
+      <target>/var/www/html/doc/urenregistratie</target>
+   </transformation>
+   <transformations>
+	   <!--<template name="responsive" />-->
+   </transformations>
+   <files>
+      <directory>.</directory>
+   </files>
+</phpdoc>

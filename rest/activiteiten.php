@@ -1,10 +1,10 @@
 <?php
 /**
- * Activiteiten
+ * Service activiteiten | rest/activiteiten.php
  *
  * Rest service voor Activiteiten
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,20 +15,30 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2015 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var input $input
  */
 
-include_once '../includes/db_connect.php';
-include_once '../includes/settings.php';
-include_once '../objects/Authenticate_obj.php';
-include_once '../objects/Input_obj.php';
-include_once '../objects/Activiteiten_obj.php';
+/**
+ * required files
+ */
+
+require_once '../includes/db_connect.php';
+require_once '../includes/settings.php';
+require_once '../objects/Authenticate_obj.php';
+require_once '../objects/Input_obj.php';
+
+require_once '../objects/Activiteiten_obj.php';
+require_once '../objects/Groepen_obj.php';
 
 // Start or restart session
-include_once '../includes/login_functions.php';
+require_once '../includes/login_functions.php';
 sec_session_start();
 
 $authenticate = new Authenticate($mysqli);
@@ -91,13 +101,17 @@ switch ($input->get_method()) {
 }
 
 /**
- * Post Activiteit
+ * Function postActiviteit
  *
  * Create a new Activiteit
  *
  * @param input $input
  *
  * @return bool
+ * 
+ * @var string $json
+ * @var Activiteit $activiteit_ojb
+ * @var Activiteiten $activiteiten_obj
  */
 function postActiviteit($input)
 {
@@ -113,7 +127,7 @@ function postActiviteit($input)
 
     $json = $input->get_JSON();
 
-    $activiteit_obj = new Activiteit(null, $json->activiteit, $json->groep_id);
+    $activiteit_obj = new Activiteit(null, $json->datum, $json->begintijd, $json->eindtijd, $json->activiteit, $json->groep_id);
     $activiteiten_obj = new Activiteiten($mysqli);
     try {
         $activiteiten_obj->create($activiteit_obj);
@@ -131,16 +145,27 @@ function postActiviteit($input)
 }
 
 /**
- * Get Activiteiten
+ * function getActiviteiten
  *
  * Read one or all activiteiten
  *
  * @param input $input
  *
  * @return bool
+ * 
+ * @var array $result
+ *      @param Activiteiten "activiteiten"
+ *      @param Groepen "groepen"
+ * @var Activiteiten $activiteiten_obj
+ * @var Groepen $groepen_obj
  */
 function getActiviteiten($input)
 {
+    /**
+     * @var array $result Resultaat van bevragingen
+     */
+    $result = null;
+    
     global $mysqli;
 
     if ($input->get_pathParams()) {
@@ -165,22 +190,43 @@ function getActiviteiten($input)
         }
 
     }
+    $result['activiteiten'] = $activiteiten_obj->activiteiten;
+    
+    $groepen_obj = new Groepen($mysqli);
+    try {
+        $groepen_obj->read();
+    } catch (Exception $e) {
+        http_response_code(400);
+        header('Content-Type: application/json');
+        echo json_encode(array(
+            'success' => false,
+            'message' => $e->getMessage(),
+            'code' => 400
+        ));
+        exit();
+    }
+    
+    $result['groepen'] = $groepen_obj->groepen;
 
 	http_response_code(200);
 	header('Content-Type: application/json');
-    echo json_encode($activiteiten_obj);
+    echo json_encode($result);
 
     return true;
 }
 
 /**
- * Put Activiteit
+ * function puActiviteit
  *
  * Update an existing Activiteit
  *
  * @param input $input
  *
  * @return bool
+ * 
+ * @var string $json
+ * @var Activiteit $activititeit_obj
+ * @var Activiteiten $activiteiten_obj
  */
 function putActiviteit($input)
 {
@@ -208,7 +254,7 @@ function putActiviteit($input)
 		exit;
 	}
 
-	$activiteit_obj = new Activiteit($json->id, $json->activiteit, $json->groep_id, $json->groep);
+	$activiteit_obj = new Activiteit($json->id, $json->datum, $json->begintijd, $json->eindtijd, $json->activiteit, $json->groep_id, $json->groep);
 	$activiteiten_obj = new Activiteiten($mysqli);
 
 	try {
@@ -232,13 +278,15 @@ function putActiviteit($input)
 }
 
 /**
- * Delete Activiteit
+ * Function deleteActiviteit
  *
  * Delete an existing Activiteit
  *
  * @param input $input
  *
  * @return bool
+ * 
+ * @var Activiteiten $activiteiten_obj
  */
 function deleteActiviteit($input)
 {

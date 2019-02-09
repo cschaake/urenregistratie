@@ -1,10 +1,10 @@
 <?php
 /**
- * Goedkeurders
+ * Service goedkeurders | rest/goedkeurders.php
  *
  * Rest service voor goedkeurders pagina
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,25 +15,31 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2015 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var Input @input
  */
 
-include_once '../includes/db_connect.php';
-include_once '../includes/settings.php';
-include_once '../objects/Authenticate_obj.php';
-include_once '../objects/Input_obj.php';
+/**
+ * Required files
+ */
+require_once '../includes/db_connect.php';
+require_once '../includes/settings.php';
+require_once '../objects/Authenticate_obj.php';
+require_once '../objects/Input_obj.php';
 
-include_once '../objects/Groepen_obj.php';
-include_once '../objects/Rollen_obj.php';
-include_once '../objects/Users_obj.php';
-include_once '../objects/Goedkeurders_obj.php';
-
+require_once '../objects/Groepen_obj.php';
+require_once '../objects/Rollen_obj.php';
+require_once '../objects/Users_obj.php';
+require_once '../objects/Goedkeurders_obj.php';
 
 // Start or restart session
-include_once '../includes/login_functions.php';
+require_once '../includes/login_functions.php';
 sec_session_start();
 
 $authenticate = new Authenticate($mysqli);
@@ -86,11 +92,15 @@ switch ($input->get_method()) {
 }
 
 /**
- * Post goedkeurder
+ * Function postGoedkeurder
  *
- * @param object $record
+ * @param Input $input
  *
  * @return bool
+ * 
+ * @var string $json
+ * @var Goedkeurder $goedkeurder
+ * @var Goedkeurders $goedkeurders 
  */
 function postGoedkeurder($input)
 {
@@ -130,23 +140,36 @@ function postGoedkeurder($input)
 }
 
 /**
- * Get goedkeurders
+ * function getGoedkeurders
  *
  * @return bool
+ * 
+ * @var array $result
+ * 
+ * @var array $result
+ *      @param User[] "users"
+ *      @param Goep[] "groepen"
+ *      @param Rol[] "rollen"
+ *      @param Goedkeurder[] "goedkeurders"
+ * @var Users $users_obj
+ * @var Groepen $groepen_obj
+ * @var Rollen $rollen_obj
+ * @var Goedkeurders $goedkeurders_obj
  */
 function getGoedkeurders()
 {
 	global $authenticate;
 	global $mysqli;
+	$result = null;
 
 	$users_obj = new Users($mysqli);
 	$result['users'] = $users_obj->read();
 
-	$groepen_obj = new groepen($mysqli);
+	$groepen_obj = new Groepen($mysqli);
 	$groepen_obj->read();
 	$result['groepen'] = $groepen_obj->groepen;
 
-	$rollen_obj = new rollen($mysqli);
+	$rollen_obj = new Rollen($mysqli);
 	$rollen_obj->read();
 	$result['rollen'] = $rollen_obj->rollen;
 
@@ -162,11 +185,14 @@ function getGoedkeurders()
 }
 
 /**
- * Put goedkeurder
+ * Function puGoedkeurder
  *
- * @param object $record
+ * @param Input $input
  *
  * @return bool
+ * 
+ * @var string $json
+ * @var Goedkeurders $goedkeuren_obj
  */
 function putGoedkeurder($input)
 {
@@ -187,7 +213,7 @@ function putGoedkeurder($input)
 	    exit();
 	}
 
-    $goedkeuren_obj = new goedkeuren($mysqli);
+    $goedkeuren_obj = new Goedkeurder($mysqli);
 
     // Update record
 	//Get uren by user (if not admin or super only show own uren)
@@ -207,11 +233,13 @@ function putGoedkeurder($input)
 }
 
 /**
- * Delete goedkeurder
+ * Function deleteGoedkeurder
  *
- * @param object $request
+ * @param Input $input
  *
  * @return bool
+ * 
+ * @var Goedkeurders $goedkeurders_obj
  */
 function deleteGoedkeurder($input)
 {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Goedkeuren
+ * Service opleidingsuren | rest/opleidingsuren.php
  *
  * Rest service voor goedkeuren van uren
  *
@@ -15,10 +15,14 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2015 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version    1.1.0
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var input $input
  */
 
 include_once '../includes/db_connect.php';
@@ -96,7 +100,7 @@ switch ($input->get_method()) {
 
 
 /**
- * Checks the users rol
+ * Function checkRol
  *
  * Checks if the user has the right rol
  *
@@ -104,6 +108,8 @@ switch ($input->get_method()) {
  * @param int	 $rol_id
  *
  * @return bool
+ * 
+ * @var Goedkeurders $rollen
  */
 function checkRol($username, $rol_id)
 {
@@ -116,10 +122,8 @@ function checkRol($username, $rol_id)
 	if (in_array($rol_id, $rollen->getRolId($username))) {
 		return true;
 	} else {
-		if (is_array($authenticate->group)) {
-			if ((in_array('admin',$authenticate->group) || (in_array('super', $authenticate->group)))) {
-				return true;
-			}
+		if (is_array($authenticate->group) && (in_array('admin',$authenticate->group) || (in_array('super', $authenticate->group)))) {
+		  return true;
 		}
 	}
 	
@@ -127,11 +131,15 @@ function checkRol($username, $rol_id)
 }
 
 /**
- * Post opleidingsuren
+ * Function postOpleidinguren
  *
  * @param input $input
  *
  * @return bool
+ * 
+ * @var string $json
+ * @var Uur $uur_obj
+ * @var Opleidingsuren $opleidingsuren_obj
  */
 function postOpleidingsuren($input)
 {
@@ -167,9 +175,12 @@ function postOpleidingsuren($input)
 }
 
 /**
- * Get opleidingsuren
+ * Function getOpleidingsuren
  *
  * @return bool
+ * 
+ * @var Opleidingsuren $opleidingsuren_obj
+ * @var string $username
  */
 function getOpleidingsuren()
 {
@@ -180,7 +191,7 @@ function getOpleidingsuren()
 
     $username = $authenticate->username;
 
-    if (($authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
+    if ($authenticate->checkGroup('admin') || $authenticate->checkGroup('super')) {
         $username = null;
     } else {
         $username = $authenticate->username;
@@ -203,11 +214,15 @@ function getOpleidingsuren()
 }
 
 /**
- * Put opleidingsuren
+ * Function putOpleidingsuren
  *
- * @param input $input
+ * @param Input $input
  *
  * @return bool
+ * 
+ * @var string $json
+ * @var Goedkeurder $goedkeuren_obj
+ * @var Uren $uren_obj
  */
 function putOpleidingsuren($input)
 {
@@ -225,7 +240,7 @@ function putOpleidingsuren($input)
 
     $json = $input->get_JSON();
 
-    $goedkeuren_obj = new goedkeuren($mysqli);
+    $goedkeuren_obj = new Goedkeurder($mysqli);
 
     // Update record
 	//Get uren by user (if not admin or super only show own uren)
@@ -244,11 +259,13 @@ function putOpleidingsuren($input)
 }
 
 /**
- * Delete opleidingsuren
+ * Function deleteOpleidinguren
  *
- * @param input $input
+ * @param Input $input
  *
  * @return bool
+ * 
+ * @var Opleidingsuren $opleidingsuren_obj
  */
 function deleteOpleidingsuren($input)
 {

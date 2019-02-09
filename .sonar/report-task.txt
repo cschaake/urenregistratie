@@ -1,0 +1,6 @@
+projectKey=schaake:urenregistratie1_0
+serverUrl=http://mars.schaake.nu:9000
+serverVersion=6.4.0.25310
+dashboardUrl=http://mars.schaake.nu:9000/dashboard/index/schaake:urenregistratie1_0
+ceTaskId=AVzBvu5hrEdKxifhgyII
+ceTaskUrl=http://mars.schaake.nu:9000/api/ce/task?id=AVzBvu5hrEdKxifhgyII

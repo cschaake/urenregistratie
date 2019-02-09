@@ -1,10 +1,8 @@
 <?php
 /**
- * Uren Object
+ * Class Uren | objects/Uren_obj.php
  *
- * Object voor Uren tabel
- *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,23 +13,22 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.1.1
+ * @version    1.2.0
+ */
+
+/**
+ * Required files
  */
 require_once ('Uur_obj.php');
 
 /**
- * Uren object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
- *
+ * Class Uren - Collection van Uur objecten
+ * 
  * @since Class available since Release 1.0.0
- * @version 1.0.9
+ * @version 1.2.0
  */
 class Uren
 {
@@ -53,7 +50,7 @@ class Uren
     private $mysqli;
 
     /**
-     * Creeer uren object
+     * Method constructor - Creeer uren object
      *
      * @access public
      * @param mysqli $mysqli
@@ -71,21 +68,33 @@ class Uren
     }
 
     /**
-     * Creeer uur
+     * Method create - Creeer uur
      *
      * @access public
-     * @param Uur $uur
-     *            Uur object
+     * @param Uur $uur_obj Uur object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var array $time
+     *      @option string "start" Starttijd
+     *      @option string "eind" Eindtijd 
+     * @var string $prep_stmt SQL Statement
+     * @var SQLite3Stmt $stmt    
      */
     public function create(Uur $uur_obj)
     {
+        $time = null;
+        $prep_stmt = null;
+        $stmt = null;
+        
         // Controleer overlap in tijd
         $time = $this->_checkTime($uur_obj->username, $uur_obj->datum, $uur_obj->start, $uur_obj->eind, $uur_obj->rol_id);
         if ($time) {
             throw new Exception('Reeds uren geboekt tussen ' . $time->start . ' en ' . $time->eind);
         }
+        
+        $uur_obj->getActiviteitTijden($uur_obj);
+        $uur_obj->calculateUren();
 
         $prep_stmt = "
             INSERT
@@ -125,20 +134,23 @@ class Uren
     }
 
     /**
-     * Lees uur of uren
+     * Method read - Lees uur of uren
      *
      * @access public
-     * @param string $username
-     *            optional Username
-     * @param int $id
-     *            optional Uur id
-     * @param datetime $pijldatum
-     *            optional Toon alleen uren voor certificaat dat actief is tijdens pijldatum
+     * @param string $username optional Username
+     * @param int $id optional Uur id
+     * @param datetime $pijldatum optional Toon alleen uren voor certificaat dat actief is tijdens pijldatum
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt SQL Statement
+     * @var SQLite3Stmt $stmt  
      */
     public function read($username = null, $id = null, $pijldatum = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         if (isset($username)) {
             $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         }
@@ -148,6 +160,45 @@ class Uren
         if (isset($pijldatum)) {
             $pijldatum = date('Y-m-d', strtotime($pijldatum));
         }
+
+        $prep_stmt = $this->_prepRead($username, $id);
+        $stmt = $this->mysqli->prepare($prep_stmt);
+
+        if ($stmt) {
+            if ($id && $username) {
+                $stmt->bind_param('si', $username, $id);
+            } elseif ($username) {
+                $stmt->bind_param('s', $username);
+            } elseif ($id) {
+                $stmt->bind_param('i', $id);
+            }
+            $stmt->execute();
+            $stmt->store_result();
+
+            $this->_procRead($stmt);
+            
+            $stmt->close();
+        } else {
+            throw new Exception('Database error', 500);
+        }
+
+        return true;
+    }
+
+    /**
+     * Method _prepRead - Prepare SQL statement read
+     *
+     * @access private
+     * @param string $username optional Username
+     * @param int $id optional Uur id
+     * @throws Exception
+     * @return string prep_stmt
+     * 
+     * @var string $prep_stmt SQL Statement
+     */
+    private function _prepRead($username = null, $id = null)
+    {
+        $prep_stmt = null;
 
         $prep_stmt = "
             SELECT
@@ -181,56 +232,118 @@ class Uren
         if ($id) {
             $prep_stmt .= " AND ura_uren.id = ?";
         }
-
-        $stmt = $this->mysqli->prepare($prep_stmt);
-
-        if ($stmt) {
-            if ($id && $username) {
-                $stmt->bind_param('si', $username, $id);
-            } elseif ($username) {
-                $stmt->bind_param('s', $username);
-            } elseif ($id) {
-                $stmt->bind_param('i', $id);
+        $prep_stmt .= " ORDER BY ura_uren.datum DESC";
+        
+        return $prep_stmt;
+    }
+    
+    /**
+     * Method _procRead - Process SQL result read
+     *
+     * @access private
+     * @param string $stmt
+     * @throws Exception
+     * @return bool 
+     * 
+     * @var Uur $uur_obj
+     * @var int $id
+     * @var string $username
+     * @var int $activiteit_id
+     * @var string $activiteit
+     * @var int $groep_id
+     * @var string $groep
+     * @var int $rol_id
+     * @var string $rol
+     * @var datetime $datum
+     * @var string $start
+     * @var string $eind
+     * @var int $uren
+     * @var bool $akkoord
+     * @var string $reden
+     * @var string $opmerking
+     * @var bool $flag
+     */
+    private function _procRead($stmt)
+    {
+        $uur_obj = null;
+        $id = null;
+        $username = null;
+        $activiteit_id = null;
+        $activiteit = null;
+        $groep_id = null;
+        $groep = null;
+        $rol_id = null;
+        $rol = null;
+        $datum = null;
+        $start = null;
+        $eind = null;
+        $uren = null;
+        $akkoord = null;
+        $reden = null;
+        $opmerking = null;
+        $flag = null;
+        
+        if ($stmt->num_rows >= 1) {
+            $stmt->bind_result($id, $username, $activiteit_id, $activiteit, $groep_id, $groep, $rol_id, $rol, $datum, $start, $eind, $uren, $akkoord, $reden, $opmerking, $flag);
+            
+            while ($stmt->fetch()) {
+                $uur_obj = new Uur($username, $activiteit_id, $rol_id, $datum, $start, $eind, $uren, $opmerking, $akkoord, $reden, $flag, $id);
+                $uur_obj->addActiviteit($activiteit_id, $activiteit);
+                $uur_obj->addRol($rol_id, $rol);
+                $uur_obj->addGroep($groep_id, $groep);
+                $this->uren[] = $uur_obj;
             }
-            $stmt->execute();
-            $stmt->store_result();
-
-            if ($stmt->num_rows >= 1) {
-                $stmt->bind_result($id, $username, $activiteit_id, $activiteit, $groep_id, $groep, $rol_id, $rol, $datum, $start, $eind, $uren, $akkoord, $reden, $opmerking, $flag);
-
-                while ($stmt->fetch()) {
-                    $uur_obj = new Uur($username, $activiteit_id, $rol_id, $datum, $start, $eind, $uren, $opmerking, $akkoord, $reden, $flag, $id);
-                    $uur_obj->addActiviteit($activiteit_id, $activiteit);
-                    $uur_obj->addRol($rol_id, $rol);
-                    $uur_obj->addGroep($groep_id, $groep);
-                    $this->uren[] = $uur_obj;
-                }
-            } elseif ($stmt->num_rows == 0) {
-                $stmt->close();
-                throw new Exception('Geen uur record gevonden', 404);
-            } else {
-                $stmt->close();
-                throw new Exception('Fout bij opvragen uren', 500);
-            }
+        } elseif ($stmt->num_rows == 0) {
             $stmt->close();
+            throw new Exception('Geen uur record gevonden', 404);
         } else {
-            throw new Exception('Database error', 500);
+            $stmt->close();
+            throw new Exception('Fout bij opvragen uren', 500);
         }
-
         return true;
     }
-
+    
     /**
-     * Lees goed te keuren uren
+     * Method readGoedTeKeuren - Lees goed te keuren uren
      *
      * @access public
      * @param string $username
      *            optional Username
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     * @var Uur $uur_obj
+     * @var string $firstname
+     * @var string $lastname
+     * @var int $activiteit_id
+     * @var string $activiteit
+     * @var int $rol_id
+     * @var string $rol
+     * @var datetime $datum
+     * @var string $start
+     * @var string $eind
+     * @var int $uren
+     * @var string $opmerking
      */
     public function readGoedTeKeuren($username = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $uur_obj = null;
+        $firstname = null;
+        $lastname = null;
+        $activiteit_id = null;
+        $activiteit = null;
+        $rol_id = null;
+        $rol = null;
+        $datum = null;
+        $start = null;
+        $eind = null;
+        $uren = null;
+        $opmerking = null;
+        
         if (isset($username)) {
             $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         }
@@ -307,16 +420,24 @@ class Uren
     }
 
     /**
-     * Update uur
+     * Method update - Update uur
      *
      * @access public
-     * @param Uur $uur
-     *            Uur object
+     * @param Uur $uur_obj Uur object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function update(Uur $uur_obj)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
+        $uur_obj->getActiviteitTijden($uur_obj);
+        $uur_obj->calculateUren();
+        
         $prep_stmt = "
             UPDATE
 				ura_uren
@@ -356,7 +477,7 @@ class Uren
     }
 
     /**
-     * Delete uur
+     * Method delete - Delete uur
      *
      * @access public
      * @param int $id
@@ -365,9 +486,15 @@ class Uren
      *            Username
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function delete($id, $username = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
         if (isset($username)) {
             $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
@@ -404,16 +531,22 @@ class Uren
     }
 
     /**
-     * Uur goedkeuren
+     * Method goedkeuren - Uur goedkeuren
      *
      * @access public
      * @param int $id
      *            Uur id
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function goedkeuren($id)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
 
         $prep_stmt = "
@@ -442,7 +575,7 @@ class Uren
     }
 
     /**
-     * Uur afkeuren
+     * Method afkeuren - Uur afkeuren
      *
      * @access public
      * @param int $id
@@ -451,9 +584,15 @@ class Uren
      *            Reden
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt q$stmt
      */
     public function afkeuren($id, $reden)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
         $reden = filter_var($reden, FILTER_SANITIZE_STRING);
 
@@ -484,23 +623,29 @@ class Uren
     }
 
     /**
-     * Check time
+     * Method _checkTime - Check time
      *
      * Check of er reeds uren zijn geboekt op het gevraagde tijdstip
      *
-     * @param string $username
-     *            Username
-     * @param string $date
-     *            Datum
-     * @param string $start
-     *            Start tijd
-     * @param string $end
-     *            End tijd
+     * @param string $username Username
+     * @param string $date Datum
+     * @param string $start Start tijd
+     * @param string $end End tijd
+     * @param int $rol_id
      * @return bool Succes vlag
+     * 
+     * @var string prep_stmt
+     * @var mysqli_stmt stmt
      */
     private function _checkTime($username, $date, $start, $end, $rol_id)
     {
+        $prep_stmt = null;
+        $stmt = null;
         $result = false;
+        
+        if ($start > $end) {
+            throw new Exception('Eindtijd voor begintijd', 500);
+        }
 
         $prep_stmt = "
             SELECT

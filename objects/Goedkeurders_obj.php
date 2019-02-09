@@ -1,10 +1,10 @@
 <?php
 /**
- * Goedkeurders Object
+ * Class Goedkeurders | objects/Goedkeurders_obj.php
  *
  * Object voor goedkeurders
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,20 +15,15 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.6
- * @version    1.0.9
+ * @version    1.2.0
  */
 include_once ('Goedkeurder_obj.php');
 
 /**
- * Goedkeurders object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class Goedkeurders 
  *
  * @since Object available since Release 1.0.7
  * @version 1.0.9
@@ -53,7 +48,7 @@ class Goedkeurders
     private $mysqli;
 
     /**
-     * Creeer goedkeurders object
+     * Method constructor - Creeer goedkeurders object
      *
      * @access public
      * @param mysqli $mysqli
@@ -71,16 +66,21 @@ class Goedkeurders
     }
 
     /**
-     * Creeer goedkeurder
+     * Method create - Creeer goedkeurder
      *
      * @access public
-     * @param Goedkeurder $goedkeurder
-     *            Goedkeurder object
+     * @param Goedkeurder $record Goedkeurder object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function create(Goedkeurder $record)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             INSERT INTO
                 ura_urengoedkeuren (username, groep_id, rol_id)
@@ -122,16 +122,25 @@ class Goedkeurders
     }
 
     /**
-     * Lees goedkeurders
+     * Method read - Lees goedkeurders
      *
      * @access public
-     * @param
-     *            string optional $username
+     * @param string $username
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $firstname
+     * @var string $lastname
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function read($username = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $firstname = null;
+        $lastname = null;
+        
         if (isset($username)) {
             $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         }
@@ -182,11 +191,10 @@ class Goedkeurders
     }
 
     /**
-     * Update goedkeurder
+     * Method update - Update goedkeurder
      *
      * @access public
-     * @param Goedkeurder $goedkeurder
-     *            Goedkeurder object
+     * @param Goedkeurder $record Goedkeurder object
      * @throws Exception
      * @return bool Succes vlag
      */
@@ -203,16 +211,21 @@ class Goedkeurders
     }
 
     /**
-     * Delete activiteit
+     * Method delete - Delete activiteit
      *
      * @access public
-     * @param string $username
-     *            Username
+     * @param string $username Username
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function delete($username)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
 
         $prep_stmt = "
@@ -238,18 +251,24 @@ class Goedkeurders
     }
 
     /**
-     * Get groep_id's of user
+     * Method _getGroepId - Get groep_id's of user
      *
      * @access private
-     * @param string $username
-     *            Username
+     * @param string $username Username
      * @throws Exception
      * @return array $groepen
+     * 
+     * @var string $groep
+     * @var array $groepen
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     private function _getGroepId($username)
     {
+        $prep_stmt = null;
+        $stmt = null;
         $groepen = array();
-
+        
         $prep_stmt = "
 			SELECT DISTINCT
 				groep_id
@@ -285,21 +304,28 @@ class Goedkeurders
     }
 
     /**
-     * Get rol_id's of user
+     * Method getRolId - Get rol_id's of user
      *
      * Get the rol_id's of the user
      *
      * @access public
-     * @param string $username
-     *            Username
+     * @param string $username Username
      * @throws Exception
      * @return array $rollen
+     * 
+     * @var string $rol
+     * @var array $rollen
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function getRolId($username)
     {
-        $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
-
+        $prep_stmt = null;
+        $stmt = null;
+        $rol = null;
         $rollen = array();
+        
+        $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
 
         $prep_stmt = "
 			SELECT DISTINCT

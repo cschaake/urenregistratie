@@ -1,10 +1,10 @@
 <?php
 /**
- * Activiteiten Object
+ * Class Activiteiten | objects/Activiteiten_obj.php
  *
- * Object voor Activiteiten tabel
+ * Factory voor activiteiten. Bevat meerdere activiteit objecten.
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,29 +15,32 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.7
+ * @version    1.2.0
+ */
+
+/**
+ * Activiteit object wordt gebruikt in array $activiteiten
  */
 include_once ('Activiteit_obj.php');
 
 /**
- * Activiteiten object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class Activiteiten - Collection van activiteiten
+ * 
+ * Factory voor activiteit objecten. Kan 1 of meer activiteit objecten bevatten.
  *
  * @since Object available since Release 1.0.0
- * @version 1.0.7
+ * @version 1.2.0
+ * 
+ * @see objects/Activiteit_obj.php
  */
-class Activiteiten
+class Activiteiten 
 {
 
     /**
-     * Array met Activiteit objecten
+     * Array met Activiteit objecten.
      *
      * @var Activiteit[]
      * @access public
@@ -45,7 +48,7 @@ class Activiteiten
     public $activiteiten;
 
     /**
-     * Mysqli object
+     * Mysqli object.
      *
      * @var mysqli
      * @access private
@@ -53,7 +56,7 @@ class Activiteiten
     private $mysqli;
 
     /**
-     * Creeer activtiteiten object
+     * Method constructor - Creeer activtiteiten object.
      *
      * @access public
      * @param mysqli $mysqli
@@ -71,16 +74,21 @@ class Activiteiten
     }
 
     /**
-     * Creeer activiteit
+     * Method create - Creeer activiteit.
      *
      * @access public
-     * @param Activiteit $activiteit
-     *            Activiteit object
+     * @param Activiteit $activiteit Activiteit object.
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function create(Activiteit $activiteit)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         // Controleer of groep_id bestaat en geef groepnaam terug
         if (! $this->_groepExists($activiteit)) {
             throw new Exception('Niet bestaande groep geselecteerd', 400);
@@ -89,14 +97,14 @@ class Activiteiten
         // Insert de nieuwe activiteit
         $prep_stmt = "
             INSERT INTO
-                ura_activiteiten (activiteit, groep_id)
+                ura_activiteiten (activiteit, groep_id, datum, begintijd, eindtijd)
             VALUES
-				(?,?)";
+				(?,?,?,?,?)";
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('si', $activiteit->activiteit, $activiteit->groep_id);
+            $stmt->bind_param('sisss', $activiteit->activiteit, $activiteit->groep_id, $activiteit->datum, $activiteit->begintijd, $activiteit->eindtijd);
             $stmt->execute();
             $stmt->store_result();
 
@@ -115,20 +123,25 @@ class Activiteiten
     }
 
     /**
-     * Lees activiteit of activiteiten
+     * Method read - Lees activiteit of activiteiten
      *
      * De functie bevat één parameter met 2 functies:
-     * + integer - Selecteer een speficieke activiteit
-     * + string - Selecteer alle activiteiten voor een specifieke gebruiker
+     * + integer - Selecteer een speficieke activiteit.
+     * + string - Selecteer alle activiteiten voor een specifieke gebruiker.
      *
      * @access public
-     * @param int|string $id
-     *            optional Integer is activiteit_id, string is username
+     * @param int|string $id optional Integer is activiteit_id, string is username
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function read($id = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         if (isset($id)) {
             $id = filter_var($id, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         }
@@ -136,6 +149,9 @@ class Activiteiten
         $prep_stmt = "
             SELECT
                 distinct (ura_activiteiten.id),
+                ura_activiteiten.datum,
+                ura_activiteiten.begintijd,
+                ura_activiteiten.eindtijd,
                 ura_activiteiten.activiteit,
                 ura_activiteiten.groep_id,
                 ura_groepen.groep
@@ -162,18 +178,7 @@ class Activiteiten
             $stmt->execute();
             $stmt->store_result();
 
-            if ($stmt->num_rows >= 1) {
-                $stmt->bind_result($id, $activiteit, $groep_id, $groep);
-
-                while ($stmt->fetch()) {
-                    $this->activiteiten[] = new activiteit($id, $activiteit, $groep_id, $groep, (ACTIVITEIT_OPMERKING == $id));
-                }
-            } elseif ($stmt->num_rows == 0) {
-                throw new Exception('Geen activiteit gevonden', 404);
-            } else {
-                $stmt->close();
-                throw new Exception('Fout bij opvragen activiteit', 500);
-            }
+            $this->_processread($stmt);
             $stmt->close();
         } else {
             throw new Exception('Database error', 500);
@@ -181,18 +186,62 @@ class Activiteiten
 
         return true;
     }
-
+    
     /**
-     * Update activiteit
+     * Method _precessread - Process resultaat van read.
      *
      * @access public
-     * @param Activiteit $activiteit
-     *            Activiteit object
+     * @param mysqli_stmt $stmt
+     * @throws Exception
+     * @return void
+     * 
+     * @var int $id
+     * @var string $datum
+     * @var string $begintijd
+     * @var string $eindtijd
+     * @var string $activiteit
+     * @var int $groep_id
+     * @var string $groep 
+     */
+    private function _processread(mysqli_stmt $stmt){
+        $id = null;
+        $datum = null;
+        $begintijd = null;
+        $eindtijd = null;
+        $activiteit = null;
+        $groep_id = null;
+        $groep = null;
+        
+        if ($stmt->num_rows >= 1) {
+            $stmt->bind_result($id, $datum, $begintijd, $eindtijd, $activiteit, $groep_id, $groep);
+            
+            while ($stmt->fetch()) {
+                $this->activiteiten[] = new activiteit($id, $datum, $begintijd, $eindtijd, $activiteit, $groep_id, $groep, (ACTIVITEIT_OPMERKING == $id));
+            }
+        } elseif ($stmt->num_rows == 0) {
+            throw new Exception('Geen activiteit gevonden', 404);
+        } else {
+            $stmt->close();
+            throw new Exception('Fout bij opvragen activiteit', 500);
+        }
+    }
+
+    /**
+     * Method update - Update activiteit.
+     *
+     * @access public
+     * @param Activiteit $activiteit Activiteit object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function update(Activiteit $activiteit)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         // Controleer of groep_id bestaat en geef groepnaam terug
         if (! $this->_groepExists($activiteit)) {
             throw new Exception('Niet bestaande groep geselecteerd', 400);
@@ -201,6 +250,9 @@ class Activiteiten
         $prep_stmt = "
             UPDATE ura_activiteiten
             SET
+                datum = ?,
+                begintijd = ?,
+                eindtijd = ?,
                 activiteit = ?,
                 groep_id = ?
             WHERE
@@ -209,7 +261,15 @@ class Activiteiten
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('sii', $activiteit->activiteit, $activiteit->groep_id, $activiteit->id);
+            $stmt->bind_param(
+                'ssssii', 
+                $activiteit->datum, 
+                $activiteit->begintijd, 
+                $activiteit->eindtijd, 
+                $activiteit->activiteit, 
+                $activiteit->groep_id, 
+                $activiteit->id
+                );
             $stmt->execute();
             $stmt->store_result();
 
@@ -227,16 +287,22 @@ class Activiteiten
     }
 
     /**
-     * Delete activiteit
+     * Method delete - Delete activiteit
      *
      * @access public
      * @param int $id
      *            Activiteit id
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
-    public function delete($id)
+    public function delete($id) 
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         if (isset($id)) {
             $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
         }
@@ -269,18 +335,26 @@ class Activiteiten
     }
 
     /**
-     * Kan worden gedelete
+     * Method _canDelete - Kan worden gedelete
      *
      * Controleer of activiteit nog in gebruik is
      *
      * @access private
-     * @param int $id
-     *            Activiteit_id
+     * @param int $id Activiteit_id
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     * @var int $count
+     * @var bool $result
      */
-    private function _canDelete($id)
+    private function _canDelete($id) 
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $count = null;
         $result = false;
+
         $prep_stmt = "SELECT COUNT(*) count
 						FROM
 							ura_uren,
@@ -315,15 +389,22 @@ class Activiteiten
     }
 
     /**
-     * Controleer of groep bestaat
+     * Method _groepExists - Controleer of groep bestaat
      *
      * @access private
      * @param Activiteit $activiteit
      * @return bool Succes vlag
+     * 
+     * @var bool $result
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
-    private function _groepExists($activiteit)
+    private function _groepExists($activiteit) 
     {
+        $prep_stmt = null;
+        $stmt = null;
         $result = false;
+
         $prep_stmt = "
             SELECT
                 groep

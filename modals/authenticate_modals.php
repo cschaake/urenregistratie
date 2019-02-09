@@ -1,8 +1,8 @@
 <?php
 /**
- * Login modals
+ * Modals for authenticate | modals/authenticate_modals.php
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -16,8 +16,18 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version	   1.0.9
+ * @version	   1.2.0
+ * 
+ * @var Authenticate $authenticate
  */
+?>
+
+<?php
+    /**
+     * Modal loginModal
+     *
+     * Modal will be displayed on successfull login.
+     */
 ?>
     <div id="loginModal" class="modal" role="dialog">
         <div class="modal-dialog">
@@ -82,7 +92,7 @@
 
 <?php
     /**
-     * Login Success Modal
+     * Modal loginSuccessModal
      *
      * Modal will be displayed on successfull login.
      */
@@ -105,7 +115,7 @@
 
 <?php
     /**
-     * Account Locked Modal
+     * Model accountLockedModal
      *
      * Modal will be displayed on successfull login.
      */
@@ -129,7 +139,7 @@
 
 <?php
     /**
-     * registerModal
+     * Modal regsiterModal
      *
      * Modal to register a new user
      */
@@ -231,7 +241,7 @@
 
 <?php
     /**
-     * Register Success Modal
+     * Modal registerSuccessModal
      *
      * Displays when logout was succesfull.
      */
@@ -255,7 +265,7 @@
 
 	<?php
     /**
-     * Forgot Password Modal
+     * Model forgotPasswordModal
      *
      * Displays password was lost.
      */
@@ -293,7 +303,7 @@
 
 <?php
     /**
-     * Forgot Password Succes Modal
+     * Model forgotPasswordSuccessModal
      *
      * Displays when password forgot was succesfull.
      */
@@ -318,7 +328,7 @@
 
 <?php
 	/**
-	 * Modals for succesfully logged in users only
+	 * Only loaded when user is authenticated
 	 */
 
 	if(isset($authenticate)) {
@@ -326,7 +336,7 @@
 
 <?php
     /**
-     * Logout Modal
+     * Modal logoutModal
      *
      * Displays the modal to logout.
      */
@@ -353,7 +363,7 @@
 
 <?php
     /**
-     * Logout Success Modal
+     * Modal logoutSuccessModal
      *
      * Displays when logout was succesfull.
      */
@@ -376,7 +386,7 @@
 
 <?php
     /**
-     * ChangePasswordModal
+     * Modal changePasswordModal
      *
      * Displays modal to change password.
      */
@@ -463,7 +473,7 @@
 
 <?php
     /**
-     * changePasswordSucessModal
+     * Modal changePasswordSuccessModal
      *
      * Displays password was changes successfully.
      */
@@ -487,7 +497,7 @@
 
 <?php
     /**
-     * profileModal
+     * Modal profileModal
      *
      * Modal to edit user profile information
      */
@@ -536,7 +546,6 @@
                         <button class="btn btn-default" ng-disabled="profileForm.$invalid" ng-class="{'btn-success': profileForm.$valid}" ng-click="processProfileForm(profile)">Update</button>
                         <button class="btn btn-default" data-dismiss="modal" ng-click="reset()">Annuleer</button>
                     </div>
-                    {{ profile }}
                 </div>
             </form>
         </div>
@@ -545,7 +554,7 @@
 
 <?php
     /**
-     * profileSuccessModal
+     * Modal profileSuccessModal
      *
      * Shown when profile was updated successfully
      */

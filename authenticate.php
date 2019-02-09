@@ -1,10 +1,10 @@
 <?php
 /**
- * Authenticate
+ * Page authenticate | authenticate.php
  *
  * Full functional authentication module
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,18 +15,28 @@
  *
  * @package    authenticate
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
  * @version    1.0.9
+ * 
+ * @var string $action
+ * @var Authenticate $authenticate
+ * @var mysqli $mysqli
+ * @var string $postdata
+ * @var object $request
  */
-include_once 'includes/db_connect.php';
-include_once 'includes/settings.php';
-include_once 'objects/Authenticate_obj.php';
-include_once 'objects/Users_obj.php';
+
+/**
+ * Required files
+ */
+require_once 'includes/db_connect.php';
+require_once 'includes/settings.php';
+require_once 'objects/Authenticate_obj.php';
+require_once 'objects/Users_obj.php';
 
 // Start or restart session
-include_once 'includes/login_functions.php';
+require_once 'includes/login_functions.php';
 sec_session_start ();
 
 if (isset ( $_SERVER ['PATH_INFO'] ) && (strlen ( $_SERVER ['PATH_INFO'] ) > 1)) {
@@ -119,12 +129,18 @@ if ($_SERVER ['REQUEST_METHOD'] == 'POST') {
 }
 
 /**
- * Login
+ * Function doLogin
  *
  * @param object $request
- * @param object $authenticate
+ * @param Authenticate $authenticate
  *
  * @return bool
+ * 
+ * @var string $username
+ * @var string $password
+ * @var string $sessionHash
+ * @var bool $remember
+ * @var string $session
 */
 function doLogin($request, $authenticate)
 {
@@ -175,11 +191,14 @@ function doLogin($request, $authenticate)
 }
 
 /**
- * Logout
+ * Function doLogout
  *
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var string $username
+ * @var string sessionHash
 */
 function doLogout($authenticate)
 {
@@ -207,12 +226,14 @@ function doLogout($authenticate)
 }
 
 /**
- * Request password reset
+ * Function doPasswordReset
  *
  * @param object $request
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var string $email
 */
 function doPasswordReset($request, $authenticate)
 {
@@ -237,12 +258,18 @@ function doPasswordReset($request, $authenticate)
 }
 
 /**
- * Password change
+ * Function doPasswordChange
  *
  * @param object $request
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var string $username
+ * @var string $token
+ * @var string $password
+ * @var string $password1
+ * @var string $password2
 */
 function doPasswordChange($request, $authenticate)
 {
@@ -280,12 +307,18 @@ function doPasswordChange($request, $authenticate)
 }
 
 /**
- * Register new user
+ * Function doRegister
  *
  * @param object $request
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var string $username
+ * @var string $password1
+ * @var string $password2
+ * @var string $firstname
+ * @var string $lastname
  */
 function doRegister($request, $authenticate)
 {
@@ -324,11 +357,15 @@ function doRegister($request, $authenticate)
 }
 
 /**
- * Verify user
+ * Function getVerify
  *
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var string $username
+ * @var string $token
+ * @var string $errormessage
  */
 function getVerify($authenticate)
 {
@@ -352,7 +389,7 @@ function getVerify($authenticate)
 }
 
 /**
- * Cofirm password reset
+ * Function getConfirmReset
  *
  * @return bool
  */
@@ -365,12 +402,14 @@ function getConfirmReset()
 }
 
 /**
- * Get Groups of user
+ * Function getGroups
  *
  * @todo Groups verplaatsen naar groups rest service
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var array $groups
  */
 function getGroups($authenticate)
 {
@@ -393,11 +432,15 @@ function getGroups($authenticate)
 }
 
 /**
- * Unlock user account
+ * Function getUnlock
  *
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var string $errormessage
+ * @var string $username
+ * @var string $token
  */
 function getUnlock($authenticate)
 {
@@ -421,11 +464,20 @@ function getUnlock($authenticate)
 }
 
 /**
+ * Function getSelf
+ * 
  * Get information of current user
  *
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var array $self
+ *      @param string "username"
+ *      @param string "firstname"
+ *      @param string "lastname"
+ *      @param string "email"
+ *      @param string "ipaddres"
  */
 function getSelf($authenticate)
 {
@@ -452,12 +504,16 @@ function getSelf($authenticate)
 }
 
 /**
- * Get all information of users
+ * Function getListUsers
  *
  * @todo Verplaats naar rest users
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var string $request_user
+ * @var Users $user
+ * @var Users $users_obj
  */
 function getListUsers($authenticate)
 {
@@ -532,13 +588,17 @@ function getListUsers($authenticate)
 }
 
 /**
- * Update user information
+ * Function putUser
  *
  * @todo Verplaats naar rest users
  * @param object $request
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var bool $super
+ * @var Users $users_obj
+ * @var User $user_obj
  */
 function putUser($request, $authenticate)
 {
@@ -583,12 +643,15 @@ function putUser($request, $authenticate)
 }
 
 /**
- * Delete user information
+ * Function deleteUser
  *
  * @todo Verplaats naar rest users
  * @param object $authenticate
  *
  * @return bool
+ * 
+ * @var Users $users
+ * @var string $request_user
  */
 function deleteUser($authenticate)
 {

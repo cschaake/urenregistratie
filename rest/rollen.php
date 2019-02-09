@@ -1,10 +1,10 @@
 <?php
 /**
- * Rollen
+ * Service Rollen | rest/rollen.php
  *
  * Rest service voor Rollen
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,21 +15,28 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var Input $input
  */
 
-include_once '../includes/db_connect.php';
-include_once '../includes/settings.php';
-include_once '../objects/Authenticate_obj.php';
-include_once '../objects/Input_obj.php';
+/**
+ * Required files
+ */
+require_once '../includes/db_connect.php';
+require_once '../includes/settings.php';
+require_once '../objects/Authenticate_obj.php';
+require_once '../objects/Input_obj.php';
 
-include_once '../objects/Rollen_obj.php';
+require_once '../objects/Rollen_obj.php';
 
 // Start or restart session
-include_once '../includes/login_functions.php';
+require_once '../includes/login_functions.php';
 sec_session_start();
 
 $authenticate = new Authenticate($mysqli);
@@ -82,18 +89,24 @@ switch ($input->get_method()) {
 }
 
 /**
- * Post rol
+ * Function postRol - Post rol
  *
  * Insert a new record
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param input $input Input object containing all input parameters (sanitized)
  * @return bool Successflag
+ * 
+ * @var string $json
+ * @var Rol $rol_obj
+ * @var Rollen $rollen_obj
  */
 function postRol($input)
 {
 	global $authenticate;
 	global $mysqli;
+	$json = null;
+	$rol_obj = null;
+	$rollen_obj = null;
 
 	$json = $input->get_JSON();
 
@@ -124,16 +137,20 @@ function postRol($input)
 }
 
 /**
- * Get rollen
+ * Function getRollen Get rollen
  *
  * Get all records
  *
+ * @param Input $input
  * @return bool
+ * 
+ * @var Rollen $rollen_obj
  */
 function getRollen($input)
 {
 	global $authenticate;
 	global $mysqli;
+	$rollen_obj = null;
 
 	if ($input->get_pathParams()) {
 	    $rollen_obj = new Rollen($mysqli);
@@ -163,18 +180,20 @@ function getRollen($input)
 }
 
 /**
- * Delete rol
+ * Function deleteRol - Delete rol
  *
  * Delete a record
  *
- * @param object $request
- *
+ * @param Input $input
  * @return bool
+ * 
+ * @var Rollen $rollen_obj
  */
 function deleteRol($input)
 {
 	global $authenticate;
 	global $mysqli;
+	$rollen_obj = null;
 
 	// Only admin or super may execute this method
 	if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {
@@ -211,18 +230,24 @@ function deleteRol($input)
 }
 
 /**
- * Put rol
+ * Function putRol - Put rol
  *
  * Replace a record
  *
- * @param object $record
- *
+ * @param Input $input
  * @return bool
+ * 
+ * @var Rol $rol_obj
+ * @var Rollen $rollen_obj
+ * @var string $json
  */
 function putRol($input)
 {
 	global $authenticate;
 	global $mysqli;
+	$rol_obj = null;
+	$rollen_obj = null;
+	$json = null;
 
 	// Only admin or super may execute this method
 	if ((!is_array($authenticate->group)) || !(in_array('admin',$authenticate->group) || in_array('super',$authenticate->group))) {

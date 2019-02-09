@@ -1,10 +1,10 @@
 <?php
 /**
- * Configuratie pagina
+ * Template configuratiePanel | includes/configuratie_pagina.php
  *
  * Pagina voor Urenregistatie configuratie
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,10 +15,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.7
+ * @version    1.2.0
  */
 
 ?>
@@ -166,7 +166,7 @@
                                 <!-- Header -->
                                 <tr>
                                     <th>
-                                        Rol
+                                        Certificaat
                                     </th>
                                     <th>
                                         Groep
@@ -209,58 +209,7 @@
                 </div>
             </div>
 
-            <div id="activiteitenPanel" class="panel panel-default">
-                <div class="panel-heading">
-                    Activiteiten
-                </div>
-                <div class="panel-body">
-                    <!-- Activiteiten tabel -->
-
-                    <!-- ----------------------------------------------------------
-                        Table
-                        -->
-                    <div class="table-responsive">
-                        <!-- Table list -->
-                        <table class="table table-striped table-bordered">
-                            <thead>
-                                <!-- Table header -->
-                                <!-- Header -->
-                                <tr>
-                                    <th>
-                                        Activiteit
-                                    </th>
-                                    <th>
-                                        Groepen
-                                    </th>
-                                    <th/>
-                                </tr>
-
-                            </thead>
-
-                            <!-- Table body -->
-                            <tbody>
-                                <tr ng-repeat="activiteit in activiteiten">
-                                    <td>{{ activiteit.activiteit }}</td>
-                                    <td>{{ activiteit.groep }}</td>
-                                    <td class="text-right" style="width:7em;">
-                                        <button type="button" style="width:3em;" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleteactiviteit" ng-click="editactiviteit(activiteiten.indexOf(activiteit))"><span class="glyphicon glyphicon glyphicon-trash"></span></button>&nbsp;
-                                        <button type="button" style="width:3em;" class="btn btn-xs btn-default" data-toggle="modal" data-target="#editactiviteit" ng-click="editactiviteit(activiteiten.indexOf(activiteit))"><span class="glyphicon glyphicon glyphicon glyphicon-pencil"></span></button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- ----------------------------------------------------------------------------------
-                        Table controls below table
-                        -->
-                    <div class="row">
-                        <div class="col-sm-12 text-right">
-                            <button class="btn btn-default" data-toggle="modal" data-target="#editactiviteit" ng-click="new()">Nieuw <span class="glyphicon glyphicon-log-in"></span></button><br/>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
 		</div>
 	</div>
 
@@ -433,14 +382,14 @@
 						<input type="hidden" ng-model="certificaten.form.id" value="{{ certificaten.form.id }}"></input> <!-- Hidden field to set record id -->
 						
 						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
-							<label class="control-label col-sm-2" for="rol">Rol</label>
+							<label class="control-label col-sm-2" for="certificaat">Certificaten</label>
 							<div class="col-sm-10">
-								<select id="rol" name="rol" class="form-control" ng-model="certificaten.form.rol_id" ng-options="a.id as a.rol group by a.groep for a in rollen" errorText="Rol is verplicht" required></select>
+								<select id="certificaat" name="certificaat" class="form-control" ng-model="certificaten.form.rol_id" ng-options="a.id as a.rol group by a.groep for a in rollen" errorText="Certificaat is verplicht" required></select>
 							</div>
 						</div>
 						
 						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
-							<label class="control-label col-sm-2" for="rol">Groep</label>
+							<label class="control-label col-sm-2" for="groep">Groep</label>
 							<div class="col-sm-10">
 								<select id="groep" name="groep" class="form-control" ng-model="certificaten.form.groep_id" ng-options="a.id as a.groep for a in groepen" errorText="Groep is verplicht" required></select>
 							</div>
@@ -507,80 +456,6 @@
 		</div>
 	</div>
 
-	<!-- ------------------------------------------------------------------------------------------
-		Modal for new and update activiteit
-	-->
-	<div id="editactiviteit" class="modal" role="dialog">
-		<div class="modal-dialog">
-			<!-- Edit form -->
-			<form class="form-horizontal" role="form" novalidate name="editactiviteitForm">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 ng-show="activiteiten.form.edit" class="modal-title">Regel wijzigen</h4>
-						<h4 ng-hide="activiteiten.form.edit" class="modal-title">Nieuwe regel toevoegen</h4>
-					</div>
-
-					<!-- Form -->
-					<div class="modal-body">
-						<div ng-show="messageActiviteiten" class="alert alert-danger">{{ messageActiviteiten }}</div>
-						<input type="hidden" ng-model="activiteiten.form.edit" value="{{ activiteiten.form.edit }}"></input> <!-- Hidden field to set the edit variable -->
-						<input type="hidden" ng-model="activiteiten.form.id" value="{{ activiteiten.form.id }}"></input> <!-- Hidden field to set record id -->
-						
-						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
-							<label class="control-label col-sm-2" for="activiteit">Activiteit</label>
-							<div class="col-sm-10">
-								<input
-									id="activiteit"
-									name="activiteit"
-									type="text"
-									ng-model="activiteiten.form.activiteit"
-									errorText="Activiteit is verplicht"
-									class="form-control"
-									required/>
-							</div>
-						</div>
-						
-						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
-							<label class="control-label col-sm-2" for="rol">Groep</label>
-							<div class="col-sm-10">
-								<select id="groep" name="groep" class="form-control" ng-model="activiteiten.form.groep_id" ng-options="a.id as a.groep for a in groepen" errorText="Groep is verplicht" required></select>
-							</div>
-						</div>
-						
-						<br/>
-
-						<button class="btn btn-default" ng-disabled="editactiviteitForm.$invalid" ng-class="{'btn-success': editactiviteitForm.$valid}" ng-click="insertactiviteit(activiteiten.form.index)">Update</button>
-						<button class="btn btn-default" ng-click="reset()">Reset</button>
-						<button class="btn btn-default" data-dismiss="modal" ng-click="reset()">Annuleer</button>
-					</div>
-				</div>
-			</form>
-		</div>
-	</div>
-
-	<!-- ------------------------------------------------------------------------------------------
-		Modal delete activiteit confirmation
-	-->
-	<div id="deleteactiviteit" class="modal" role="dialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Regel verwijderen</h4>
-				</div>
-				<div class="modal-body">
-					<div ng-show="messageActiviteiten" class="alert alert-danger">{{ messageActiviteiten }}</div>
-					<p>Activiteit record voor {{ activiteiten.form.activiteit }} wordt verwijderd.<br/>
-					Weet u het zeker?</p><br/>
-
-					<button class="btn btn-danger" ng-click="deleteactiviteit(activiteiten.form.index)">Delete</button>
-					<button class="btn btn-default" data-dismiss="modal" ng-click="reset()">Cancel</button>
-				</div>
-			</div>
-		</div>
-	</div>
-	
 	<!-- ------------------------------------------------------------------------------------------
 		Modal for help
 	-->

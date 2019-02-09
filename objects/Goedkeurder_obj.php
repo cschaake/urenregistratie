@@ -1,11 +1,11 @@
 <?php
 
 /**
- * goedkeurder Object
+ * Class Goedkeurder | objects/Goedkeurder_obj.php
  *
  * Object voor een goedkeurder
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -16,14 +16,14 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.6
- * @version    1.0.9
+ * @version    1.2.0
  */
 
 /**
- * Goedkeurder object
+ * Class Goedkeurder - Goedkeurder object
  *
  * @package Urenverantwoording
  * @author Christiaan Schaake <chris@schaake.nu>
@@ -77,14 +77,13 @@ class Goedkeurder
     public $rollen;
 
     /**
-     * Creeer activtiteit object
+     * Method constructor - Creeer activtiteit object
      *
-     * @param string $username
-     *            Username
-     * @param array $groepen
-     *            Array van groep_id's
-     * @param array $rollen
-     *            Array van rol_id's
+     * @param string $username Username
+     * @param string $firstname Voornaam
+     * @param string $lastname Achternaam
+     * @param array $groepen Array van groep_id's
+     * @param array $rollen Array van rol_id's
      *
      * @return bool Succes vlag
      */

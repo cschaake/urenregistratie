@@ -1,10 +1,10 @@
 <?php
 /**
- * Authenticate
+ * Script login functies | includes/login_functions.php
  *
  * Full functional authentication module
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,10 +15,10 @@
  *
  * @package    authenticate
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.8
+ * @version    1.2.0
  */
 include_once 'settings.php';
 
@@ -28,11 +28,16 @@ if (!isset($_SERVER['HTTPS']) || $_SERVER['HTTPS'] != 'on') {
 }
 
 /**
- * Start or renew PHP session
+ * Function sec_session_start
  *
  * Starts or renews PHP session, set new session-id and extent time for cookie
  *
  * @return bool success
+ * 
+ * @var string $session_name
+ * @var string $secure
+ * @var bool $httponly
+ * @var array $cookieParams
  */
 function sec_session_start() 
 {
@@ -63,11 +68,8 @@ function sec_session_start()
     
     // Sets the session name to the one set above.
     session_name($session_name);
+    session_set_cookie_params('2592000');
     session_start();
-    if (isset($_SESSION['remember'])) {
-		 // Set lifetime to 30 days
-        session_set_cookie_params('2592000');
-    }
     
 	// regenerated the session, delete the old one. 
     session_regenerate_id(true);    
@@ -76,11 +78,17 @@ function sec_session_start()
 }
 
 /**
- * Check authenticate
+ * Function checkAuthenticate
  *
  * Check if the user is logged in
- *
+ * 
+ * @param mysqli $mysqli
  * @return Authenticate $authenticate object
+ * 
+ * @var string $username
+ * @var string $sessionHash
+ * @var string $remember
+ * @var Authenticate $authenticate
  */
 function checkAuthenticate($mysqli) 
 {

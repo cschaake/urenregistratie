@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Rapportage Object
+ * Class Rapport | objects/Rapportage_obj
  *
  * Object voor Rapportages
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -16,22 +16,17 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.1.1
+ * @version    1.2.0
  */
 
 /**
- * Rapport object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class Rapport
  *
  * @since File available since Release 1.0.0
- * @version 1.0.9
+ * @version 1.2.0
  */
 class Rapport
 {
@@ -69,7 +64,7 @@ class Rapport
     private $mysqli;
 
     /**
-     * Create the uren object
+     * Method constructor - Create the uren object
      *
      * Creates the uren object that will contain all uren stuff
      *
@@ -89,16 +84,35 @@ class Rapport
     }
 
     /**
-     * Lees certificaten statistiek
+     * Method certificaten - Lees certificaten statistiek
      *
      * @access public
      * @param string $username
      *            optional Username
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var int $id
+     * @var string $voornaam
+     * @var string $achternaam
+     * @var string $laatstelogin
+     * @var string $gecertificeerd
+     * @var string $verloopt
+     * @var int $rol_id
+     * @var string $rol
+     * @var string $looptijd
+     * @var string $uren
+     * @var string $ingevoerd
+     * @var string $goedgekeurd
+     * @var string $afgekeurd
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function certificaten($username = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         if (isset($username)) {
             $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         }
@@ -189,16 +203,24 @@ class Rapport
     }
 
     /**
-     * Lees goedtekeuren statistiek
+     * Method goedtekeuren - Lees goedtekeuren statistiek
      *
      * @access public
-     * @param string $username
-     *            optional Username
+     * @param string $username optional Username
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var int $groep_id
+     * @var string $totaaluren
+     * @var string $groep
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function goedtekeuren($username)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
 
         include_once ('RapportageGoedTeKeuren_obj.php');
@@ -262,11 +284,10 @@ class Rapport
     }
 
     /**
-     * Lees gebruikers uren
+     * Method gebruikersUren - Lees gebruikers uren
      *
      * @access public
-     * @param string $username
-     *            optional Username
+     * @param string $username optional Username
      * @throws Exception
      * @return bool Succes vlag
      */

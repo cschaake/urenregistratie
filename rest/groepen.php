@@ -1,10 +1,10 @@
 <?php
 /**
- * Groepen
+ * Service groepen | rest/groepen.php
  *
  * Rest service voor Groepen
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -18,18 +18,25 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var Input @input
  */
 
-include_once '../includes/db_connect.php';
-include_once '../includes/settings.php';
-include_once '../objects/Authenticate_obj.php';
-include_once '../objects/Input_obj.php';
+/**
+ * Required files
+ */
+require_once '../includes/db_connect.php';
+require_once '../includes/settings.php';
+require_once '../objects/Authenticate_obj.php';
+require_once '../objects/Input_obj.php';
 
-include_once '../objects/Groepen_obj.php';
+require_once '../objects/Groepen_obj.php';
 
 // Start or restart session
-include_once '../includes/login_functions.php';
+require_once '../includes/login_functions.php';
 sec_session_start();
 
 $authenticate = new Authenticate($mysqli);
@@ -82,13 +89,16 @@ switch ($input->get_method()) {
 }
 
 /**
- * Post groep
+ * Function postGroep
  *
  * Insert a new record
  *
- * @param object $request
+ * @param Input $input
  *
  * @return bool
+ * @var string $json
+ * @var Groepen $groepen_obj
+ * @var Groep $groep_obj
  */
 function postGroep($input)
 {
@@ -128,11 +138,13 @@ function postGroep($input)
 }
 
 /**
- * Get Groepen
+ * Function getGroepen
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param Input $input Input object containing all input parameters (sanitized)
  * @return bool Successflag
+ * 
+ * @var string $json
+ * @var Groepen $groepen_obj
  */
 function getGroepen(input $input = null)
 {
@@ -173,13 +185,16 @@ function getGroepen(input $input = null)
 }
 
 /**
- * Delete groep
+ * Function deleteGroep
  *
  * Delete a record
  *
- * @param object $request
+ * @param Input $input
  *
  * @return bool
+ * 
+ * @var string $username
+ * @var Groepen $groepen_obj
  */
 function deleteGroep($input)
 {
@@ -227,13 +242,17 @@ function deleteGroep($input)
 }
 
 /**
- * Put groep
+ * Function putGroep
  *
  * Replace a record
  *
- * @param object $request
+ * @param Input $input
  *
  * @return bool
+ * 
+ * @var string $json
+ * @var Groepen $groepen_obj
+ * @var Groep $groep_obj
  */
 function putGroep($input)
 {

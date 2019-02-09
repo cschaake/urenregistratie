@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Certificaten Object
+ * Class Certificaat | objects/Certificaat_obj.php
  *
  * Object voor Certificaten tabel
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -16,22 +16,17 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.0.9
+ * @version    1.2.0
  */
 
 /**
- * Certificaat object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class Certificaat
  *
  * @since Object available since Release 1.0.7
- * @version 1.0.9
+ * @version 1.2.0
  */
 class Certificaat
 {
@@ -93,7 +88,7 @@ class Certificaat
     public $groep;
 
     /**
-     * Creeer certificaat object
+     * Method constructor - Creeer certificaat object
      *
      * @access public
      * @param int $id

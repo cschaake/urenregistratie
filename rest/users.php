@@ -1,10 +1,10 @@
 <?php
 /**
- * Users
+ * Service users | rest/users.php
  *
  * Rest service voor Users
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,22 +15,29 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2015 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var input $input
  */
 
-include_once '../includes/db_connect.php';
-include_once '../includes/settings.php';
-include_once '../objects/Authenticate_obj.php';
-include_once '../objects/Input_obj.php';
+/**
+ * Required files
+ */
+require_once '../includes/db_connect.php';
+require_once '../includes/settings.php';
+require_once '../objects/Authenticate_obj.php';
+require_once '../objects/Input_obj.php';
 
-include_once '../objects/Users_obj.php';
-include_once '../objects/Boekers_obj.php';
+require_once '../objects/Users_obj.php';
+require_once '../objects/Boekers_obj.php';
 
 // Start or restart session
-include_once '../includes/login_functions.php';
+require_once '../includes/login_functions.php';
 sec_session_start();
 
 $authenticate = new Authenticate($mysqli);
@@ -78,11 +85,15 @@ switch ($input->get_method()) {
 }
 
 /**
- * Post User
+ * Function postUser
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param Input $input Input object containing all input parameters (sanitized)
  * @return bool Successflag
+ * 
+ * @var string $json
+ * @var User $boeker_obj
+ * @var Rol $rol_obj
+ * @var Boekers $boekers_obj
  */
 function postUser($input)
 {
@@ -138,11 +149,14 @@ function postUser($input)
 }
 
 /**
- * Get User
+ * Function getUsers
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param Input $input Input object containing all input parameters (sanitized)
  * @return bool Successflag
+ * 
+ * @var string $username
+ * @var Boekers $users
+ * @var Users $users_obj
  */
 function getUsers($input)
 {
@@ -257,11 +271,13 @@ function getUsers($input)
 }
 
 /**
- * Delete User
+ * Function deleteUser
  *
- * @param input $input
- *            Input object containing all input parameters (sanitized)
+ * @param Input $input Input object containing all input parameters (sanitized)
  * @return bool Successflag
+ * 
+ * @var string $username
+ * @var Boekers $users_obj
  */
 function deleteUser($input)
 {

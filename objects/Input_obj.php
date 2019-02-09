@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Input Object
+ * Class Input | objects/Input_obj.php
  *
  * Checks the request input. PATH_INFO, POST and GET parameters are handled. And JSON and XML body content is processed. All parameters are sanitized.
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -20,24 +20,17 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
  */
 
 /**
- * Input object
- *
- * @package Tools
- * @subpackage Input
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class Input
  *
  * @since Class available since Release 1.0.0
- * @version 1.0.9
+ * @version 1.2.0
  */
 class Input
 {
-
     /**
      * HTTP method
      *
@@ -111,13 +104,17 @@ class Input
     private $JSON;
 
     /**
-     * Create the input object
+     * Method constructor - Create the input object
      *
      * Creates and processes the client input and fills the object
      *
      * @access public
      * @throws Exception if input could not be converted into a DOM Document or JSON object
-     * @return bool Success flag
+     * 
+     * @var string $split
+     * @var string $pathInfo
+     * @var string $value
+     * @var string $param
      */
     public function __construct()
     {
@@ -186,7 +183,7 @@ class Input
     }
 
     /**
-     * Returns the HTTP method of the request
+     * Method get_method - Returns the HTTP method of the request
      *
      * @access public
      * @return string The method type
@@ -197,7 +194,7 @@ class Input
     }
 
     /**
-     * Returns the path called by the client
+     * Method get_path - Returns the path called by the client
      *
      * @access public
      * @return string URL Path
@@ -208,7 +205,7 @@ class Input
     }
 
     /**
-     * Returns the script called by the client, without the PATH_INFO extensions
+     * Method get_script - Returns the script called by the client, without the PATH_INFO extensions
      *
      * @access public
      * @return string Scriptname
@@ -219,7 +216,7 @@ class Input
     }
 
     /**
-     * Returns Content Type of the request
+     * Method get_contentType - Returns Content Type of the request
      *
      * @access public
      * @return string Content Type
@@ -230,7 +227,7 @@ class Input
     }
 
     /**
-     * Returns PATH_INFO parameters and values
+     * Method get_pathParams - Returns PATH_INFO parameters and values
      *
      * Contains an associated array where the array keys are the names of the parameters. If values are provided,
      * the values are inserted there respective the array keys.
@@ -244,7 +241,7 @@ class Input
     }
 
     /**
-     * Returns all GET parameters and values
+     * Method get_getParams - Returns all GET parameters and values
      *
      * Contains an associated array where the array keys are the names of the parameters. If values are provided,
      * the values are inserted there respective the array keys.
@@ -258,7 +255,7 @@ class Input
     }
 
     /**
-     * Returns all POST parameters and values
+     * Method get_postParmas - Returns all POST parameters and values
      *
      * Contains an associated array where the array keys are the names of the parameters. If values are provided,
      * the values are inserted there respective the array keys.
@@ -277,7 +274,7 @@ class Input
     }
 
     /**
-     * Returns the XML in the body of the request
+     * Method get_DOM - Returns the XML in the body of the request
      *
      * The XML is already converted into a DOM Document object.
      *
@@ -294,7 +291,7 @@ class Input
     }
 
     /**
-     * Returns the JSON in the body of the request
+     * Method get_JSON - Returns the JSON in the body of the request
      *
      * The JSON is already converted into an array or standard class
      *
@@ -311,7 +308,7 @@ class Input
     }
 
     /**
-     * Checks if Path Params are provided
+     * Method hasPathParams - Checks if Path Params are provided
      *
      * pathParams should contain an array of path parameters if any are provided.
      *

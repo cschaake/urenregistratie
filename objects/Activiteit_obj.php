@@ -1,11 +1,11 @@
 <?php
-
 /**
- * Activiteit Object
+ * Class Activiteit | objects/Activiteit_obj.php
  *
- * Object voor Activiteit
+ * Bevat object Activiteit. Op een activiteit kunnen uren geboekt worden.
+ * Een activiteit heeft een datum en begin- en eindtijd.
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -16,28 +16,25 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.6
- * @version    1.0.7
+ * @version    1.2.0
  */
 
 /**
- * Activiteit object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class Activiteit - Enkele activiteit
+ * 
+ * Bevat een activiteit welke gepersisteerd is of wordt in de database.
  *
  * @since Object available since Release 1.0.0
- * @version 1.0.7
+ * @version 1.2.0
  */
 class Activiteit
 {
 
     /**
-     * id van de activiteit verplicht numeriek 5 lang
+     * id van de activiteit verplicht numeriek 5 lang.
      *
      * @var int Id van de activiteit
      * @access public
@@ -45,7 +42,31 @@ class Activiteit
     public $id;
 
     /**
-     * Naam van de activiteit verplicht alfanumeriek 30 lang
+     * Datum van de activiteit.
+     *
+     * @var string Datum van activiteit
+     * @access public
+     */
+    public $datum;
+    
+    /**
+     * Begintijd van de activiteit.
+     *
+     * @var string Begintijd van activiteit
+     * @access public
+     */
+    public $begintijd;
+    
+    /**
+     * Eindtijd van activiteit.
+     *
+     * @var string Eindtijd van activiteit
+     * @access public
+     */
+    public $eindtijd;
+    
+    /**
+     * Naam van de activiteit verplicht alfanumeriek 30 lang.
      *
      * @var string Naam van de activiteit
      * @access public
@@ -53,7 +74,7 @@ class Activiteit
     public $activiteit;
 
     /**
-     * Group_id verplicht numeriek 5 lang (link naar ura_groepen tabel)
+     * Group_id verplicht numeriek 5 lang (link naar ura_groepen tabel).
      *
      * @var int Groep id
      * @access public
@@ -61,7 +82,7 @@ class Activiteit
     public $groep_id;
 
     /**
-     * Naam van de groep (uit ura_groepen tabel)
+     * Naam van de groep (uit ura_groepen tabel).
      *
      * @var string Name van de groep
      * @access public
@@ -69,7 +90,7 @@ class Activiteit
     public $groep;
 
     /**
-     * Opmerking verplicht
+     * Opmerking verplicht.
      *
      * @var bool Configuratie parameter of opmerking verplicht is bij boeken van deze activiteit
      * @access public
@@ -77,26 +98,30 @@ class Activiteit
     public $opmerkingVerplicht;
 
     /**
-     * Creeer activtiteit object
+     * Method constructor - Creeer activtiteit object.
      *
-     * @param int $id
-     *            Id van de activiteit
-     * @param string $activiteit
-     *            naam van de activiteit
-     * @param int $group_id
-     *            Id van de groep
-     * @param string $group
-     *            Optioneel naam van de groep
+     * @param int $id Id van de activiteit
+     * @param string $datum Datum waarop activiteit plaats vindt
+     * @param string $begintijd Begin tijd van activiteit (dit is exclusief voorbereidingstijd)
+     * @param string $eindtijd Eind tijd van acitviteit (dit is exlcusief opruimtijd)
+     * @param string $activiteit naam van de activiteit
+     * @param int $groep_id Id van de groep
+     * @param string $groep Optioneel naam van de groep
+     * @param bool $opmerkingVerplicht Opmerking verplicht
      *
      * @return bool Succes vlag
      */
-    public function __construct($id, $activiteit, $groep_id, $groep = null, $opmerkingVerplicht = null)
+    public function __construct($id, $datum, $begintijd, $eindtijd, $activiteit, $groep_id, $groep = null, $opmerkingVerplicht = null)
     {
+        // Sanitize input
         if ($id) {
             $this->id = (int) filter_var($id, FILTER_SANITIZE_STRING);
         } else {
             $this->id = null;
         }
+        $this->datum = date('Y-m-d', strtotime($datum));
+        $this->begintijd = date('H:i', strtotime($begintijd));
+        $this->eindtijd = date('H:i', strtotime($eindtijd));
         $this->activiteit = filter_var($activiteit, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         $this->groep_id = (int) filter_var($groep_id, FILTER_SANITIZE_STRING);
         $this->groep = filter_var($groep, FILTER_SANITIZE_STRING, FILTER_CUSTOM);

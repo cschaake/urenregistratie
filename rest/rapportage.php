@@ -1,10 +1,10 @@
 <?php
 /**
- * Rapportage
+ * Service rapportage | rest/rapportage.php
  *
  * Rest service voor diverse rapportages
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,21 +15,28 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
+ * 
+ * @var mysqli $mysqli
+ * @var Authenticate $authenticate
+ * @var input $input
  */
 
-include_once '../includes/db_connect.php';
-include_once '../includes/settings.php';
-include_once '../objects/Authenticate_obj.php';
-include_once '../objects/Input_obj.php';
+/**
+ * Required files
+ */
+require_once '../includes/db_connect.php';
+require_once '../includes/settings.php';
+require_once '../objects/Authenticate_obj.php';
+require_once '../objects/Input_obj.php';
 
-include_once '../objects/Rapportage_obj.php';
+require_once '../objects/Rapportage_obj.php';
 
 // Start or restart session
-include_once '../includes/login_functions.php';
+require_once '../includes/login_functions.php';
 sec_session_start();
 
 $authenticate = new Authenticate($mysqli);
@@ -56,11 +63,11 @@ if ($input->get_method() == 'GET') {
 }
 
 /**
- * Get Rapport
+ * Function getRapport
  *
  * Read rapport
  *
- * @param 	input 	$input	Input object containing all input parameters (sanitized)
+ * @param 	Input 	$input	Input object containing all input parameters (sanitized)
  *
  * @return 	bool	Successflag
  */
@@ -101,11 +108,13 @@ function getRapport(input $input)
 }
 
 /**
- * Get Certificaten
+ * Function getCertificaten
  *
- * @param 	input 	$input	Input object containing all input parameters (sanitized)
+ * @param 	string $username
  *
  * @return 	bool	Successflag
+ * 
+ * @var Rapport $rapport_obj
  */
 function getCertificaten($username)
 {
@@ -132,11 +141,13 @@ function getCertificaten($username)
 }
 
 /**
- * Get Goedtekeuren
+ * Function getGoedtekeuren
  *
- * @param 	input 	$input	Input object containing all input parameters (sanitized)
+ * @param 	string $username
  *
  * @return 	bool	Successflag
+ * 
+ * @var Rapport $rapport_obj
  */
 function getGoedtekeuren($username)
 {
@@ -163,11 +174,13 @@ function getGoedtekeuren($username)
 }
 
 /**
- * Get Rapport
+ * Function getHuidigeUren
  *
- * @param 	input 	$input	Input object containing all input parameters (sanitized)
+ * @param 	string $username
  *
  * @return 	bool	Successflag
+ * 
+ * @var Rapport $rapport_obj
  */
 function getHuidigeUren($username = null)
 {

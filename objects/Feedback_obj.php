@@ -1,10 +1,10 @@
 <?php
 /**
- * Feedback Object
+ * Class Feedback | objects/Feedback_obj
  *
  * Object voor Feedback tabel
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,15 +15,19 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.8
- * @version    1.0.9
+ * @version    1.2.0
+ */
+
+/**
+ * Required files
  */
 require_once ('FeedbackItem_obj.php');
 
 /**
- * Feedback object
+ * Class Feedback
  *
  * @package Urenverantwoording
  * @author Christiaan Schaake <chris@schaake.nu>
@@ -53,7 +57,7 @@ class Feedback
     private $mysqli;
 
     /**
-     * Creeer feedback object
+     * Method constructor - Creeer feedback object
      *
      * @access public
      * @param mysqli $mysqli
@@ -71,15 +75,21 @@ class Feedback
     }
 
     /**
-     * Creeer feedback
+     * Method create - Creeer feedback
      *
      * @access public
      * @param FeedbackItem $feedbackItem_obj
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function create(FeedbackItem $feedbackItem_obj)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             INSERT
 				feedback

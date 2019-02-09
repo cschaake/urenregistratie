@@ -1,11 +1,11 @@
 <?php
 
 /**
- * FeedbackItem Object
+ * Class FeedbackItem | objects/FeedbackItem_obj.php
  *
  * Object voor een uur record
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -14,23 +14,15 @@
  * obtain it through the web, please send a note to license@php.net so
  * we can mail you a copy immediately.
  *
- * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.8
- * @version    1.1.1
+ * @version    1.2.0
  */
 
 /**
- * FeedbackItem object
- *
- * Single FeedbackItem
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Class FeedbackItem - Enkel feedback record
  *
  * @since File available since Release 1.0.8
  * @version 1.0.9
@@ -95,17 +87,15 @@ class FeedbackItem
     public $status;
 
     /**
-     * Creeer uren object
+     * Method constructor - Creeer uren object
      *
      * @param string $username
      * @param datetime $datetime
      * @param int $star
      * @param string $subject
      * @param string $comment
-     * @param
-     *            int optional $status
-     * @param
-     *            int optional $id
+     * @param int optional $status
+     * @param int optional $id
      *
      * @throws Exception
      *

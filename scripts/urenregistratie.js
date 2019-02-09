@@ -41,6 +41,42 @@ angular.module('myApp')
 	}
 })
 
+.directive('checkBegintijd', function() {
+	return {
+		require: 'ngModel',
+		scope: true,
+		link: function(scope, element, attr, mCtrl) {
+			function valideBegintijd(begintijd) {
+				if ((begintijd < scope.begintijd) || (begintijd >= scope.eindtijd) || (begintijd >= scope.form.eind)) {
+					mCtrl.$setValidity('charE', false);
+				} else {
+					mCtrl.$setValidity('charE', true);
+				}
+				return begintijd;
+			}
+			mCtrl.$parsers.push(valideBegintijd);
+		}
+	}
+})
+
+.directive('checkEindtijd', function() {
+	return {
+		require: 'ngModel',
+		scope: true,
+		link: function(scope, element, attr, mCtrl) {
+			function valideEindtijd(eindtijd) {
+				if ((eindtijd > scope.eindtijd) || (eindtijd <= scope.begintijd) || (eindtijd <= scope.form.start)) {
+					mCtrl.$setValidity('charE', false);
+				} else {
+					mCtrl.$setValidity('charE', true);
+				}
+				return eindtijd;
+			}
+			mCtrl.$parsers.push(valideEindtijd);
+		}
+	}
+})
+
 .controller('gebuikersCtrl',function($scope,$filter,$http) {
 
 	// ------------------------------------------------------------
@@ -62,6 +98,10 @@ angular.module('myApp')
 	$scope.startItem = -1; // Set start item to first
 	$scope.totalItems = 0; // Get initial total records
 	$scope.totalRecords = 0; // Get total unfiltered records
+	
+	// @todo Deze parameters uit configuratie halen
+	$scope.configuratieExtraBeginUren = 0.5;
+	$scope.configuratieExtraEindUren = 0.5;
 	
 	$scope.spinner = false;
 	
@@ -120,14 +160,8 @@ angular.module('myApp')
 				if ($scope.uren.length > 0) {
 					$scope.startItem = 0;
 				}
-				$scope.totalItems = $scope.uren.length; // Get
-									// initial
-									// total
-									// records
-				$scope.totalRecords = $scope.uren.length; // Get
-									    // total
-									    // unfiltered
-									    // records
+				$scope.totalItems = $scope.uren.length; 
+				$scope.totalRecords = $scope.uren.length;
 				$scope.spinner = false;
 			}
 		}, function(response) {
@@ -166,14 +200,8 @@ angular.module('myApp')
 						response.data.uren[0].datum = new Date(response.data.uren[0].datum);
 						$scope.uren[index] = response.data.uren[0];
 						
-						$scope.totalItems = $scope.uren.length; // Get
-											// initial
-											// total
-											// records
-						$scope.totalRecords = $scope.uren.length; // Get
-											    // total
-											    // unfiltered
-											    // records
+						$scope.totalItems = $scope.uren.length; 
+						$scope.totalRecords = $scope.uren.length; 
 						
 						$scope.closeEditModal();
 					}
@@ -196,14 +224,8 @@ angular.module('myApp')
 						response.data.uren[0].datum = new Date(response.data.uren[0].datum);
 						$scope.uren.push(response.data.uren[0]);
 
-						$scope.totalItems = $scope.uren.length; // Get
-											// initial
-											// total
-											// records
-						$scope.totalRecords = $scope.uren.length; // Get
-											    // total
-											    // unfiltered
-											    // records
+						$scope.totalItems = $scope.uren.length; 
+						$scope.totalRecords = $scope.uren.length; 
 						
 						$scope.closeEditModal();
 					}
@@ -242,18 +264,11 @@ angular.module('myApp')
 				$scope.spinner = false;
 			} else {
 				$scope.uren.splice(index,1);
-				$scope.totalItems = $scope.uren.length; // Get
-									// initial
-									// total
-									// records
-				$scope.totalRecords = $scope.uren.length; // Get
-									    // total
-									    // unfiltered
-									    // records
+				$scope.totalItems = $scope.uren.length; 
+				$scope.totalRecords = $scope.uren.length; 
 				$scope.form = null;
 				$scope.original = null;
-				$('#deleterecord').modal('hide'); // Close the
-								    // modal
+				$('#deleterecord').modal('hide'); // Close the modal
 				$scope.spinner = false;
 			}
 		}, function(response) {
@@ -269,33 +284,19 @@ angular.module('myApp')
 	$scope.new = function() {
 		$scope.form = {}; // Destroy the current form, if any
 		$scope.form.username = $scope.self.username;
-		$scope.original = angular.copy($scope.form); // Copy the
-								// current form
-								// to the
-								// temporary
-								// original
-								// object
+		$scope.form.start = '';
+		$scope.form.eind = '';
+		$scope.original = angular.copy($scope.form); 
 		
 		$scope.startItem = ($scope.numberOfPages() - 1) * $scope.itemsPerPage
 	}
 	
 	// Function to fill the form with the record to be editted
 	$scope.edit = function(index) {
-		$scope.form = angular.copy($scope.uren[index]); // Copy the
-								// object row to
-								// the temporary
-								// form object
-		$scope.form.index = index; // Store the index of the original
-					    // record
-		$scope.form.edit = true; // Set the edit variable to true,
-					    // needed in the $scope.insert
-					    // function
-		$scope.original = angular.copy($scope.form); // Copy the
-								// current form
-								// to the
-								// temporary
-								// original
-								// object
+		$scope.form = angular.copy($scope.uren[index]); 
+		$scope.form.index = index; // Store the index of the original record
+		$scope.form.edit = true; // Set the edit variable to true, needed in the $scope.insert function
+		$scope.original = angular.copy($scope.form); // Copy the current form to the temporary original object
 	}
 	
 	// Function to reset the form to its original state
@@ -397,6 +398,81 @@ angular.module('myApp')
 			}
 		}
 		return null;
+	}
+	
+	
+	/**
+	 * Filter activiteiten op geselecteerde datum
+	 * 
+	 * Watch de variabele form.datum. Wanneer deze wijzigigd wordt urenActiviteitenFiltered aangepast
+	 * naar entries welke alleen de geselecteerde datum hebben in urenActiviteiten.
+	 * 
+	 * @param date newDatum Geselecteerde datum in veld
+	 */
+	$scope.$watch("form.datum", function(newDatum) {
+		// Add 3 hours to compensate for timezone
+		if (typeof newDatum != "undefined") {
+			newDatum.setHours(3);
+			newDatum = newDatum.toISOString().substring(0,10);
+			$scope.urenActiviteitenFiltered = $scope.urenActiviteiten.filter(function(urenActiviteit) {
+				return urenActiviteit.datum == newDatum;
+			});
+			
+			// Set default times
+		}
+	});
+	
+	/**
+	 * Haal de juiste begin en eindtijden op
+	 * 
+	 * @param int newId id van de activiteit
+	 */
+	$scope.$watch("form.activiteit_id", function(newId) {
+		if (typeof newId != "undefined") {
+			var activiteit = $scope.urenActiviteiten.filter(function(urenActiviteit) { 
+				return urenActiviteit.id == newId; 
+			});
+			// Set default field values
+			$scope.form.start = activiteit[0].begintijd;
+			$scope.form.eind = activiteit[0].eindtijd;
+	
+			// Set borders for field values
+			$scope.begintijd = activiteit[0].begintijd;
+			$scope.eindtijd = activiteit[0].eindtijd;
+		}
+	});
+	
+	/**
+	 * Bereken verschil tussen 2 tijden.
+	 * De extra parameter berekend inclusief begin en eindtijd
+	 * 
+	 * @param string first Eindtijd
+	 * @param string second Begintijd
+	 * @param bool extra Wanneer true, bereken ook de extra begin- en eindtijd uren
+	 */
+	$scope.calculateTime = function(first, second, extra) {
+		
+		if ($scope.form != null) {
+			var firstTime = new Date("01/01/1970 " + first);
+			var secondTime = new Date("01/01/1970 " + second);
+			
+			var difference = firstTime - secondTime;
+			var hourDiff = Math.round((difference / 1000 / 60 / 60) * 100) / 100;
+			if (($scope.begintijd != null) && (extra == true)) {
+				if ($scope.form.start == $scope.begintijd) {
+					hourDiff = hourDiff + $scope.configuratieExtraBeginUren;
+				}
+				if ($scope.form.eind == $scope.eindtijd) {
+					hourDiff = hourDiff + $scope.configuratieExtraEindUren;
+				}
+			}
+			
+			if (isNaN(hourDiff)) {
+				hourDiff = 0;
+			}
+		}
+		
+		return hourDiff;
 	}
 	
 	// First load own data, refresh when load is complete

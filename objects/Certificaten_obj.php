@@ -4,7 +4,7 @@
  *
  * Object voor Certificaten tabel
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,20 +15,19 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
  */
-include_once ('Certificaat_obj.php');
 
 /**
- * Certificaten object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Required files
+ */
+require_once ('Certificaat_obj.php');
+
+/**
+ * Method Certificaten
  *
  * @since Class available since Release 1.0.0
  * @version 1.0.9
@@ -53,7 +52,7 @@ class Certificaten
     private $mysqli;
 
     /**
-     * Creeer certificaten object
+     * Method constructor - Creeer certificaten object
      *
      * @access public
      * @param mysqli $mysqli
@@ -71,16 +70,21 @@ class Certificaten
     }
 
     /**
-     * Creeer certificaat
+     * Method create - Creeer certificaat
      *
      * @access public
-     * @param Certificaat $certificaat
-     *            Certificaat object
+     * @param Certificaat $record Certificaat object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function create(Certificaat $record)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             INSERT
 				ura_certificering
@@ -113,16 +117,34 @@ class Certificaten
     }
 
     /**
-     * Lees certificaat of certificaten
+     * Method read - Lees certificaat of certificaten
      *
      * @access public
      * @param int $id
      *            optional certificaat id
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var int $rol_id
+     * @var string $rol
+     * @var string $looptijd
+     * @var string $uren
+     * @var int $groep_id
+     * @var string $groep
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function read($id = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $rol_id = null;
+        $rol = null;
+        $looptijd = null;
+        $uren = null;
+        $groep_id = null;
+        $groep = null;
+        
         if (isset($id)) {
             $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
         }
@@ -179,16 +201,21 @@ class Certificaten
     }
 
     /**
-     * Update certificaat
+     * Method update - Update certificaat
      *
      * @access public
-     * @param Certificaat $certificaat
-     *            certificaat object
+     * @param Certificaat $record certificaat object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function update(Certificaat $record)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             UPDATE
 				ura_certificering
@@ -221,16 +248,23 @@ class Certificaten
     }
 
     /**
-     * Delete certificaat
+     * Methode delete - Delete certificaat
      *
      * @access public
-     * @param int $id
-     *            certificaat id
+     * @param int $id certificaat id
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     * @var bool $result
      */
     public function delete($id)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $result = null;
+        
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
 
         if (! $this->_canDelete($id)) {
@@ -260,13 +294,12 @@ class Certificaten
     }
 
     /**
-     * Kan worden gedelete
+     * Method _canDelete - Kan worden gedelete
      *
      * Controleer of certificaat nog in gebruik is
      *
      * @access private
-     * @param int $id
-     *            Certificaat_id
+     * @param int $id Certificaat_id
      * @return bool Succes vlag
      */
     private function _canDelete($id)

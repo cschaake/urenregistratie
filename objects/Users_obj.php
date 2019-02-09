@@ -1,10 +1,10 @@
 <?php
 /**
- * users Object
+ * Class Users | objects/Users_obj.php
  *
  * Object voor users tabel
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,27 +15,25 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.1.1
+ * @version    1.2.0
  */
-include_once 'User_obj.php';
 
 /**
- * Rollen object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Required files
+ */
+require_once 'User_obj.php';
+
+/**
+ * Class Users
  *
  * @since Class available since Release 1.0.0
- * @version 1.0.9
+ * @version 1.2.0
  */
 class Users
 {
-
     /**
      * users
      *
@@ -53,12 +51,11 @@ class Users
     private $mysqli;
 
     /**
-     * Create the activtiteiten object
+     * Method constructor - Create the activtiteiten object
      *
      * Creates the activiteiten object that will contain all activiteiten stuff
      *
-     * @param mysqli $mysqli
-     *            Valid mysqli object
+     * @param mysqli $mysqli Valid mysqli object
      *
      * @return bool Success flag
      */
@@ -73,17 +70,44 @@ class Users
     }
 
     /**
-     * Get user(s)
+     * Method read - Get user(s)
      *
      * Get all the information of one or all users
      *
-     * @param string $username
-     *            optional username
+     * @param string $username optional username
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $firstname
+     * @var string $lastname
+     * @var string $email
+     * @var string $passwordHash
+     * @var string $resetToken
+     * @var string $failedLogin
+     * @var string $lastLogin
+     * @var string $status
+     * @var string $created
+     * @var string $groupname
+     * @var array $groups
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function read($username = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $firstname = null;
+        $lastname = null;
+        $email = null;
+        $passwordHash = null;
+        $resetToken = null;
+        $failedLogin = null;
+        $lastLogin = null;
+        $status = null;
+        $created = null;
+        $groupname = null;
+        $groups = null;
+        
         if (isset($username)) {
             $this->username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         }
@@ -171,19 +195,23 @@ class Users
     }
 
     /**
-     * Update user information
+     * Method update - Update user information
      *
      * Update the information of a specific user
      *
-     * @param
-     *            User user User information
-     * @param
-     *            bool super Is super user, so can change user status
+     * @param User user User information
+     * @param bool super Is super user, so can change user status
      *
      * @return bool Success flag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function update(User $user, $super = false)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         if ($super) {
             $super = true;
         } else {
@@ -258,19 +286,23 @@ class Users
     }
 
     /**
-     * Delete user
+     * Method delete - Delete user
      *
      * Delete the specific user
      *
-     * @param
-     *            string username
-     * @param
-     *            bool super Is super user, so can change user status
+     * @param string username
+     * @param bool super Is super user, so can change user status
      *
      * @return bool Success flag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function delete($username)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
 
         // Delete user
@@ -307,14 +339,22 @@ class Users
     }
 
     /**
-     * Get all goedkeurders
+     * Method getGoedkeurders - Get all goedkeurders
      *
      * @todo verplaats naar goedkeurders object
      * @throws Exception
      * @return NULL
+     * 
+     * @var string $username
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function getGoedkeurders()
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             SELECT
                 users.username, users.firstName, users.lastName
@@ -359,16 +399,23 @@ class Users
     }
 
     /**
-     * Controlleer of gebruiker kan goedkeuren
+     * Method kanGoedkeuren - Controlleer of gebruiker kan goedkeuren
      *
      * @todo verplaats naar goedkeurders object
-     * @param string $username
-     *            Username
+     * @param string $username Username
      * @throws Exception
      * @return bool Resultaat (true is kan goedkeuren)
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     * @var bool $result
      */
     public function kanGoedkeuren($username)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $result = null;
+        
         $username = filter_var($username, FILTER_SANITIZE_STRING);
 
         $prep_stmt = "

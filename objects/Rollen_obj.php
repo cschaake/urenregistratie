@@ -1,10 +1,10 @@
 <?php
 /**
- * Rollen Object
+ * Class Rollen | objects/Rollen_obj.php
  *
  * Object voor Rollen tabel
  *
- * PHP version 5.4
+ * PHP version 7.2
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,27 +15,25 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.0
  */
-include_once ('Rol_obj.php');
 
 /**
- * Rollen object
- *
- * @package Urenverantwoording
- * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2017 Schaake.nu
- * @license http://www.opensource.org/licenses/mit-license.html MIT License
+ * Required files
+ */
+require_once ('Rol_obj.php');
+
+/**
+ * Class Rollen - Collection van rollen
  *
  * @since File available since Release 1.0.0
  * @version 1.0.9
  */
 class Rollen
 {
-
     /**
      * Array met Rol objecten
      *
@@ -53,7 +51,7 @@ class Rollen
     private $mysqli;
 
     /**
-     * Creeer rollen object
+     * Method constructor - Creeer rollen object
      *
      * @access public
      * @param mysqli $mysqli
@@ -71,16 +69,21 @@ class Rollen
     }
 
     /**
-     * Creeer rol
+     * Method create - Creeer rol
      *
      * @access public
-     * @param Rol $rol
-     *            Rol object
+     * @param Rol $record Rol object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function create(Rol $record)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             INSERT
 				ura_rollen
@@ -109,14 +112,25 @@ class Rollen
     }
 
     /**
-     * Lees rollen
+     * Method read - Lees rollen
      *
      * @access public
+     * @param string $username
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var int $id
+     * @var string $rol
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function read($username = null)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        $id = null;
+        $rol = null;
+        
         if (isset($username)) {
             $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         }
@@ -171,16 +185,21 @@ class Rollen
     }
 
     /**
-     * Update rol
+     * Method update - Update rol
      *
      * @access public
-     * @param Rol $activiteit
-     *            Rol object
+     * @param Rol $record Rol object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function update(Rol $record)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $prep_stmt = "
             UPDATE
 				ura_rollen
@@ -209,19 +228,23 @@ class Rollen
     }
 
     /**
-     * Delete rol
+     * Method delete - Delete rol
      *
      * @access public
-     * @param int $id
-     *            Rol id
+     * @param int $id Rol id
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
      */
     public function delete($id)
     {
+        $prep_stmt = null;
+        $stmt = null;
+        
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
 
-        $result = false;
         if (! $this->_canDelete($id)) {
             throw new Exception('Kan rol niet verwijderen, nog in gebruik', 409);
         }
@@ -239,7 +262,6 @@ class Rollen
             $stmt->execute();
             $stmt->store_result();
 
-            $result = ($stmt->affected_rows >= 1);
             $stmt->close();
         } else {
             throw new Exception('Database error', 500);
@@ -249,14 +271,16 @@ class Rollen
     }
 
     /**
-     * Kan worden gedelete
+     * Method _canDelete - Kan worden gedelete
      *
      * Controleer of rol nog in gebruik is
      *
      * @access private
-     * @param int $id
-     *            Rol id
+     * @param int $id Rol id
      * @return bool Succes vlag
+     * 
+     * @var int $count
+     * @var bool $result
      */
     private function _canDelete($id)
     {
