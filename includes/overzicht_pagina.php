@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.1
  */
 ?>
 
@@ -63,6 +63,72 @@
 				</div>
 			</div>
 		</div>
+		
+		<!--  Punten paneel -->
+		<div id="urenPanel" class="panel panel-primary">
+			<div class="panel-heading">
+				<div class="row">
+					<div class="col-sm-3 hidden-xs">
+						<span class="glyphicon glyphicon-grain" style="font-size:7em"></span>
+					</div>
+					<div class="col-sm-9 text-right">
+						Saldo paarpunten
+						<span style="font-size:4em">
+							{{ punten.totaal - punten.gebruikt }}
+						</span>
+					</div>
+					<div class="col-sm-9 text-right">
+						Order status: Geen orders
+					</div>
+				</div>
+			</div>
+
+			<div ng-init="showbewaking=false">
+				<div ng-show="showbewaking" class="panel-body ">
+					<table class="table">
+						<tr>
+							<th>Totaal gespaarde punten</th>
+							<td>{{ punten.totaal }}</td>
+						</tr>
+						<tr>
+							<th>Ingeleverde punten</th>
+							<td>{{ punten.gebruikt }}</td>
+						</tr>
+						<tr>
+							<th>Te gebruiken punten</th>
+							<td>{{ punten.totaal - punten.gebruikt }}</td>
+						</tr>
+						<tr>
+							<th>Openstaand bedrag</th>
+							<td>€ 0.00</td>
+						</tr>
+						<tr>
+							<th>Aantal openstaande bestellingen</th>
+							<td>0</td>
+						</tr>
+						<tr>
+							<th>Aantal geleverde bestellingen</th>
+							<td>0</td>
+						</tr>
+						
+					</table>
+				</div>
+				
+				<div ng-hide="showbewaking" class="panel-footer text-primary">
+					<a href="" ng-click="showbewaking = !showbewaking">Details
+						<span class="pull-right glyphicon glyphicon-chevron-right"></span>
+					</a>
+				</div>
+				<div ng-show="showbewaking" class="panel-footer text-primary">
+					<a href="" ng-click="showbewaking = !showbewaking">Details
+						Minder
+						<span class="pull-right glyphicon glyphicon-chevron-left"></span>
+					</a>
+				</div>
+				
+			</div>
+		</div>
+		
 	</div>
 		
 	<div class="col-sm-12 col-md-6">

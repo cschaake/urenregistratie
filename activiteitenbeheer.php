@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.2.0
- * @version    1.2.0
+ * @version    1.2.1
  *
  * @var Authenticate $authenticate Bevat het authenticatie object uit includes/login_functions.
  * @var mysqli $mysqli Represents a connection between PHP and a MySQL database.
@@ -29,8 +29,16 @@
 /**
  * Required files
  */
-require_once 'includes/login_functions.php';
 require_once 'includes/db_connect.php';
+require_once 'includes/configuration.php';
+require_once 'includes/login_functions.php';
+
+/** 
+ * Define variables
+ */
+$authenticate = null;
+$javaScript = null;
+$pagina = null;
 
 $authenticate = checkAuthenticate($mysqli);
 

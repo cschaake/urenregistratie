@@ -60,7 +60,8 @@ function sec_session_start()
     
     // Sets the new cookies params
     session_set_cookie_params(
-        $cookieParams["lifetime"],
+	    //        $cookieParams["lifetime"],
+	'2592000',
         $cookieParams["path"], 
         $cookieParams["domain"], 
         $secure,
@@ -68,7 +69,7 @@ function sec_session_start()
     
     // Sets the session name to the one set above.
     session_name($session_name);
-    session_set_cookie_params('2592000');
+    //session_set_cookie_params('2592000');
     session_start();
     
 	// regenerated the session, delete the old one. 

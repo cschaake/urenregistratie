@@ -29,8 +29,9 @@
 /**
  * Required files
  */
-require_once 'includes/login_functions.php';
 require_once 'includes/db_connect.php';
+require_once 'includes/configuration.php';
+require_once 'includes/login_functions.php';
 
 $authenticate = checkAuthenticate($mysqli);
 

@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.1
  * 
  * @var mysqli $mysqli
  * @var Authenticate $authenticate
@@ -29,7 +29,7 @@
  * Required files
  */
 require_once '../includes/db_connect.php';
-require_once '../includes/settings.php';
+require_once '../includes/configuration.php';
 require_once '../objects/Authenticate_obj.php';
 require_once '../objects/Input_obj.php';
 

@@ -19,14 +19,14 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.1
  */
 
 /**
  * Class Rapport
  *
  * @since File available since Release 1.0.0
- * @version 1.2.0
+ * @version 1.2.1
  */
 class Rapport
 {
@@ -136,7 +136,7 @@ class Rapport
 					SELECT SUM(ura_uren.uren)
 					FROM ura_uren
 					WHERE
-						ura_uren.rol_id = ura_certificaat.rol_id
+						ura_uren.groep_id = ura_certificaat.groep_id
 						AND ura_uren.datum BETWEEN ura_certificaat.gecertificeerd AND ura_certificaat.verloopt
 						AND ura_uren.username = ura_certificaat.username
 				) 'ureningevoerd',
@@ -144,7 +144,7 @@ class Rapport
 					SELECT SUM(ura_uren.uren)
 					FROM ura_uren
 					WHERE
-						ura_uren.rol_id = ura_certificaat.rol_id
+						ura_uren.groep_id = ura_certificaat.groep_id
 						AND ura_uren.datum BETWEEN ura_certificaat.gecertificeerd AND ura_certificaat.verloopt
 						AND ura_uren.username = ura_certificaat.username
 						AND ura_uren.akkoord = 1
@@ -153,7 +153,7 @@ class Rapport
 					SELECT SUM(ura_uren.uren)
 					FROM ura_uren
 					WHERE
-						ura_uren.rol_id = ura_certificaat.rol_id
+						ura_uren.groep_id = ura_certificaat.groep_id
 						AND ura_uren.datum BETWEEN ura_certificaat.gecertificeerd AND ura_certificaat.verloopt
 						AND ura_uren.username = ura_certificaat.username
 						AND ura_uren.akkoord = 2
@@ -227,12 +227,9 @@ class Rapport
 
         $prep_stmt = "
             SELECT
-                ura_urengoedkeuren.username,
                 ura_uren.rol_id,
                 ura_rollen.rol,
                 SUM(ura_uren.uren),
-                ura_groepen.id,
-                ura_groepen.groep,
                 (SELECT
                         SUM(ura_uren.uren)
                     FROM
@@ -263,10 +260,10 @@ class Rapport
             $stmt->store_result();
 
             if ($stmt->num_rows >= 1) {
-                $stmt->bind_result($username, $rol_id, $rol, $uren, $groep_id, $groep, $totaaluren);
+                $stmt->bind_result( $rol_id, $rol, $uren, $totaaluren);
 
                 while ($stmt->fetch()) {
-                    $this->records[] = new RaportageGoedTeKeuren($username, $rol_id, $rol, $uren, $groep_id, $groep, $totaaluren);
+                    $this->records[] = new RaportageGoedTeKeuren(null, $rol_id, $rol, $uren, null, null, $totaaluren);
                 }
             } elseif ($stmt->num_rows == 0) {
                 $stmt->close();

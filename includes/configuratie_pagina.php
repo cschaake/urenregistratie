@@ -64,9 +64,6 @@
                                     <th>
                                         Groep
                                     </th>
-                                    <th>
-                                        Instructeur
-                                    </th>
                                     <th/>
                                 </tr>
 
@@ -77,7 +74,6 @@
                             <tbody>
                                 <tr ng-repeat="groep in groepen">
                                     <td>{{ groep.groep }}</td>
-                                    <td>{{ groep.opleiding | boolFilter }}</td>
                                     <td class="text-right" style="width:7em;">
                                         <button type="button" style="width:3em;" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deletegroep" ng-click="editgroep(groepen.indexOf(groep))"><span class="glyphicon glyphicon glyphicon-trash"></span></button>&nbsp;
                                         <button type="button" style="width:3em;" class="btn btn-xs btn-default" data-toggle="modal" data-target="#editgroep" ng-click="editgroep(groepen.indexOf(groep))"><span class="glyphicon glyphicon glyphicon glyphicon-pencil"></span></button>
@@ -251,15 +247,6 @@
 							</div>
 						</div>
 						
-						<div class="form-group">
-							<label class="control-label col-sm-2" for="opleiding">Opleiding</label>
-							<div class="col-sm-10">
-								<div class="checkbox">
-									<label><input id="opleiding" name="opleiding" type="checkbox" ng-model="groepen.form.opleiding" disabled/>Kan opleidingsuren boeken</label>
-								</div>
-							</div>
-						</div>
-
 						<br/>
 
 						<button class="btn btn-default" ng-disabled="editgroepForm.$invalid" ng-class="{'btn-success': editgroepForm.$valid}" ng-click="insertgroep(groepen.form.index)">Update</button>

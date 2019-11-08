@@ -16,7 +16,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.2.0
- * @version    1.2.0
+ * @version    1.2.1
  */
 
 // Calculate date range for input (P3M means 3 months)
@@ -233,7 +233,7 @@ $enddate = $enddate->format('Y-m-d');
 					<tbody>
 						<tr
 							ng-repeat="activiteit in activiteiten | orderBy:sortType:sortReverse | filter:search:strict | limitTo:itemsPerPage:startItem">
-							<td>{{ activiteit.datum | date: "yyyy-MM-dd"}}</td>
+							<td><div ng-hide="activiteit.nodate">{{ activiteit.datum | date: "yyyy-MM-dd"}}</div></td>
 							<td>{{ activiteit.activiteit }}</td>
 							<td class="hidden-xs">{{ activiteit.groep }}</td>
 							<td class="hidden-xs hidden-sm hidden-md">{{ activiteit.begintijd }}</td>
@@ -354,7 +354,7 @@ $enddate = $enddate->format('Y-m-d');
 	    * Include modals
 	    */
 	   include_once 'modals/activiteiten_editrecord_modal.php';
-	   include_once 'modals/activiteiten_deleteconfirmation_modl.php';
+	   include_once 'modals/activiteiten_deleteconfirmation_modal.php';
 	   include_once 'modals/activiteiten_help_modal.php';
 	?>
 

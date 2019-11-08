@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.1
  * 
  * @var mysqli $mysqli
  * @var Authenticate $authenticate
@@ -30,12 +30,13 @@
  */
 
 require_once '../includes/db_connect.php';
-require_once '../includes/settings.php';
+require_once '../includes/configuration.php';
 require_once '../objects/Authenticate_obj.php';
 require_once '../objects/Input_obj.php';
 
 require_once '../objects/Activiteiten_obj.php';
 require_once '../objects/Groepen_obj.php';
+require_once '../objects/Rollen_obj.php';
 
 // Start or restart session
 require_once '../includes/login_functions.php';
@@ -126,9 +127,9 @@ function postActiviteit($input)
     }
 
     $json = $input->get_JSON();
-
-    $activiteit_obj = new Activiteit(null, $json->datum, $json->begintijd, $json->eindtijd, $json->activiteit, $json->groep_id);
+    $activiteit_obj = new Activiteit(null, $json->datum, $json->begintijd, $json->eindtijd, $json->activiteit, $json->rollen, $json->groep_id, null, $json->opmerkingVerplicht, $json->opbouw);
     $activiteiten_obj = new Activiteiten($mysqli);
+    
     try {
         $activiteiten_obj->create($activiteit_obj);
     } catch(Exception $e) {
@@ -140,7 +141,8 @@ function postActiviteit($input)
 	http_response_code(200);
 	header('Content-Type: application/json');
     echo json_encode($activiteiten_obj);
-
+    
+    
     return true;
 }
 
@@ -158,6 +160,7 @@ function postActiviteit($input)
  *      @param Groepen "groepen"
  * @var Activiteiten $activiteiten_obj
  * @var Groepen $groepen_obj
+ * @var Rollen $rollen_obj
  */
 function getActiviteiten($input)
 {
@@ -207,6 +210,22 @@ function getActiviteiten($input)
     }
     
     $result['groepen'] = $groepen_obj->groepen;
+    
+    $rollen_obj = new Rollen($mysqli);
+    try {
+        $rollen_obj->read();
+    } catch (Exception $e) {
+        http_response_code(400);
+        header('Content-Type: application/json');
+        echo json_encode(array(
+            'success' => false,
+            'message' => $e->getMessage(),
+            'code' => 400
+        ));
+        exit();
+    }
+    
+    $result['rollen'] = $rollen_obj->rollen;
 
 	http_response_code(200);
 	header('Content-Type: application/json');
@@ -254,7 +273,7 @@ function putActiviteit($input)
 		exit;
 	}
 
-	$activiteit_obj = new Activiteit($json->id, $json->datum, $json->begintijd, $json->eindtijd, $json->activiteit, $json->groep_id, $json->groep);
+	$activiteit_obj = new Activiteit($json->id, $json->datum, $json->begintijd, $json->eindtijd, $json->activiteit, $json->rollen, $json->groep_id, $json->groep, $json->opmerkingVerplicht, $json->opbouw);
 	$activiteiten_obj = new Activiteiten($mysqli);
 
 	try {

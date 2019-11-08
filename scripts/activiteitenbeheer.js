@@ -17,7 +17,7 @@
  * @copyright 2019 Schaake.nu
  * @license http://www.opensource.org/licenses/mit-license.html MIT License
  * @since File available since Release 1.2.0
- * @version 1.2.0
+ * @version 1.2.1
  */
 // --------------------------------------------------------------------
 // Custom App
@@ -47,6 +47,21 @@ angular.module('myApp')
 	$scope.totalRecords = 0; // Get total unfiltered records
 	
 	$scope.spinner = false;
+	
+	// Get application configuration
+	$scope.loadConfig = function() {
+		$http({
+			mehtod : 'GET',
+			url : 'rest/config.php',
+			headers : { 'Content-Type' : 'applicication/json' }
+		}).then(function(response) {
+			if (response.data.message) {
+				$scope.message = response.data.message;
+			} else {
+				$scope.config = response.data;
+			}
+		})
+	}
 	
 	$scope.refresh = function() {
 		$scope.load();
@@ -95,6 +110,7 @@ angular.module('myApp')
 					$scope.activiteiten = [];
 				}
 				$scope.activiteitenGroepen = response.data.groepen;
+				$scope.rollen = response.data.rollen;
 
 				// Set paging
 				if ($scope.activiteiten.length > 0) {
@@ -116,7 +132,7 @@ angular.module('myApp')
 	$scope.insert = function(index) {
 		$scope.spinner = true;
 		
-		console.log($scope);
+		console.log($scope.form);
 		
 		if ($scope.editForm.$valid) {
 			
@@ -296,6 +312,18 @@ angular.module('myApp')
 		$scope.totalItems = $filter('filter')($scope.activiteiten,$scope.search).length;
 	}
 
+	/**
+	 * Zet default datum en tijd bij tijdloze activiteit
+	 * 
+	 */
+	$scope.$watch("form.nodate", function(nodate) {
+		if (nodate == true) {
+			$scope.form.datum = new Date('1970', '01', '01');
+			$scope.form.begintijd = '00:00';
+			$scope.form.eindtijd = '00:00';
+		}
+	});
+	
 	// Helper function to convert the dates and time in uren object
 	function convertJsonDate(array) {
 		var l = array.length;
@@ -311,6 +339,7 @@ angular.module('myApp')
 		return array;
 	}
 
+	$scope.loadConfig();
 	// First load own data, refresh when load is complete
 	$scope.loadOwn();
 	

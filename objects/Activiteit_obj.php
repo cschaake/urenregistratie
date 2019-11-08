@@ -82,6 +82,14 @@ class Activiteit
     public $groep_id;
 
     /**
+     * Rollen.
+     *
+     * @var array rollen
+     * @access public
+     */
+    public $rollen;
+    
+    /**
      * Naam van de groep (uit ura_groepen tabel).
      *
      * @var string Name van de groep
@@ -98,6 +106,22 @@ class Activiteit
     public $opmerkingVerplicht;
 
     /**
+     * Opbouw en afbouw uren.
+     *
+     * @var bool Configuratie parameter of opbouw en afbouw uren worden meegerekend
+     * @access public
+     */
+    public $opbouw;
+    
+    /**
+     * Activity without date
+     *
+     * @var bool Configuratie parameter dat activiteit tijdloos is
+     * @access public
+     */
+    public $nodate;
+    
+    /**
      * Method constructor - Creeer activtiteit object.
      *
      * @param int $id Id van de activiteit
@@ -108,10 +132,11 @@ class Activiteit
      * @param int $groep_id Id van de groep
      * @param string $groep Optioneel naam van de groep
      * @param bool $opmerkingVerplicht Opmerking verplicht
+     * @param bool $opbouw Opbouw en afbouw uren
      *
      * @return bool Succes vlag
      */
-    public function __construct($id, $datum, $begintijd, $eindtijd, $activiteit, $groep_id, $groep = null, $opmerkingVerplicht = null)
+    public function __construct($id, $datum, $begintijd, $eindtijd, $activiteit, $rollen, $groep_id, $groep = null, $opmerkingVerplicht = false, $opbouw = false)
     {
         // Sanitize input
         if ($id) {
@@ -123,10 +148,109 @@ class Activiteit
         $this->begintijd = date('H:i', strtotime($begintijd));
         $this->eindtijd = date('H:i', strtotime($eindtijd));
         $this->activiteit = filter_var($activiteit, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
+        $this->rollen = $rollen; //@TODO juiste filter toepassen
         $this->groep_id = (int) filter_var($groep_id, FILTER_SANITIZE_STRING);
         $this->groep = filter_var($groep, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         $this->opmerkingVerplicht = (bool) $opmerkingVerplicht;
+        $this->opbouw = (bool) $opbouw;
+        
+        // Database return 1970-01-01 for nulified date records. So we need te reset them to null 
+        if ($this->datum < date('Y-m-d', strtotime('2000-01-01'))) {
+            $this->datum = null;
+            $this->begintijd = null;
+            $this->eindtijd = null;
+            $this->nodate = true;
+        }
 
+        return true;
+    }
+    
+    /**
+     * Insert of update rollen voor huidige activiteit
+     * Maak records aan in activiteitrol tabel
+     *
+     * @param mysqli $mysqli MySQL object
+     * @return bool Succes vlag
+     */
+    public function upsertRollen($mysqli) {
+        //Verwijder eerst eventuele activiteit-rol koppelingen
+        if ($this->deleteRollen($mysqli)) {
+            //Loop over alle rollen
+            foreach($this->rollen as $rol) {
+                //Maak record aan
+                $this->_insertRol($mysqli, $rol);
+            }
+        } else {
+            throw new Exception('Error deleting activiteitrol', 500);
+        }
+        return true;
+    }
+    
+    /**
+     * Insert activiteitrol
+     * Insert record in activiteitrol tabel
+     *
+     * @param mysqli $mysqli MySQL object
+     * @param int $rol Rol id van huidige rol
+     *
+     * @return bool Succes vlag
+     */
+    private function _insertRol($mysqli, $rol) {
+        $prep_stmt = null;
+        $stmt = null;
+        
+        $prep_stmt = "
+            INSERT INTO ura_activiteitrol (
+                activiteit_id,
+                rol_id )
+            VALUES (?, ?)";
+        
+        $stmt = $mysqli->prepare($prep_stmt);
+        if ($stmt) {
+            $stmt->bind_param('ii', $this->id, $rol);
+            $stmt->execute();
+            $stmt->store_result();
+            
+            if ($stmt->affected_rows < 1) {
+                $stmt->close();
+                throw new Exception('Fout bij updaten activiteit', 500);
+            }
+            $stmt->close();
+        } else {
+            throw new Exception('Database error', 500);
+        }
+        return true;
+    }
+    
+    /**
+     * Verwijder rollen voor huidige activiteit
+     * Verwijder records uit activiteitrol tabel
+     * 
+     * @param mysqli $mysqli MySQL object
+     *
+     * @return bool Succes vlag
+     */
+    public function deleteRollen($mysqli) {
+        $prep_stmt = null;
+        $stmt = null;
+        
+        $prep_stmt = "
+            DELETE FROM
+                ura_activiteitrol
+            WHERE
+                activiteit_id = ?";
+        
+        $stmt = $mysqli->prepare($prep_stmt);
+        
+        if ($stmt) {
+            $stmt->bind_param('i', $this->id);
+            $stmt->execute();
+            $stmt->store_result();
+            
+            $stmt->close();
+        } else {
+            throw new Exception('Database error', 500);
+        }
         return true;
     }
 }

@@ -15,7 +15,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.1
  */
 
 angular.module('myApp')
@@ -42,6 +42,21 @@ angular.module('myApp')
     $scope.message = null;
     
     $scope.register = {};
+    
+    // Get application configuration
+	$scope.loadConfig = function() {
+		$http({
+			mehtod : 'GET',
+			url : 'rest/config.php',
+			headers : { 'Content-Type' : 'applicication/json' }
+		}).then(function(response) {
+			if (response.data.message) {
+				$scope.message = response.data.message;
+			} else {
+				$scope.config = response.data;
+			}
+		})
+	}
     
     /**
      * processLoginForm
@@ -296,5 +311,7 @@ angular.module('myApp')
             $scope.message = 'Request mislukt';
         });
     }
+    
+    $scope.loadConfig();
     
 });

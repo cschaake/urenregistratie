@@ -78,11 +78,25 @@
 						show-errors="{ showSuccess: true }">
 						<label class="control-label col-sm-2" for="rol">Rol</label>
 						<div class="col-sm-10">
-							<select id="rol" name="rol" class="form-control"
+							<div ng-hide="form.edit">
+								<div ng-hide="activiteitRollen.length > 0">Selecteer eerst activiteit</div>
+    							<div class="checkbox" ng-show="activiteitRollen.length > 0" ng-repeat="rol in activiteitRollen">
+    								<label>
+    									<input type="checkbox" class="custom-control-input" name="rol.id" ng-model="form.rol_id[rol.id]"/>{{rol.rol}}
+    								</label>
+    							</div>
+    							<br/>
+    							<div ng-show="activiteitRollen.length > 1" class="alert alert-info" role="alert">
+    								Bij selecteren meerdere rollen worden aparte urenrecords aangemaakt.
+    							</div> 
+							</div>
+							
+							<select ng-show="form.edit" id="rol" name="rol" class="form-control"
 								ng-model="form.rol_id"
-								ng-options="a.id as a.rol for a in urenRollen"
+								ng-options="a.id as a.rol for a in activiteitRollen"
 								errorText="Rol is verplicht" required>
 							</select>
+							
 						</div>
 					</div>
 
@@ -126,7 +140,7 @@
 							<input id="opmerking" name="opmerking" type="text"
 								ng-model="form.opmerking" class="form-control"
 								errorText="Bij deze geselecteerde activiteit is opmerking verplicht"
-								ng-required="form.activiteit_id == opmerkingRequired" />
+								ng-required="opmerkingVerplicht" />
 						</div>
 					</div>
 					
@@ -140,11 +154,11 @@
         						</tr>
         						<tr>
         							<td>Extra opbouw uren</td>
-        							<td>{{ form.start == begintijd ? configuratieExtraBeginUren : '0' }}</td>
+        							<td>{{ form.start == begintijd ? ExtraBeginUren : '0' }}</td>
         						</tr>
         						<tr>
         							<td>Extra opruim uren</td>
-        							<td>{{ form.eind == eindtijd ? configuratieExtraEindUren : '0' }}</td>
+        							<td>{{ form.eind == eindtijd ? ExtraEindUren : '0' }}</td>
         						</tr>
         						<tr>
         							<td><strong>Totaal uren</strong></td>

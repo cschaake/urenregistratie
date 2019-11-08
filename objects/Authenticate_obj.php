@@ -335,7 +335,7 @@ class Authenticate
 
                     // Set info for new cookie
                     $this->hits ++;
-                    $this->sessionHash = md5(uniqid(rand(), true));
+                    $this->sessionHash = password_hash(uniqid(random_int(0,99)),PASSWORD_DEFAULT);
                     $this->browser = filter_var($_SERVER['HTTP_USER_AGENT'], FILTER_SANITIZE_STRING);
                     $this->ip = filter_var($_SERVER['REMOTE_ADDR'], FILTER_SANITIZE_STRING);
                     $this->lastHit = date('Y-n-j H:i:s');
@@ -539,7 +539,7 @@ class Authenticate
         $this->firstname = $firstname;
         $this->lastname = $lastname;
         $this->status = ! SEND_USERCREATE_MAIL;
-        $this->resetToken = md5(uniqid(rand(), true));
+        $this->resetToken = md5(uniqid(random_int(0,99), true));
         $this->created = date('Y-n-j H:i:s');
 
         // Check if username already exists
@@ -734,7 +734,7 @@ class Authenticate
         $prep_stmt = null;
         $stmt = null;
         
-        $this->resetToken = md5(uniqid(rand(), true));
+        $this->resetToken = password_hash(uniqid(random_int(0,99)),PASSWORD_DEFAULT);
         $this->email = $email;
 
         // Get user information
@@ -1073,7 +1073,7 @@ class Authenticate
         }
 
         // Set some administration data
-        $this->sessionHash = md5(uniqid(rand(), true));
+        $this->sessionHash = password_hash(uniqid(random_int(0,99)),PASSWORD_DEFAULT);
         $this->browser = $_SERVER['HTTP_USER_AGENT'];
         $this->ip = $_SERVER['REMOTE_ADDR'];
         $this->hits = 1;
@@ -1124,7 +1124,7 @@ class Authenticate
     {
         $stmt = null;
         
-        $this->resetToken = md5(uniqid(rand(), true));
+        $this->resetToken = password_hash(uniqid(random_int(0,99)),PASSWORD_DEFAULT);
         $this->sendUnlockMail();
 
         // Set user data for failed login

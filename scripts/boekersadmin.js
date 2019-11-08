@@ -17,7 +17,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.8
+ * @version    1.2.1
  */
 
 //--------------------------------------------------------------------
@@ -106,6 +106,21 @@ angular.module('myApp')
     $scope.spinner = false;
 
     $scope.boekers = '';
+    
+    // Get application configuration
+	$scope.loadConfig = function() {
+		$http({
+			mehtod : 'GET',
+			url : 'rest/config.php',
+			headers : { 'Content-Type' : 'applicication/json' }
+		}).then(function(response) {
+			if (response.data.message) {
+				$scope.message = response.data.message;
+			} else {
+				$scope.config = response.data;
+			}
+		})
+	}
 
     // Function to refresh the table data (retrieve data again from backend)
     $scope.refresh = function() {
@@ -530,6 +545,7 @@ angular.module('myApp')
 	$scope.totalItems = $filter('filter')($scope.users,$scope.search).length;
     }
 
+    $scope.loadConfig();
     $scope.loadSelf();
 
 });

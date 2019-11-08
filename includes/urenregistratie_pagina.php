@@ -387,5 +387,4 @@ $enddate = $enddate->format('Y-m-d');
 	<?php include_once 'modals/urenregistratie_editrecord_modal.php';?>
 	<?php include_once 'modals/urenregistratie_deleteconfirmation_modal.php';?>
 	<?php include_once 'modals/urenregistratie_help_modal.php';?>
-
 </div>

@@ -250,7 +250,7 @@ class Opleidingsuren
             FROM ura_urenboeken
             LEFT JOIN users
             ON ura_urenboeken.username = users.username
-            WHERE ura_urenboeken.groep_id = " . OPLEIDINGS_GROEP_ID;
+            WHERE ura_urenboeken.rol_id = " . OPLEIDINGS_ROL_ID;
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 

@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.2.0
+ * @version    1.2.1
  * 
  * @var mysqli $mysqli
  * @var Authenticate $authenticate
@@ -29,7 +29,7 @@
  * Requred files
  */
 require_once '../includes/db_connect.php';
-require_once '../includes/settings.php';
+require_once '../includes/configuration.php';
 require_once '../objects/Authenticate_obj.php';
 require_once '../objects/Input_obj.php';
 
@@ -106,10 +106,10 @@ function postUrenboeken(input $input)
     global $mysqli;
     global $authenticate;
 
-    $json = $input->get_JSON();
+    $jsoncontainer = $input->get_JSON();
 
     // Only admin and super may update records of other users
-    if (! ($authenticate->checkUsername($json->username) || $authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
+    if (! ($authenticate->checkUsername($jsoncontainer->username) || $authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
         http_response_code(403);
         header('Content-Type: application/json');
         echo json_encode(array(
@@ -120,40 +120,43 @@ function postUrenboeken(input $input)
         exit();
     }
 
-    if (! isset($json->reden)) {
-        $json->reden = null;
-    }
-
-    if (! isset($json->opmerking)) {
-        $json->opmerking = null;
-    }
-
-    try {
-        $uur_obj = new Uur($json->username, $json->activiteit_id, $json->rol_id, $json->datum, $json->start, $json->eind, $json->uren, $json->opmerking, $json->akkoord, $json->reden);
-    } catch (Exception $e) {
-        http_response_code(400);
-        header('Content-Type: application/json');
-        echo json_encode(array(
-            'success' => false,
-            'message' => $e->getMessage(),
-            'code' => 400
-        ));
-        exit();
-    }
-
-    $uren_obj = new Uren($mysqli);
-
-    try {
-        $uren_obj->create($uur_obj);
-    } catch (Exception $e) {
-        http_response_code(400);
-        header('Content-Type: application/json');
-        echo json_encode(array(
-            'success' => false,
-            'message' => $e->getMessage(),
-            'code' => 400
-        ));
-        exit();
+    foreach($jsoncontainer as $json) {
+    
+        if (! isset($json->reden)) {
+            $json->reden = null;
+        }
+    
+        if (! isset($json->opmerking)) {
+            $json->opmerking = null;
+        }
+    
+        try {
+            $uur_obj = new Uur($json->username, $json->activiteit_id, $json->rol_id, $json->datum, $json->start, $json->eind, $json->uren, $json->opmerking, $json->akkoord, $json->reden);
+        } catch (Exception $e) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                'success' => false,
+                'message' => $e->getMessage(),
+                'code' => 400
+            ));
+            exit();
+        }
+    
+        $uren_obj = new Uren($mysqli);
+    
+        try {
+            $uren_obj->create($uur_obj);
+        } catch (Exception $e) {
+            http_response_code(400);
+            header('Content-Type: application/json');
+            echo json_encode(array(
+                'success' => false,
+                'message' => $e->getMessage(),
+                'code' => 400
+            ));
+            exit();
+        }
     }
 
     http_response_code(200);

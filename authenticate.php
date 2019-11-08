@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.0.9
+ * @version    1.2.1
  * 
  * @var string $action
  * @var Authenticate $authenticate
@@ -31,9 +31,17 @@
  * Required files
  */
 require_once 'includes/db_connect.php';
-require_once 'includes/settings.php';
+require_once 'includes/configuration.php';
 require_once 'objects/Authenticate_obj.php';
 require_once 'objects/Users_obj.php';
+
+/**
+ * Define variables
+ */
+$action = null;
+$authenticate = null;
+$postdata = null;
+$request = null;
 
 // Start or restart session
 require_once 'includes/login_functions.php';
@@ -144,6 +152,15 @@ if ($_SERVER ['REQUEST_METHOD'] == 'POST') {
 */
 function doLogin($request, $authenticate)
 {
+    /**
+     * Define variables
+     */
+    $username = null;
+    $password = null;
+    $sessionHash = null;
+    $remember = null;
+    $session = null;
+    
     // Logon to application
     $username = filter_var ( $request->username, FILTER_SANITIZE_STRING );
     $password = filter_var ( $request->password, FILTER_SANITIZE_STRING );
@@ -202,6 +219,12 @@ function doLogin($request, $authenticate)
 */
 function doLogout($authenticate)
 {
+    /**
+     * Define variables
+     */
+    $username = null;
+    $sessionHash = null;
+    
     // Logout from application
     $username = filter_var ( $_SESSION ['username'], FILTER_SANITIZE_STRING );
     $sessionHash = filter_var ( $_SESSION ['sessionHash'], FILTER_SANITIZE_STRING );
@@ -237,6 +260,11 @@ function doLogout($authenticate)
 */
 function doPasswordReset($request, $authenticate)
 {
+    /**
+     * Define variables
+     */
+    $email = null;
+    
     $email = filter_var ( $request->email, FILTER_SANITIZE_EMAIL );
 
     try {
@@ -273,37 +301,46 @@ function doPasswordReset($request, $authenticate)
 */
 function doPasswordChange($request, $authenticate)
 {
-            // Change user password
-            $username = filter_var ( $request->username, FILTER_SANITIZE_STRING );
-            if (isset ( $request->token )) {
-                $token = filter_var ( $request->token, FILTER_SANITIZE_STRING );
-            } else {
-                $token = null;
-            }
-            if (isset ( $request->password )) {
-                $password = filter_var ( $request->password, FILTER_SANITIZE_STRING );
-            } else {
-                $password = null;
-            }
-            $password1 = filter_var ( $request->password1, FILTER_SANITIZE_STRING );
-            $password2 = filter_var ( $request->password2, FILTER_SANITIZE_STRING );
+    /**
+     * Define variables
+     */
+    $username = null;
+    $token = null;
+    $password = null;
+    $password1 = null;
+    $password2 = null;
+        
+    // Change user password
+    $username = filter_var ( $request->username, FILTER_SANITIZE_STRING );
+    if (isset ( $request->token )) {
+        $token = filter_var ( $request->token, FILTER_SANITIZE_STRING );
+    } else {
+        $token = null;
+    }
+    if (isset ( $request->password )) {
+        $password = filter_var ( $request->password, FILTER_SANITIZE_STRING );
+    } else {
+        $password = null;
+    }
+    $password1 = filter_var ( $request->password1, FILTER_SANITIZE_STRING );
+    $password2 = filter_var ( $request->password2, FILTER_SANITIZE_STRING );
 
-            try {
-                $authenticate->change_password ( $username, $password, $password1, $password2, $token );
-            } catch ( Exception $e ) {
-                echo json_encode ( array (
-                        'success' => false,
-                        'message' => $e->getMessage ()
-                ) );
-                exit ();
-            }
+    try {
+        $authenticate->change_password ( $username, $password, $password1, $password2, $token );
+    } catch ( Exception $e ) {
+        echo json_encode ( array (
+            'success' => false,
+            'message' => $e->getMessage ()
+        ));
+        exit ();
+     }
 
-            echo json_encode ( array (
-                    'success' => true,
-                    'message' => 'Wachtwoord gewijzigd'
-            ) );
+     echo json_encode ( array (
+        'success' => true,
+        'message' => 'Wachtwoord gewijzigd'
+     ));
 
-			return true;
+	 return true;
 }
 
 /**
@@ -322,6 +359,16 @@ function doPasswordChange($request, $authenticate)
  */
 function doRegister($request, $authenticate)
 {
+    /**
+     * Define variables
+     */
+    $username = null;
+    $password1 = null;
+    $password2 = null;
+    $email = null;
+    $firstname = null;
+    $lastname = null;
+    
             // Sanitize our input
             $username = filter_var ( $request->username, FILTER_SANITIZE_STRING );
             $password1 = filter_var ( $request->password1, FILTER_SANITIZE_STRING );
@@ -369,6 +416,13 @@ function doRegister($request, $authenticate)
  */
 function getVerify($authenticate)
 {
+    /**
+     * Define variables
+     */
+    $username = null;
+    $token = null;
+    $errormessage = null;
+    
             // Validate user from email validation request
                         // Find the username in the URL
             $username = substr ( $_SERVER ['PATH_INFO'], 1 );
@@ -413,6 +467,11 @@ function getConfirmReset()
  */
 function getGroups($authenticate)
 {
+    /**
+     * Define variables
+     */
+    $groups = null;
+    
             // Get all groups
             if ($authenticate->authorisation_check ( false )) {
                 try {
@@ -444,6 +503,13 @@ function getGroups($authenticate)
  */
 function getUnlock($authenticate)
 {
+    /**
+     * Define variables
+     */
+    $errormessage = null;
+    $username = null;
+    $token = null;
+    
             // Execute account unlock from email
                         // Find the username in the URL
             $username = substr ( $_SERVER ['PATH_INFO'], 1 );
@@ -481,6 +547,11 @@ function getUnlock($authenticate)
  */
 function getSelf($authenticate)
 {
+    /**
+     * Define variables
+     */
+    $self = null;
+   
             // Get information about current user
             if ($authenticate->authorisation_check ( false )) {
                 $self = array (
@@ -517,6 +588,13 @@ function getSelf($authenticate)
  */
 function getListUsers($authenticate)
 {
+    /**
+     * Define variables
+     */
+    $request_user = null;
+    $user = null;
+    $users_obj = null;
+    
 	global $mysqli;
             // Get all information of the user or users
 
@@ -602,6 +680,13 @@ function getListUsers($authenticate)
  */
 function putUser($request, $authenticate)
 {
+    /**
+     * Define variables
+     */
+    $super = null;
+    $users_obj = null;
+    $user_obj = null;
+    
     global $mysqli;
 
     if ($authenticate->authorisation_check(false)) {
@@ -655,6 +740,12 @@ function putUser($request, $authenticate)
  */
 function deleteUser($authenticate)
 {
+    /**
+     * Define variables
+     */
+    $users = null;
+    $request_user = null;
+    
     global $mysqli;
 
     // Delete user information

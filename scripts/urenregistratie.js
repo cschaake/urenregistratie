@@ -17,7 +17,7 @@
  * @copyright 2017 Schaake.nu
  * @license http://www.opensource.org/licenses/mit-license.html MIT License
  * @since File available since Release 1.0.0
- * @version 1.0.7
+ * @version 1.2.1
  */
 // --------------------------------------------------------------------
 // Custom App
@@ -103,7 +103,27 @@ angular.module('myApp')
 	$scope.configuratieExtraBeginUren = 0.5;
 	$scope.configuratieExtraEindUren = 0.5;
 	
+	$scope.ExtraBeginUren = 0;
+	$scope.ExtraEindUren = 0;
+	
+	$scope.activiteitRollen = [];
+	
 	$scope.spinner = false;
+	
+	// Get application configuration
+	$scope.loadConfig = function() {
+		$http({
+			mehtod : 'GET',
+			url : 'rest/config.php',
+			headers : { 'Content-Type' : 'applicication/json' }
+		}).then(function(response) {
+			if (response.data.message) {
+				$scope.message = response.data.message;
+			} else {
+				$scope.config = response.data;
+			}
+		})
+	}
 	
 	$scope.refresh = function() {
 		$scope.load();
@@ -182,11 +202,8 @@ angular.module('myApp')
 			$scope.form.activiteit = urenActiviteitIndex.activiteit;
 			$scope.form.groep_id = urenActiviteitIndex.groep_id;
 			$scope.form.groep = urenActiviteitIndex.groep;
-			$scope.form.rol = $scope.urenRollen[getValueById($scope.urenRollen,$scope.form.rol_id)].rol;
 			
 			if ($scope.form.edit === true) {
-				// The true value is set in the $scope.edit
-				// function
 				$http({
 					method : 'PUT',
 					url : 'rest/urenboeken.php/' + $scope.form.id,
@@ -211,10 +228,21 @@ angular.module('myApp')
 				});
 				
 			} else {
+				$scope.forms = [];
+				for (record in $scope.form.rol_id) {
+					$scope.form.rol_id = parseInt(record,10);
+					if (!isNaN($scope.form.rol_id)) {
+
+						$scope.forms.push(JSON.parse(JSON.stringify($scope.form)));
+					}
+					
+					
+				}
+
 				$http({
 					method : 'POST',
 					url : 'rest/urenboeken.php',
-					data : $scope.form,
+					data : $scope.forms,
 					headers : { 'Content-Type': 'application/json' }
 				}).then(function(response) {
 					if (response.data.message) {
@@ -282,6 +310,7 @@ angular.module('myApp')
 
 	// Function to reset the form for a new record
 	$scope.new = function() {
+		$scope.activiteitRollen = [];
 		$scope.form = {}; // Destroy the current form, if any
 		$scope.form.username = $scope.self.username;
 		$scope.form.start = '';
@@ -293,7 +322,7 @@ angular.module('myApp')
 	
 	// Function to fill the form with the record to be editted
 	$scope.edit = function(index) {
-		$scope.form = angular.copy($scope.uren[index]); 
+		$scope.form = angular.copy($scope.uren[index]);
 		$scope.form.index = index; // Store the index of the original record
 		$scope.form.edit = true; // Set the edit variable to true, needed in the $scope.insert function
 		$scope.original = angular.copy($scope.form); // Copy the current form to the temporary original object
@@ -307,6 +336,7 @@ angular.module('myApp')
 		$scope.messagelocal = '';
 
 		$scope.form = angular.copy($scope.original);
+		
 	}
 
 	// ------------------------------------------------------------
@@ -417,13 +447,16 @@ angular.module('myApp')
 			$scope.urenActiviteitenFiltered = $scope.urenActiviteiten.filter(function(urenActiviteit) {
 				return urenActiviteit.datum == newDatum;
 			});
+			$scope.urenActiviteitenFiltered = $scope.urenActiviteitenFiltered.concat($scope.urenActiviteiten.filter(function(urenActiviteit) {
+				return urenActiviteit.datum == null;
+			}));
 			
 			// Set default times
 		}
 	});
 	
 	/**
-	 * Haal de juiste begin en eindtijden op
+	 * Haal de juiste gegevens voor de activiteit op
 	 * 
 	 * @param int newId id van de activiteit
 	 */
@@ -433,14 +466,48 @@ angular.module('myApp')
 				return urenActiviteit.id == newId; 
 			});
 			// Set default field values
-			$scope.form.start = activiteit[0].begintijd;
-			$scope.form.eind = activiteit[0].eindtijd;
+			if($scope.form.start == "") {
+				$scope.form.start = activiteit[0].begintijd;
+			}
+			if($scope.form.eind == "") {
+				$scope.form.eind = activiteit[0].eindtijd;
+			}
+			$scope.activiteitRollen = [];
+			$scope.getActiviteitRollen(activiteit[0].rollen);
 	
+			if($scope.activiteitRollen.length < 2) {
+				$scope.form.rol_id = {"1": true};
+			} 
+			
 			// Set borders for field values
 			$scope.begintijd = activiteit[0].begintijd;
 			$scope.eindtijd = activiteit[0].eindtijd;
+			
+			// Set opbouw/afbouw
+			$scope.opbouw = activiteit[0].opbouw;
+			
+			// Set opmerking verplicht
+			$scope.opmerkingVerplicht = activiteit[0].opmerkingVerplicht
 		}
 	});
+	
+	/**
+	 * Haal de omschrijving op voor de rollen
+	 * 
+	 * @param array rollen
+	 */
+	$scope.getActiviteitRollen = function(rollen) {
+		rollen.forEach(function(rol) {
+			$scope.urenRollen.forEach(function(activiteitRol) {
+				if(activiteitRol.id == rol) {
+					var temp = [];
+					temp.id = activiteitRol.id;
+					temp.rol = activiteitRol.rol;
+					$scope.activiteitRollen.push(temp);
+				}
+			});
+		});
+	}
 	
 	/**
 	 * Bereken verschil tussen 2 tijden.
@@ -452,7 +519,7 @@ angular.module('myApp')
 	 */
 	$scope.calculateTime = function(first, second, extra) {
 		
-		if ($scope.form != null) {
+		if (($scope.form != null) && ($scope.opbouw == true)) {
 			var firstTime = new Date("01/01/1970 " + first);
 			var secondTime = new Date("01/01/1970 " + second);
 			
@@ -466,14 +533,20 @@ angular.module('myApp')
 					hourDiff = hourDiff + $scope.configuratieExtraEindUren;
 				}
 			}
+			$scope.ExtraBeginUren = $scope.configuratieExtraBeginUren;
+			$scope.ExtraEindUren = $scope.configuratieExtraEindUren;
 			
 			if (isNaN(hourDiff)) {
 				hourDiff = 0;
 			}
+		} else {
+			hourDiff = 0;
 		}
 		
 		return hourDiff;
 	}
+	
+	$scope.loadConfig();
 	
 	// First load own data, refresh when load is complete
 	$scope.loadOwn();

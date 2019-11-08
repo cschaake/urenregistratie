@@ -88,7 +88,6 @@ class Activiteiten
     {
         $prep_stmt = null;
         $stmt = null;
-        
         // Controleer of groep_id bestaat en geef groepnaam terug
         if (! $this->_groepExists($activiteit)) {
             throw new Exception('Niet bestaande groep geselecteerd', 400);
@@ -97,14 +96,14 @@ class Activiteiten
         // Insert de nieuwe activiteit
         $prep_stmt = "
             INSERT INTO
-                ura_activiteiten (activiteit, groep_id, datum, begintijd, eindtijd)
+                ura_activiteiten (activiteit, groep_id, datum, begintijd, eindtijd, opbouw, opmerkingVerplicht)
             VALUES
-				(?,?,?,?,?)";
+				(?,?,?,?,?,?,?)";
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('sisss', $activiteit->activiteit, $activiteit->groep_id, $activiteit->datum, $activiteit->begintijd, $activiteit->eindtijd);
+            $stmt->bind_param('sisssii', $activiteit->activiteit, $activiteit->groep_id, $activiteit->datum, $activiteit->begintijd, $activiteit->eindtijd, $activiteit->opbouw, $activiteit->opmerkingVerplicht);
             $stmt->execute();
             $stmt->store_result();
 
@@ -119,6 +118,8 @@ class Activiteiten
         } else {
             throw new Exception('Database error', 500);
         }
+        
+        $activiteit->upsertRollen($this->mysqli);
         return true;
     }
 
@@ -154,7 +155,9 @@ class Activiteiten
                 ura_activiteiten.eindtijd,
                 ura_activiteiten.activiteit,
                 ura_activiteiten.groep_id,
-                ura_groepen.groep
+                ura_groepen.groep,
+                ura_activiteiten.opmerkingVerplicht,
+                ura_activiteiten.opbouw
             FROM
                 ura_activiteiten
             JOIN
@@ -200,8 +203,11 @@ class Activiteiten
      * @var string $begintijd
      * @var string $eindtijd
      * @var string $activiteit
+     * @var array $rollen
      * @var int $groep_id
      * @var string $groep 
+     * @var int $opmerkingVerplicht
+     * @var int $opbouw
      */
     private function _processread(mysqli_stmt $stmt){
         $id = null;
@@ -209,14 +215,18 @@ class Activiteiten
         $begintijd = null;
         $eindtijd = null;
         $activiteit = null;
+        $rollen = null;
         $groep_id = null;
         $groep = null;
+        $opmerkingVerplicht = null;
+        $opbouw = null;
         
         if ($stmt->num_rows >= 1) {
-            $stmt->bind_result($id, $datum, $begintijd, $eindtijd, $activiteit, $groep_id, $groep);
+            $stmt->bind_result($id, $datum, $begintijd, $eindtijd, $activiteit, $groep_id, $groep, $opmerkingVerplicht, $opbouw);
             
             while ($stmt->fetch()) {
-                $this->activiteiten[] = new activiteit($id, $datum, $begintijd, $eindtijd, $activiteit, $groep_id, $groep, (ACTIVITEIT_OPMERKING == $id));
+                $rollen = $this->_getRollen($id);
+                $this->activiteiten[] = new activiteit($id, $datum, $begintijd, $eindtijd, $activiteit, $rollen, $groep_id, $groep, $opmerkingVerplicht, $opbouw);
             }
         } elseif ($stmt->num_rows == 0) {
             throw new Exception('Geen activiteit gevonden', 404);
@@ -241,7 +251,7 @@ class Activiteiten
     {
         $prep_stmt = null;
         $stmt = null;
-        
+
         // Controleer of groep_id bestaat en geef groepnaam terug
         if (! $this->_groepExists($activiteit)) {
             throw new Exception('Niet bestaande groep geselecteerd', 400);
@@ -254,7 +264,9 @@ class Activiteiten
                 begintijd = ?,
                 eindtijd = ?,
                 activiteit = ?,
-                groep_id = ?
+                groep_id = ?,
+                opmerkingVerplicht = ?,
+                opbouw = ?
             WHERE
                 id = ?";
 
@@ -262,13 +274,16 @@ class Activiteiten
 
         if ($stmt) {
             $stmt->bind_param(
-                'ssssii', 
+                'ssssiiii', 
                 $activiteit->datum, 
                 $activiteit->begintijd, 
                 $activiteit->eindtijd, 
                 $activiteit->activiteit, 
                 $activiteit->groep_id, 
-                $activiteit->id
+                $activiteit->id,
+                $activiteit->opmerkingVerplicht,
+                $activiteit->opbouw
+                
                 );
             $stmt->execute();
             $stmt->store_result();
@@ -282,6 +297,8 @@ class Activiteiten
             throw new Exception('Database error', 500);
         }
 
+        $activiteit->upsertRollen($this->mysqli);
+        
         $this->activiteiten[] = $activiteit;
         return true;
     }
@@ -331,9 +348,43 @@ class Activiteiten
             throw new Exception('Database error', 500);
         }
 
+        $this->_deleteRollen($id);
+        
         return $result;
     }
 
+    /**
+     * Verwijder rollen voor huidige activiteit
+     * Verwijder records uit activiteitrol tabel
+     *
+     * @param int $id activiteitid
+     *
+     * @return bool Succes vlag
+     */
+    private function _deleteRollen($id) {
+        $prep_stmt = null;
+        $stmt = null;
+        
+        $prep_stmt = "
+            DELETE FROM
+                ura_activiteitrol
+            WHERE
+                activiteit_id = ?";
+        
+        $stmt = $this->mysqli->prepare($prep_stmt);
+        
+        if ($stmt) {
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            $stmt->store_result();
+            
+            $stmt->close();
+        } else {
+            throw new Exception('Database error', 500);
+        }
+        return true;
+    }
+    
     /**
      * Method _canDelete - Kan worden gedelete
      *
@@ -433,5 +484,63 @@ class Activiteiten
         }
 
         return $result;
+    }
+    
+    /**
+     * Method _getRollen - Lees alle rollen
+     *
+     * @access private
+     * @param int $id activiteit_id
+     * @throws Exception
+     * @return array $rollen
+     *
+     * @var array $rollen
+     * @var int $rol_id
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     */
+    private function _getRollen($id) {
+        $prep_stmt = null;
+        $stmt = null;
+        $rollen = null;
+        $rol_id = null;
+        
+        if (isset($id)) {
+            $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
+        }
+        
+        $prep_stmt = "
+			SELECT
+				rol_id
+			FROM
+				ura_activiteitrol
+			WHERE
+				activiteit_id = ?";
+        
+        $stmt = $this->mysqli->prepare($prep_stmt);
+        
+        $stmt->bind_param('i', $id);
+        
+        if ($stmt) {
+            $stmt->execute();
+            $stmt->store_result();
+            
+            if ($stmt->num_rows >= 1) {
+                $stmt->bind_result($rol_id);
+                
+                while ($stmt->fetch()) {
+                    $rollen[] = $rol_id;
+                }
+            } elseif ($stmt->num_rows == 0) {
+                $rollen = null;
+            } else {
+                $stmt->close();
+                throw new Exception('Fout bij opvragen groep', 500);
+            }
+            $stmt->close();
+        } else {
+            throw new Exception('Database error');
+        }
+        return $rollen;
     }
 }

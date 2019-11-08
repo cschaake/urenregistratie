@@ -16,13 +16,14 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.1
  */
 
 /**
  * Required files
  */
 require_once ('Uur_obj.php');
+require_once ('Punten_obj.php');
 
 /**
  * Class Uren - Collection van Uur objecten
@@ -103,6 +104,12 @@ class Uren
                 username = ?,
                 activiteit_id = ?,
                 rol_id = ?,
+                groep_id = ( 
+                    SELECT 
+                        groep_id 
+                    FROM 
+                        ura_certificering 
+                    WHERE rol_id = ?),
                 datum = ?,
                 start = ?,
                 eind = ?,
@@ -114,7 +121,7 @@ class Uren
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('siisssds', $uur_obj->username, $uur_obj->activiteit_id, $uur_obj->rol_id, $uur_obj->datum, $uur_obj->start, $uur_obj->eind, $uur_obj->uren, $uur_obj->opmerking);
+            $stmt->bind_param('siiisssds', $uur_obj->username, $uur_obj->activiteit_id, $uur_obj->rol_id, $uur_obj->rol_id, $uur_obj->datum, $uur_obj->start, $uur_obj->eind, $uur_obj->uren, $uur_obj->opmerking);
             $stmt->execute();
             $stmt->store_result();
 
@@ -435,6 +442,12 @@ class Uren
         $prep_stmt = null;
         $stmt = null;
         
+        // Controleer overlap in tijd
+        $time = $this->_checkTime($uur_obj->username, $uur_obj->datum, $uur_obj->start, $uur_obj->eind, $uur_obj->rol_id, $uur_obj->id);
+        if ($time) {
+            throw new Exception('Reeds uren geboekt tussen ' . $time->start . ' en ' . $time->eind);
+        }
+        
         $uur_obj->getActiviteitTijden($uur_obj);
         $uur_obj->calculateUren();
         
@@ -445,6 +458,12 @@ class Uren
                 username = ?,
                 activiteit_id = ?,
                 rol_id = ?,
+                groep_id = ( 
+                    SELECT 
+                        groep_id 
+                    FROM 
+                        ura_certificering 
+                    WHERE rol_id = ?),
                 datum = ?,
                 start = ?,
                 eind = ?,
@@ -458,7 +477,7 @@ class Uren
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('siisssdissi', $uur_obj->username, $uur_obj->activiteit_id, $uur_obj->rol_id, $uur_obj->datum, $uur_obj->start, $uur_obj->eind, $uur_obj->uren, $uur_obj->akkoord, $uur_obj->reden, $uur_obj->opmerking, $uur_obj->id);
+            $stmt->bind_param('siiisssdissi', $uur_obj->username, $uur_obj->activiteit_id, $uur_obj->rol_id, $uur_obj->rol_id, $uur_obj->datum, $uur_obj->start, $uur_obj->eind, $uur_obj->uren, $uur_obj->akkoord, $uur_obj->reden, $uur_obj->opmerking, $uur_obj->id);
             $stmt->execute();
             $stmt->store_result();
 
@@ -549,6 +568,9 @@ class Uren
         
         $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
 
+        $Uur = new Uren($this->mysqli);
+        $Uur->read(null,$id,null);
+
         $prep_stmt = "
             UPDATE
 				ura_uren
@@ -560,6 +582,7 @@ class Uren
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
+            
             $stmt->bind_param('i', $id);
 
             $stmt->execute();
@@ -570,6 +593,14 @@ class Uren
         } else {
             throw new Exception('Database error', 500);
         }
+        
+        // Geef het juiste aantal punten vrij bij goedkeuren.
+        $createDate = null; //@TODO huidige datum invullen
+        $waardePunten = null; //@TODO waarde punten bepalen uit tabel op basis van huidige datum
+        
+        $punt_obj = new Punt(null, $Uur->username, $Uur->datum, $Uur->start, $Uur->eind, $Uur->id, $createDate, $Uur-uren, $waardePunten, 0);
+        $punten = new Punten($this->mysqli);
+        $punten->create($punt_obj);
 
         return $result;
     }
@@ -632,12 +663,13 @@ class Uren
      * @param string $start Start tijd
      * @param string $end End tijd
      * @param int $rol_id
+     * @param int $uur_id optioneel te wijzigen uur_id
      * @return bool Succes vlag
      * 
      * @var string prep_stmt
      * @var mysqli_stmt stmt
      */
-    private function _checkTime($username, $date, $start, $end, $rol_id)
+    private function _checkTime($username, $date, $start, $end, $rol_id, $uur_id = null)
     {
         $prep_stmt = null;
         $stmt = null;
@@ -662,11 +694,21 @@ class Uren
 				start < ?
             AND
                 rol_id = ?";
+        
+        if ($uur_id) {
+            $prep_stmt .= "
+            AND
+                id != ?";
+        }
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('ssssi', $username, $date, $start, $end, $rol_id);
+            if ($uur_id) {
+                $stmt->bind_param('ssssii', $username, $date, $start, $end, $rol_id, $uur_id);
+            } else {
+                $stmt->bind_param('ssssi', $username, $date, $start, $end, $rol_id);
+            }
 
             $stmt->execute();
             $stmt->store_result();
@@ -686,4 +728,5 @@ class Uren
 
         return $result;
     }
+    
 }

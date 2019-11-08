@@ -45,15 +45,7 @@
 					<input type="hidden" ng-model="form.id" value="{{ form.id }}"></input>
 					<!-- Hidden field to set record id -->
 
-					<div class="form-group has-feedback"
-						show-errors="{ showSuccess: true }">
-						<label class="control-label col-sm-2" for="datum">Datum</label>
-						<div class="col-sm-10">
-							<input id="datum" name="datum" type="date" ng-model="form.datum"
-								errorText="Datum is verplicht in het formaat jaar-maand-dag"
-								class="form-control" required placeholder="jjjj-mm-dd" />
-						</div>
-					</div>
+					
 					
 					<div class="form-group has-feedback"
 						show-errors="{ showSuccess: true }">
@@ -76,8 +68,52 @@
 							</select>
 						</div>
 					</div>
+					
+					<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
+							<label class="control-label col-sm-2" for="rollen">Rollen</label>
+							<div class="col-sm-10">
+								<select 
+									multiple 
+									id="rollen" 
+									name="rollen" 
+									class="form-control" 
+									size="{{ rollen.length }}"
+									ng-model="form.rollen" 
+									ng-options="c.id as c.rol for c in rollen"
+									errorText="Selecteer minimaal 1 rol"
+									required></select>
+								<br/>
+								<div id="description-select" class="alert alert-info"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a>Gebruik <kbd>ctrl</kbd> om meerder rollen te selecteren.</div>
+							</div>
+						</div>
+					
+					<div class="form-group has-feedback" ng-hide="form.nodate"
+						show-errors="{ showSuccess: true }">
+						<label class="control-label col-sm-2" for="datum">Datum</label>
+						<div class="col-sm-10">
+							<input id="datum" name="datum" type="date" ng-model="form.datum"
+								errorText="Datum is verplicht in het formaat jaar-maand-dag"
+								class="form-control" required placeholder="jjjj-mm-dd" />
+						</div>
+					</div>
 
 					<div class="form-group has-feedback"
+						show-errors="{ showSuccess: true }">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-10">
+							<input type="checkbox" name="nodate" ng-model="form.nodate"/> Activiteit zonder datum
+						</div>
+					</div>
+
+					<div class="form-group has-feedback"
+						show-errors="{ showSuccess: true }">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-10">
+							<input type="checkbox" name="opmerkingVerplicht" ng-model="form.opmerkingVerplicht"/> Opmerking verplicht bij boeken
+						</div>
+					</div>
+
+					<div class="form-group has-feedback" ng-hide="form.nodate"
 						show-errors="{ showSuccess: true }">
 						<label class="control-label col-sm-2" for="begintijd">Begintijd</label>
 						<div class="col-sm-10">
@@ -89,7 +125,7 @@
 						</div>
 					</div>
 
-					<div class="form-group has-feedback"
+					<div class="form-group has-feedback" ng-hide="form.nodate"
 						show-errors="{ showSuccess: true }">
 						<label class="control-label col-sm-2" for="eindtijd">Eindtijd</label>
 						<div class="col-sm-10">
@@ -100,8 +136,19 @@
 								min="{{ form.begintijd }}" placeholder="hh:mm" />
 						</div>
 					</div>
+					
+					<div class="form-group has-feedback"
+						show-errors="{ showSuccess: true }">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-10">
+							<input type="checkbox" name="opbouw" ng-model="form.opbouw"/> Voorbereiding en afbouw tijden toevoegen
+						</div>
+					</div>
+					
+					
+					
 					<?php /** @TODO voorbereiding en afbouw tijd uit parameters halen */ ?>
-					<div class="alert alert-info" role="alert">
+					<div class="alert alert-info" role="alert" ng-show="form.opbouw">
  						Begin- en eindtijden zijn exclusief 30 minuten voorbereiding en 30 minuten afbouwen van de activiteit. 
 						De extra tijd wordt automatisch toegekend wanneer bij uren boeken de begin- en eindtijd wordt gehandhaaft.
 					</div>
@@ -117,6 +164,7 @@
 						ng-click="reset()">Annuleer</button>
 				</form>
 			</div>
+			<pre>{{ form | json }}</pre>
 		</div>
 	</div>
 </div>
