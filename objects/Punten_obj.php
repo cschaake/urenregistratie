@@ -13,10 +13,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2019 Schaake.nu
+ * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.2.1
- * @version    1.2.1
+ * @version    1.2.2
  */
 
 /**
@@ -28,7 +28,7 @@ require_once ('Punt_obj.php');
  * Class Punten - Collection van Punt objecten
  *
  * @since Class available since Release 1.0.0
- * @version 1.2.1
+ * @version 1.2.2
  */
 class Punten
 {
@@ -39,7 +39,31 @@ class Punten
      * @var Punt[]
      * @access public
      */
-    public $uren;
+    public $punten;
+    
+    /**
+     * Totaal aantal punten
+     *
+     * @var double totaalPunten
+     * @access public
+     */
+    public $totaalPunten;
+    
+    /**
+     * Totaal aantal gebruikte punten
+     *
+     * @var double puntenGebruikt
+     * @access public
+     */
+    public $puntenGebruikt;
+    
+    /**
+     * Totaal aantal beschikbare punten
+     *
+     * @var double puntenBeschikbaar
+     * @access public
+     */
+    public $puntenBeschikbaar;
     
     /**
      * Mysqli object
@@ -75,7 +99,6 @@ class Punten
      * @throws Exception
      * @return bool Succes vlag
      *
-     * @var array $time
      * @var string $prep_stmt SQL Statement
      * @var SQLite3Stmt $stmt
      */
@@ -84,9 +107,7 @@ class Punten
         $prep_stmt = null;
         $stmt = null;
         
-        // Bepaal werkelijke uren door te controleren of er al geen uren waren geboekt
-        $punt_obj->punten = $this->_checkTime($punt_obj->username, $punt_obj->datum, $punt_obj->start, $punt_obj->eind, $punt_obj->uur_id);
-        
+      
         $prep_stmt = "
             INSERT
 				ura_punten
@@ -99,12 +120,12 @@ class Punten
                 createDate = ?,
                 punten = ?,
 				waardePunten = ?,
-                puntenGebruikt = 0";
+                puntenGebruikt = ?";
         
         $stmt = $this->mysqli->prepare($prep_stmt);
         
         if ($stmt) {
-            $stmt->bind_param('ssssisdd', $punt_obj->username, $punt_obj->datum, $punt_obj->start, $punt_obj->eind, $punt_obj->uur_id, $punt_obj->createDate, $punt_obj->punten, $punt_obj->waardePunten);
+            $stmt->bind_param('ssssisddd', $punt_obj->username, $punt_obj->datum, $punt_obj->start, $punt_obj->eind, $punt_obj->uur_id, $punt_obj->createDate, $punt_obj->punten, $punt_obj->waardePunten, $punt_obj->puntenGebruikt);
             $stmt->execute();
             $stmt->store_result();
             
@@ -112,7 +133,7 @@ class Punten
                 $id = (int) $stmt->insert_id;
             } else {
                 $stmt->close();
-                throw new Exception('Fout bij updaten uur', 500);
+                throw new Exception('Fout bij updaten punt', 500);
             }
             $stmt->close();
         } else {
@@ -129,6 +150,7 @@ class Punten
      * @access public
      * @param string $username optional Username
      * @param int $id optional Punt id
+     * @param int $uurId optional Uur id
      * @throws Exception
      * @return bool Succes vlag
      *
@@ -146,13 +168,11 @@ class Punten
      * @var string $prep_stmt SQL Statement
      * @var SQLite3Stmt $stmt
      */
-    public function read($username = null, $id = null)
+    public function read($username = null, $id = null, $uurId = null)
     {
         $prep_stmt = null;
         $stmt = null;
         
-        $id = null;
-        $username = null;
         $datum = null;
         $start = null;
         $eind = null; 
@@ -167,6 +187,11 @@ class Punten
         }
         if (isset($id)) {
             $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
+        }
+        if (isset($uurId)) {
+            $id = (int) filter_var($id, FILTER_SANITIZE_STRING);
+            $username = null;
+            $id = null;
         }
         
         $prep_stmt = null;
@@ -185,12 +210,22 @@ class Punten
                 ura_punten.puntenGebruikt
             FROM
                 ura_punten";
+        if ($username || $id || $uurId) {
+            $prep_stmt .= " WHERE ";
+        }
         if ($username) {
-            $prep_stmt .= " WHERE ura_uren.username = ? ";
+            $prep_stmt .= " ura_punten.username = ? ";
         }
         if ($id) {
-            $prep_stmt .= " AND ura_uren.id = ?";
+            if ($username) {
+                $prep_stmt .= " AND ";
+            }
+            $prep_stmt .= " ura_punten.id = ?";
         }
+        if ($uurId) {
+            $prep_stmt .= " ura_punten.uur_id = ?";
+        }
+        
         $prep_stmt .= " ORDER BY ura_punten.datum";
         
         $stmt = $this->mysqli->prepare($prep_stmt);
@@ -202,6 +237,8 @@ class Punten
                 $stmt->bind_param('s', $username);
             } elseif ($id) {
                 $stmt->bind_param('i', $id);
+            } elseif ($uurId) {
+                $stmt->bind_param('i', $uurId);
             }
             $stmt->execute();
             $stmt->store_result();
@@ -216,7 +253,7 @@ class Punten
                 }
             } elseif ($stmt->num_rows == 0) {
                 $stmt->close();
-                throw new Exception('Geen uur record gevonden', 404);
+                return false;
             } else {
                 $stmt->close();
                 throw new Exception('Fout bij opvragen uren', 500);
@@ -246,9 +283,6 @@ class Punten
         $prep_stmt = null;
         $stmt = null;
         
-        // Bepaal werkelijke uren door te controleren of er al geen uren waren geboekt
-        $punt_obj->punten = $this->_checkTime($punt_obj->username, $punt_obj->datum, $punt_obj->start, $punt_obj->eind, $punt_obj->uur_id);
-        
         $prep_stmt = "
             UPDATE
 				ura_punten
@@ -267,7 +301,7 @@ class Punten
         $stmt = $this->mysqli->prepare($prep_stmt);
         
         if ($stmt) {
-            $stmt->bind_param('ssssisddi', $punt_obj->username, $punt_obj->datum, $punt_obj->start, $punt_obj->eind, $punt_obj->uur_id, $punt_obj->createDate, $punt_obj->punten, $punt_obj->waardePunten, $punt_obj->id);
+            $stmt->bind_param('ssssisddd', $punt_obj->username, $punt_obj->datum, $punt_obj->start, $punt_obj->eind, $punt_obj->uur_id, $punt_obj->createDate, $punt_obj->punten, $punt_obj->waardePunten, $punt_obj->id);
             $stmt->execute();
             $stmt->store_result();
             
@@ -290,7 +324,7 @@ class Punten
      *
      * @access public
      * @param int $id Punt id
-     * @param string $username Username
+     * @param string $username Optional Username
      * @throws Exception
      * @return int Number of deleted rows
      *
@@ -339,88 +373,31 @@ class Punten
     }
     
     /**
-     * Method _checkTime - Check time
+     * Method calculateTotals
      *
-     * Check of er reeds uren zijn geboekt op het gevraagde tijdstip en geen array met start en eindtijden terug.
+     * @access public
+     * @param string $datum
+     * @throws Exception
+     * @return int Number of deleted rows
      *
-     * @param string $username Username
-     * @param string $date Datum
-     * @param string $start Start tijd
-     * @param string $end End tijd
-     * @param int $uur_id optioneel te wijzigen uur_id
-     * @return bool Succes vlag
-     *
-     * @var string start2
-     * @var string eind2
-     * @var string prep_stmt
-     * @var mysqli_stmt stmt
+     * @var bool Resultflag
      */
-    private function _checkTime($username, $date, $start, $eind, $uur_id = null)
-    {
-        $prep_stmt = null;
-        $stmt = null;
-        $start2 = null;
-        $eind2 = null;
+    public function calculateTotals($datum) {
+        $this->puntenBeschikbaar = 0;
+        $this->puntenGebruikt = 0;
+        $this->totaalPunten = 0;
         
-        if ($start > $eind) {
-            throw new Exception('Eindtijd voor begintijd', 500);
-        }
-        
-        $prep_stmt = "
-            SELECT
-				start, eind
-			FROM
-				ura_uren
-            WHERE
-				username = ?
-			AND
-				datum = ?
-			AND
-				eind > ?
-			AND
-				start < ?
-            AND 
-                akkoord = 1";
-        
-        if ($uur_id) {
-            $prep_stmt .= "
-            AND
-                id != ?";
-        }
-        
-        $stmt = $this->mysqli->prepare($prep_stmt);
-        
-        if ($stmt) {
-            if ($uur_id) {
-                $stmt->bind_param('ssssii', $username, $date, $start, $eind, $uur_id);
-            } else {
-                $stmt->bind_param('ssssi', $username, $date, $start, $eind);
-            }
-            
-            $stmt->execute();
-            $stmt->store_result();
-            
-            if ($stmt->affected_rows < 0) {
-                $stmt->close();
-                throw new Exception('Fout bij bepalen tijds overlap', 500);
-            } elseif ($stmt->affected_rows > 0) {
-                $stmt->bind_result($start2, $eind2);
-                while ($stmt->fetch()) {
-                    
-                    if (($eind2 > $start) && ($eind2 < $eind)) {
-                        $start = $eind2;   
-                    }
-                    
-                    if (($start2 < $eind) && ($start2 > $start)) {
-                        $eind = $start2;
-                    }
+        if (isset($this->punten)) {
+            foreach($this->punten as $punt) {
+                if (strtotime($punt->datum) > strtotime(PUNTENGELDIGHEID)) {
+                    $this->totaalPunten = $this->totaalPunten + $punt->punten;
+                    $this->puntenGebruikt = $this->puntenGebruikt + $punt->puntenGebruikt;
                 }
             }
-            $stmt->close();
-        } else {
-            throw new Exception('Database error', 500);
+            
+            $this->puntenBeschikbaar = $this->totaalPunten - $this->puntenGebruikt;
         }
         
-        return $eind - $start;
+        return true;
     }
 }

@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.2.1
+ * @version    1.2.2
  * 
  * @var mysqli $mysqli
  * @var Authenticate $authenticate
@@ -114,7 +114,7 @@ function postUrenboeken(input $input)
         header('Content-Type: application/json');
         echo json_encode(array(
             'success' => false,
-            'message' => 'Forbidden',
+            'message' => 'Forbidden (#A01)',
             'code' => 403
         ));
         exit();
@@ -213,7 +213,7 @@ function getUrenboeken(input $input)
             header('Content-Type: application/json');
             echo json_encode(array(
                 'success' => false,
-                'message' => 'Forbidden',
+                'message' => 'Forbidden (#A02)',
                 'code' => 403
             ));
             exit();
@@ -228,7 +228,7 @@ function getUrenboeken(input $input)
             header('Content-Type: application/json');
             echo json_encode(array(
                 'success' => false,
-                'message' => 'Forbidden',
+                'message' => 'Forbidden (#A03)',
                 'code' => 403
             ));
             exit();
@@ -325,7 +325,7 @@ function putUrenboeken(input $input)
         header('Content-Type: application/json');
         echo json_encode(array(
             'success' => false,
-            'message' => 'Forbidden',
+            'message' => 'Forbidden (#A04)',
             'code' => 403
         ));
         exit();

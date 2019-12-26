@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.2
  */
 
 /**
@@ -30,7 +30,7 @@ require_once ('Rol_obj.php');
  * Class Rollen - Collection van rollen
  *
  * @since File available since Release 1.0.0
- * @version 1.0.9
+ * @version 1.2.2
  */
 class Rollen
 {
@@ -75,6 +75,8 @@ class Rollen
      * @param Rol $record Rol object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @todo Puntensparen toevoegen
      * 
      * @var string $prep_stmt
      * @var mysqli_stmt $stmt
@@ -121,6 +123,7 @@ class Rollen
      * 
      * @var int $id
      * @var string $rol
+     * @var bool $puntenSparen
      * @var string $prep_stmt
      * @var mysqli_stmt $stmt
      */
@@ -130,6 +133,7 @@ class Rollen
         $stmt = null;
         $id = null;
         $rol = null;
+        $puntenSparen = null;
         
         if (isset($username)) {
             $username = filter_var($username, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
@@ -138,7 +142,8 @@ class Rollen
         $prep_stmt = "
             SELECT DISTINCT
                 ura_rollen.id,
-                ura_rollen.rol
+                ura_rollen.rol,
+                ura_rollen.puntensparen
             FROM
                 ura_rollen";
 
@@ -166,10 +171,11 @@ class Rollen
             $stmt->store_result();
 
             if ($stmt->num_rows >= 1) {
-                $stmt->bind_result($id, $rol);
-
+                $stmt->bind_result($id, $rol, $puntenSparen);
+                
                 while ($stmt->fetch()) {
-                    $this->rollen[] = new rol($id, $rol);
+                    
+                    $this->rollen[] = new rol($id, $rol, null, null, $puntenSparen);
                 }
             } elseif ($stmt->num_rows == 0) {
                 throw new Exception('Geen rol gevonden', 404);
@@ -191,6 +197,8 @@ class Rollen
      * @param Rol $record Rol object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @todo Puntensparen toevoegen
      * 
      * @var string $prep_stmt
      * @var mysqli_stmt $stmt
@@ -325,5 +333,27 @@ class Rollen
         }
 
         return $result;
+    }
+    
+    /**
+     * Method magSparen - Controleer of rol punten mag sparen
+     *
+     * @access public
+     * @param int $id
+     *            Rol id
+     * @throws Exception
+     * @return bool Succes vlag
+     *
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     */
+    public function magSparen($id)
+    {
+        foreach($this->rollen as $rol) {
+            if ($rol->id == $id) {
+                return $rol->puntenSparen;
+            }
+        }
+        throw new Exception('Kan punten sparen niet bepalen', 500);
     }
 }

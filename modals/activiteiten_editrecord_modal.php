@@ -16,7 +16,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.2.0
- * @version    1.2.0
+ * @version    1.2.2
  */
 ?>
 
@@ -164,7 +164,6 @@
 						ng-click="reset()">Annuleer</button>
 				</form>
 			</div>
-			<pre>{{ form | json }}</pre>
 		</div>
 	</div>
 </div>

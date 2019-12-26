@@ -125,7 +125,7 @@ function postActiviteit($input)
         echo json_encode(array('success' => false, 'message' => 'Forbidden', 'code' => 403));
         exit;
     }
-
+    // @TODO opmerkingVerplicht en opbouw kunnen ontbreken in de JSON
     $json = $input->get_JSON();
     $activiteit_obj = new Activiteit(null, $json->datum, $json->begintijd, $json->eindtijd, $json->activiteit, $json->rollen, $json->groep_id, null, $json->opmerkingVerplicht, $json->opbouw);
     $activiteiten_obj = new Activiteiten($mysqli);

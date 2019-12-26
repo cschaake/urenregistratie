@@ -98,7 +98,7 @@ angular.module('myApp')
 	$scope.loadPunten = function() {
 		$http({
 			method : 'GET',
-			url : 'rest/punten.php/' + $scope.self.username,
+			url : 'rest/punten.php/getTotals/' + $scope.self.username,
 			headers : { 'Content-Type': 'application/json' }
 		}).then(function(response) {
 			if (response.data.message) {

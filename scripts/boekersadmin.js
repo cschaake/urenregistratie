@@ -17,7 +17,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.1
+ * @version    1.2.2
  */
 
 //--------------------------------------------------------------------
@@ -397,10 +397,12 @@ angular.module('myApp')
     }
 
     $scope.calcCertificaat = function() {
+    	console.log("CalcCertificaat");
 	var l = $scope.certificaten.length;
 	for (var k=0; k<l; k++) {
+		console.log($scope.certificaten);
 	    if ($scope.certificaten[k].id === $scope.certificaat.id) {
-
+	    	
 		if ($scope.certificaat.gecertificeerd) {
 		    var jaar = $scope.certificaat.gecertificeerd.getFullYear(); // Current yeara
 		    var maand = $scope.certificaat.gecertificeerd.getMonth(); // Current month

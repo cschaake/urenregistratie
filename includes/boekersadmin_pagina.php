@@ -14,10 +14,10 @@
  * we can mail you a copy immediately.
  *
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2019 Schaake.nu
+ * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.2
  */
 
 /**
@@ -323,7 +323,15 @@
 						<div class="form-group has-feedback" show-errors="{ showSuccess: true }">
 							<label class="control-label col-sm-4" for="gecertificeerd">Datum gecertificeerd</label>
 							<div class="col-sm-8">
-								<input id="gecertificeerd" ng-change="calcCertificaat()" name="gecertificeerd" type="date" ng-model="certificaat.gecertificeerd" errorText="Datum is verplicht in het formaat jaar-maand-dag" class="form-control" required placeholder="jjjj-mm-dd"/>
+								<input 
+									id="gecertificeerd" 
+									ng-change="calcCertificaat()" 
+									name="gecertificeerd" 
+									type="date" 
+									ng-model="certificaat.gecertificeerd" 
+									errorText="Datum is verplicht in het formaat jaar-maand-dag" 
+									class="form-control" 
+									required placeholder="jjjj-mm-dd"/>
 							</div>
 						</div>
 

@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.2
  */
 
 /**
@@ -32,7 +32,7 @@ include_once ('Activiteit_obj.php');
  * Factory voor activiteit objecten. Kan 1 of meer activiteit objecten bevatten.
  *
  * @since Object available since Release 1.0.0
- * @version 1.2.0
+ * @version 1.2.2
  * 
  * @see objects/Activiteit_obj.php
  */
@@ -80,6 +80,8 @@ class Activiteiten
      * @param Activiteit $activiteit Activiteit object.
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @todo PuntenSparen meenemen als input
      * 
      * @var string $prep_stmt
      * @var mysqli_stmt $stmt
@@ -157,7 +159,8 @@ class Activiteiten
                 ura_activiteiten.groep_id,
                 ura_groepen.groep,
                 ura_activiteiten.opmerkingVerplicht,
-                ura_activiteiten.opbouw
+                ura_activiteiten.opbouw,
+                ura_activiteiten.puntensparen
             FROM
                 ura_activiteiten
             JOIN
@@ -208,6 +211,7 @@ class Activiteiten
      * @var string $groep 
      * @var int $opmerkingVerplicht
      * @var int $opbouw
+     * @var int $puntenSparen
      */
     private function _processread(mysqli_stmt $stmt){
         $id = null;
@@ -220,13 +224,14 @@ class Activiteiten
         $groep = null;
         $opmerkingVerplicht = null;
         $opbouw = null;
+        $puntenSparen = null;
         
         if ($stmt->num_rows >= 1) {
-            $stmt->bind_result($id, $datum, $begintijd, $eindtijd, $activiteit, $groep_id, $groep, $opmerkingVerplicht, $opbouw);
+            $stmt->bind_result($id, $datum, $begintijd, $eindtijd, $activiteit, $groep_id, $groep, $opmerkingVerplicht, $opbouw, $puntenSparen);
             
             while ($stmt->fetch()) {
                 $rollen = $this->_getRollen($id);
-                $this->activiteiten[] = new activiteit($id, $datum, $begintijd, $eindtijd, $activiteit, $rollen, $groep_id, $groep, $opmerkingVerplicht, $opbouw);
+                $this->activiteiten[] = new activiteit($id, $datum, $begintijd, $eindtijd, $activiteit, $rollen, $groep_id, $groep, $opmerkingVerplicht, $opbouw, $puntenSparen);
             }
         } elseif ($stmt->num_rows == 0) {
             throw new Exception('Geen activiteit gevonden', 404);
@@ -243,6 +248,8 @@ class Activiteiten
      * @param Activiteit $activiteit Activiteit object
      * @throws Exception
      * @return bool Succes vlag
+     * 
+     * @todo PuntenSparen meenemen als input
      * 
      * @var string $prep_stmt
      * @var mysqli_stmt $stmt
@@ -542,5 +549,27 @@ class Activiteiten
             throw new Exception('Database error');
         }
         return $rollen;
+    }
+    
+    /**
+     * Method magSparen - Controleer of activiteit punten mag sparen
+     *
+     * @access public
+     * @param int $id
+     *            Activiteit id
+     * @throws Exception
+     * @return bool Succes vlag
+     *
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     */
+    public function magSparen($id)
+    {
+        foreach($this->activiteiten as $activiteit) {
+            if ($activiteit->id == $id) {
+                return $activiteit->puntenSparen;
+            }
+        } 
+        throw new Exception('Kan punten sparen niet bepalen', 500);
     }
 }

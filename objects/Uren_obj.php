@@ -16,7 +16,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.1
+ * @version    1.2.2
  */
 
 /**
@@ -24,12 +24,15 @@
  */
 require_once ('Uur_obj.php');
 require_once ('Punten_obj.php');
+require_once ('PuntenWaardes_obj.php');
+require_once ('Activiteiten_obj.php');
+require_once ('Rollen_obj.php');
 
 /**
  * Class Uren - Collection van Uur objecten
  * 
  * @since Class available since Release 1.0.0
- * @version 1.2.0
+ * @version 1.2.2
  */
 class Uren
 {
@@ -147,13 +150,14 @@ class Uren
      * @param string $username optional Username
      * @param int $id optional Uur id
      * @param datetime $pijldatum optional Toon alleen uren voor certificaat dat actief is tijdens pijldatum
+     * @param string $action Welke soort uren moeten opgevraagd worden (null = alles; goedgekeurd = goedgekeurd)
      * @throws Exception
      * @return bool Succes vlag
      * 
      * @var string $prep_stmt SQL Statement
      * @var SQLite3Stmt $stmt  
      */
-    public function read($username = null, $id = null, $pijldatum = null)
+    public function read($username = null, $id = null, $pijldatum = null, $action = null)
     {
         $prep_stmt = null;
         $stmt = null;
@@ -167,8 +171,11 @@ class Uren
         if (isset($pijldatum)) {
             $pijldatum = date('Y-m-d', strtotime($pijldatum));
         }
+        if (isset($action)) {
+            $action = filter_var($action, FILTER_SANITIZE_STRING);
+        }
 
-        $prep_stmt = $this->_prepRead($username, $id);
+        $prep_stmt = $this->_prepRead($username, $id, $action);
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
@@ -198,12 +205,13 @@ class Uren
      * @access private
      * @param string $username optional Username
      * @param int $id optional Uur id
+     * @param string $action
      * @throws Exception
      * @return string prep_stmt
      * 
      * @var string $prep_stmt SQL Statement
      */
-    private function _prepRead($username = null, $id = null)
+    private function _prepRead($username = null, $id = null, $action)
     {
         $prep_stmt = null;
 
@@ -239,8 +247,11 @@ class Uren
         if ($id) {
             $prep_stmt .= " AND ura_uren.id = ?";
         }
+        if ($action == 'goedgekeurd') {
+            $prep_stmt .= " AND ura_uren.akkoord = 1 ";
+        }
         $prep_stmt .= " ORDER BY ura_uren.datum DESC";
-        
+       
         return $prep_stmt;
     }
     
@@ -302,7 +313,7 @@ class Uren
             }
         } elseif ($stmt->num_rows == 0) {
             $stmt->close();
-            throw new Exception('Geen uur record gevonden', 404);
+            throw new Exception('Geen uur record gevonden #A01', 404);
         } else {
             $stmt->close();
             throw new Exception('Fout bij opvragen uren', 500);
@@ -563,6 +574,8 @@ class Uren
      */
     public function goedkeuren($id)
     {
+        global $mysqli;
+        
         $prep_stmt = null;
         $stmt = null;
         
@@ -593,15 +606,19 @@ class Uren
         } else {
             throw new Exception('Database error', 500);
         }
-        
-        // Geef het juiste aantal punten vrij bij goedkeuren.
-        $createDate = null; //@TODO huidige datum invullen
-        $waardePunten = null; //@TODO waarde punten bepalen uit tabel op basis van huidige datum
-        
-        $punt_obj = new Punt(null, $Uur->username, $Uur->datum, $Uur->start, $Uur->eind, $Uur->id, $createDate, $Uur-uren, $waardePunten, 0);
-        $punten = new Punten($this->mysqli);
-        $punten->create($punt_obj);
 
+        $this->read(null, $id);
+        
+        if ($this->_checkMagPunten()) {
+            // Geef het juiste aantal punten vrij bij goedkeuren.
+            $waardePunten_obj = new PuntenWaardes($mysqli);
+            $waardePunten_obj->read();
+            $waardePunten = $waardePunten_obj->getPuntenWaarde(date('Y-m-d'));
+    
+            $punt_obj = new Punt(0, $Uur->uren[0]->username, $Uur->uren[0]->datum, $Uur->uren[0]->start, $Uur->uren[0]->eind, $Uur->uren[0]->id, date('Y-m-d'), $Uur->uren[0]->uren, $waardePunten, 0);
+            $punten = new Punten($this->mysqli);
+            $punten->create($punt_obj);
+        }
         return $result;
     }
 
@@ -729,4 +746,37 @@ class Uren
         return $result;
     }
     
+    /**
+     * Method _checkMagPunten
+     *
+     * Controleer of punten geboekt mogen worden op basis van activiteit en rol
+     *
+     * @return bool Succes vlag
+     *
+     * @var Activiteiten $activiteiten_obj
+     * @var Rollen $rollen_obj
+     */
+    private function _checkMagPunten() {
+        // Lees alle activiteiten
+        $activiteiten_obj = new Activiteiten($this->mysqli);
+        try {
+            $activiteiten_obj->read();
+        } catch(Exception $e) {
+            http_response_code(500);
+            echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 500));
+            exit;
+        }
+        
+        // Lees alle rollen
+        $rollen_obj = new Rollen($this->mysqli);
+        try {
+            $rollen_obj->read();
+        } catch(Exception $e) {
+            http_response_code(500);
+            echo json_encode(array('success' => false, 'message' => $e->getMessage(), 'code' => 500));
+            exit;
+        }
+        
+        return (($activiteiten_obj->magSparen($this->uren[0]->activiteit_id)) && ($rollen_obj->magSparen($this->uren[0]->rol_id)));
+    }
 }

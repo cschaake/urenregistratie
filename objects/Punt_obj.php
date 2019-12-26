@@ -13,10 +13,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2019 Schaake.nu
+ * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
- * @since      File available since Release 1.2.1
- * @version    1.2.1
+ * @since      File available since Release 1.2.2
+ * @version    1.2.2
  */
 
 /**
@@ -27,7 +27,7 @@
  * Class Punt - Enkel punt record
  *
  * @since File available since Release 1.2.1
- * @version 1.2.1
+ * @version 1.2.2
  */
 class Punt
 {

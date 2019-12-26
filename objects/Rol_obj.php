@@ -19,14 +19,14 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.2.0
+ * @version    1.2.2
  */
 
 /**
  * Class Rol
  *
  * @since Class available since Release 1.0.6
- * @version 1.2.0
+ * @version 1.2.2
  */
 class Rol
 {
@@ -64,6 +64,14 @@ class Rol
     public $verloopt;
 
     /**
+     * PuntenSparen
+     *
+     * @var bool
+     * @access public
+     */
+    public $puntenSparen;
+    
+    /**
      * Method constructor - Creeer rol object
      *
      * @access public
@@ -71,11 +79,13 @@ class Rol
      * @param string $rol optional Rol omschrijving
      * @param string $gecertificeerd
      * @param string $verloopt
+     * @param bool $puntenSparen mag punten sparen
      *
      * @return bool Succes vlag
      */
-    public function __construct($id, $rol = null, $gecertificeerd = null, $verloopt = null)
+    public function __construct($id, $rol = null, $gecertificeerd = null, $verloopt = null, $puntenSparen = null)
     {
+
         if (isset($id)) {
             $this->id = (int) filter_var($id, FILTER_SANITIZE_STRING);
         } else {
@@ -87,7 +97,11 @@ class Rol
             $this->rol = null;
         }
         if (isset($gecertificeerd)) {
-            $this->gecertificeerd = filter_var($gecertificeerd, FILTER_SANITIZE_STRING);
+            if (strpos($gecertificeerd,"T")) {
+                $this->gecertificeerd = filter_var(substr($gecertificeerd, 0, strpos($gecertificeerd,"T")), FILTER_SANITIZE_STRING);
+            } else {
+                $this->gecertificeerd = filter_var($gecertificeerd, FILTER_SANITIZE_STRING);
+            }
         } else {
             $this->gecertificeerd = null;
         }
@@ -96,7 +110,12 @@ class Rol
         } else {
             $this->verloopt = null;
         }
-
+        if ($puntenSparen) {
+            $this->puntenSparen = true;
+        } else {
+            $this->puntenSparen = false;
+        }
+        
         return true;
     }
 }

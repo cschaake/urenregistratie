@@ -16,7 +16,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.9
- * @version    1.2.0
+ * @version    1.2.2
  */
 
 /**
@@ -132,7 +132,7 @@ class Boekers
 
                 if ($stmt) {
                     $stmt->bind_param('sissi', $boeker->username, $rol->id, $rol->gecertificeerd, $rol->verloopt, $boeker->groepen[0]->id);
-
+                    
                     $stmt->execute();
                     $stmt->store_result();
 
@@ -250,7 +250,6 @@ class Boekers
                 $count = 0;
 
                 while ($stmt->fetch()) {
-
                     // Get the index of the current user if in object
                     $index = $this->_getIndexOf($username);
 

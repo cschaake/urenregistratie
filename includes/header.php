@@ -16,7 +16,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.2
  */
 
 /** 
@@ -111,8 +111,8 @@
 								?>
 									<li role="separator" class="divider"></li>
 									<li><a href="users.php">Gebruikers</a></li>
-									
 									<li><a href="configuratie.php">Configuratie</a></li>
+									<li><a href="puntenadmin.php">Punten beheren</a></li>
 									
 							<?php } ?>
 							

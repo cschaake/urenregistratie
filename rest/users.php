@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.1
+ * @version    1.2.2
  * 
  * @var mysqli $mysqli
  * @var Authenticate $authenticate
@@ -134,7 +134,7 @@ function postUser($input)
         header('Content-Type: application/json');
         echo json_encode(array(
             'success' => false,
-            'message' => 'Not found',
+            'message' => 'Not found (#A01)',
             'code' => 404
         ));
         print_r($e);

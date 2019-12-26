@@ -19,7 +19,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.6
- * @version    1.2.0
+ * @version    1.2.2
  */
 
 /**
@@ -28,7 +28,7 @@
  * Bevat een activiteit welke gepersisteerd is of wordt in de database.
  *
  * @since Object available since Release 1.0.0
- * @version 1.2.0
+ * @version 1.2.2
  */
 class Activiteit
 {
@@ -122,6 +122,14 @@ class Activiteit
     public $nodate;
     
     /**
+     * Punten sparen
+     *
+     * @var bool Configuratie parameter dat voor activiteit punten gespaard mogen worden
+     * @access public
+     */
+    public $puntenSparen;
+    
+    /**
      * Method constructor - Creeer activtiteit object.
      *
      * @param int $id Id van de activiteit
@@ -136,7 +144,7 @@ class Activiteit
      *
      * @return bool Succes vlag
      */
-    public function __construct($id, $datum, $begintijd, $eindtijd, $activiteit, $rollen, $groep_id, $groep = null, $opmerkingVerplicht = false, $opbouw = false)
+    public function __construct($id, $datum, $begintijd, $eindtijd, $activiteit, $rollen, $groep_id, $groep = null, $opmerkingVerplicht = false, $opbouw = false, $puntenSparen = null)
     {
         // Sanitize input
         if ($id) {
@@ -153,6 +161,7 @@ class Activiteit
         $this->groep = filter_var($groep, FILTER_SANITIZE_STRING, FILTER_CUSTOM);
         $this->opmerkingVerplicht = (bool) $opmerkingVerplicht;
         $this->opbouw = (bool) $opbouw;
+        $this->puntenSparen = (bool) $puntenSparen;
         
         // Database return 1970-01-01 for nulified date records. So we need te reset them to null 
         if ($this->datum < date('Y-m-d', strtotime('2000-01-01'))) {
