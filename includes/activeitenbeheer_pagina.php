@@ -2,7 +2,7 @@
 /**
  * Template activiteitenPanel | includes/activiteitenbeheer_pagina.php
  *
- * PHP version 7.2
+ * PHP version 7.4
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -13,10 +13,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2019 Schaake.nu
+ * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.2.0
- * @version    1.2.1
+ * @version    1.2.3
  */
 
 // Calculate date range for input (P3M means 3 months)
@@ -45,7 +45,7 @@ $enddate = $enddate->format('Y-m-d');
 			<div class="row">
 				<!-- For big displays -->
 				<div class="col-sm-9 hidden-sm hidden-xs">
-					<form role="form" class="form-inline">
+					<form aria-label="column filters" role="form" class="form-inline">
 						<div class="form-group">
 							<!-- Number of displayed rows -->
 							<select class="form-control" ng-model="itemsPerPage"
@@ -101,7 +101,7 @@ $enddate = $enddate->format('Y-m-d');
 
 				<!-- for small displays -->
 				<div class="col-sm-12 hidden-lg hidden-md">
-					<form role="form">
+					<form role="form" aria-label="filters">
 						<div class="form-group">
 							<div class="input-group">
 								<!-- Number of displayed tables and refresh data -->
@@ -158,12 +158,12 @@ $enddate = $enddate->format('Y-m-d');
 				-->
 			<div class="table-responsive">
 				<!-- Table list -->
-				<table class="table table-striped table-bordered">
+				<table class="table table-striped table-bordered"><caption>Activiteiten</caption>
 					<thead>
 						<!-- Table header -->
 						<!-- Header -->
 						<tr>
-							<th><a href="" ng-click="sortType = 'datum'">Datum</a> <a href=""
+							<th scope="col"><a href="" ng-click="sortType = 'datum'">Datum</a> <a href=""
 								ng-click="sortReverse = !sortReverse"> <span
 									ng-show="sortType == 'datum' && !sortReverse"> <span
 										class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span>
@@ -171,7 +171,7 @@ $enddate = $enddate->format('Y-m-d');
 										class="glyphicon glyphicon-sort-by-alphabet pull-right"></span>
 								</span>
 							</a></th>
-							<th><a href="" ng-click="sortType = 'activiteit'">Activiteit</a>
+							<th scope="col"><a href="" ng-click="sortType = 'activiteit'">Activiteit</a>
 								<a href="" ng-click="sortReverse = !sortReverse"> <span
 									ng-show="sortType == 'activiteit' && !sortReverse"> <span
 										class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span>
@@ -179,7 +179,7 @@ $enddate = $enddate->format('Y-m-d');
 										<span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span>
 								</span>
 							</a></th>
-							<th class="hidden-xs"><a href="" ng-click="sortType = 'groep'">Groep</a>
+							<th scope="col" class="hidden-xs"><a href="" ng-click="sortType = 'groep'">Groep</a>
 								<a href="" ng-click="sortReverse = !sortReverse"> <span
 									ng-show="sortType == 'groep' && !sortReverse"> <span
 										class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span>
@@ -187,16 +187,17 @@ $enddate = $enddate->format('Y-m-d');
 										class="glyphicon glyphicon-sort-by-alphabet pull-right"></span>
 								</span>
 							</a></th>
-							<th class="hidden-xs hidden-sm hidden-md">Begintijd</th>
-							<th class="hidden-xs hidden-sm hidden-md">Eindtijd</th>
-							<th />
+							<th scope="col" class="hidden-xs hidden-sm hidden-md">Begintijd</th>
+							<th scope="col" class="hidden-xs hidden-sm hidden-md">Eindtijd</th>
+							<th scope="col">Punten</th>
+							<th scope="col" />
 						</tr>
 
 						<!--- Filters -->
 						<tr ng-show="showFilter">
-							<th />
-							<th>
-								<form role="form" class="form-inline">
+							<th scope="col" />
+							<th scope="col">
+								<form aria-label="search" role="form" class="form-inline">
 									<div class="form-group" style="width: 100%">
 										<div class="input-group" style="width: 100%">
 											<span class="input-group-addon hidden-xs" id="search"
@@ -209,8 +210,8 @@ $enddate = $enddate->format('Y-m-d');
 									</div>
 								</form>
 							</th>
-							<th class="hidden-xs">
-								<form role="form" class="form-inline">
+							<th scope="col" class="hidden-xs">
+								<form aria-label="filter" role="form" class="form-inline">
 									<div class="form-group" style="width: 100%">
 										<div class="input-group" style="width: 100%">
 											<span class="input-group-addon hidden-xs" id="search"
@@ -223,9 +224,9 @@ $enddate = $enddate->format('Y-m-d');
 									</div>
 								</form>
 							</th>
-							<th class="hidden-xs hidden-sm hidden-md" />
-							<th class="hidden-xs hidden-sm hidden-md" />
-							<th />
+							<th scope="col" class="hidden-xs hidden-sm hidden-md" />
+							<th scope="col" class="hidden-xs hidden-sm hidden-md" />
+							<th scope="col" />
 						</tr>
 					</thead>
 
@@ -238,6 +239,7 @@ $enddate = $enddate->format('Y-m-d');
 							<td class="hidden-xs">{{ activiteit.groep }}</td>
 							<td class="hidden-xs hidden-sm hidden-md">{{ activiteit.begintijd }}</td>
 							<td class="hidden-xs hidden-sm hidden-md">{{ activiteit.eindtijd }}</td>
+							<td>{{ activiteit.puntenSparen }}</td>
 							<td class="text-right"
 								style="width: 7em;">
 								<button type="button" style="width: 3em;"

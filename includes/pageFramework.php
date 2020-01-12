@@ -27,7 +27,7 @@
  */
  ?>
 <!DOCTYPE html>
-<html>
+<html lang="nl">
     <head>
         <title><?php echo TITLE ?></title>
         <meta charset="utf-8">

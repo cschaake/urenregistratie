@@ -17,7 +17,7 @@
  * @copyright 2017 Schaake.nu
  * @license http://www.opensource.org/licenses/mit-license.html MIT License
  * @since File available since Release 1.0.0
- * @version 1.2.1
+ * @version 1.2.3
  */
 // --------------------------------------------------------------------
 // Custom App
@@ -229,7 +229,7 @@ angular.module('myApp')
 				
 			} else {
 				$scope.forms = [];
-				for (record in $scope.form.rol_id) {
+				for (let record in $scope.form.rol_id) {
 					$scope.form.rol_id = parseInt(record,10);
 					if (!isNaN($scope.form.rol_id)) {
 

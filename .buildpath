@@ -2,6 +2,6 @@
 <buildpath>
 	<buildpathentry kind="src" path=""/>
 	<buildpathentry kind="con" path="org.eclipse.dltk.USER_LIBRARY/Mail"/>
-	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
 	<buildpathentry kind="con" path="org.eclipse.dltk.USER_LIBRARY/Net"/>
+	<buildpathentry kind="con" path="org.eclipse.php.core.LANGUAGE"/>
 </buildpath>

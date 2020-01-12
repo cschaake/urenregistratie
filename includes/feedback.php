@@ -34,7 +34,7 @@
 				href="#"
 				data-toggle="modal" 
 				data-target="#feedbackModal">
-				<img src="images/feedback-side.png" width="30px" height="144px" style="top:50%; margin-top:-65px; position:fixed; z-index:999; right:0px"/>
+				<img alt="Feedback" src="images/feedback-side.png" width="30px" height="144px" style="top:50%; margin-top:-65px; position:fixed; z-index:999; right:0px"/>
 			</a>
 		</div>
 		
@@ -44,7 +44,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title"><i class="fa fa-paw" style="color: #ff6600"></i> Feedback</h4>
+						<h4 class="modal-title"><em class="fa fa-paw" style="color: #ff6600"></em> Feedback</h4>
 					</div>
 				
 					<div class="modal-body">
@@ -52,11 +52,11 @@
 						Wat vindt je van deze website?<br/>
 						<br/>
 						<div style="text-align:center">
-							<a href="#" ng-click="setStar(1)"><img src="images/smily_worst.png" width="76px" height="80px"/></a>
-							<a href="#" ng-click="setStar(2)"><img src="images/smily_bad.png" width="89px" height="80px" style="margin-left:20px"/></a>
-							<a href="#" ng-click="setStar(3)"><img src="images/smily_ok.png" width="76px" height="80px" style="margin-left:20px"/></a>
-							<a href="#" ng-click="setStar(4)"><img src="images/smily_better.png" width="108px" height="80px" style="margin-left:20px"/></a>
-							<a href="#" ng-click="setStar(5)"><img src="images/smily_best.png" width="94px" height="80px" style="margin-left:20px"/></a><br/>
+							<a href="#" ng-click="setStar(1)"><img alt="Agh..." src="images/smily_worst.png" width="76px" height="80px"/></a>
+							<a href="#" ng-click="setStar(2)"><img alt="Sniff" src="images/smily_bad.png" width="89px" height="80px" style="margin-left:20px"/></a>
+							<a href="#" ng-click="setStar(3)"><img alt="Mhoa" src="images/smily_ok.png" width="76px" height="80px" style="margin-left:20px"/></a>
+							<a href="#" ng-click="setStar(4)"><img alt="Alright" src="images/smily_better.png" width="108px" height="80px" style="margin-left:20px"/></a>
+							<a href="#" ng-click="setStar(5)"><img alt="Yee" src="images/smily_best.png" width="94px" height="80px" style="margin-left:20px"/></a><br/>
 						</div>
 						<br/>
 						<div style="text-align:center">{{ starDescription }}</div>
@@ -97,7 +97,7 @@
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
-						<h4 class="modal-title"><i class="fa fa-paw" style="color: #ff6600"></i> Feedback</h4>
+						<h4 class="modal-title"><em class="fa fa-paw" style="color: #ff6600"></em> Feedback</h4>
 					</div>
 					<div class="modal-body">
 					

@@ -3,7 +3,7 @@
  * 
  * AngularJS application for Urenregistratie pagina
  * 
- * PHP version 7.2
+ * PHP version 7.4
  * 
  * LICENSE: This source file is subject to the MIT license that is available
  * through the world-wide-web at the following URI:
@@ -14,10 +14,10 @@
  * 
  * @package Urenverantwoording
  * @author Christiaan Schaake <chris@schaake.nu>
- * @copyright 2019 Schaake.nu
+ * @copyright 2020 Schaake.nu
  * @license http://www.opensource.org/licenses/mit-license.html MIT License
  * @since File available since Release 1.2.0
- * @version 1.2.1
+ * @version 1.2.3
  */
 // --------------------------------------------------------------------
 // Custom App
@@ -49,7 +49,7 @@ angular.module('myApp')
 	$scope.spinner = false;
 	
 	// Get application configuration
-	$scope.loadConfig = function() {
+	function loadConfig() {
 		$http({
 			mehtod : 'GET',
 			url : 'rest/config.php',
@@ -64,6 +64,9 @@ angular.module('myApp')
 	}
 	
 	$scope.refresh = function() {
+		refresh();
+	}
+	function refresh() {
 		$scope.load();
 	}
 	
@@ -71,7 +74,7 @@ angular.module('myApp')
 	// Data load functions
 	
 	// Load own data
-	$scope.loadOwn = function() {
+	function loadOwn() {
 		$scope.spinner = true;
 		
 		$http({
@@ -130,6 +133,9 @@ angular.module('myApp')
 	
 	// Function to add a new record
 	$scope.insert = function(index) {
+		insert(index);
+	}
+	function insert(index) {
 		$scope.spinner = true;
 		
 		console.log($scope.form);
@@ -187,10 +193,13 @@ angular.module('myApp')
 				});
 			}
 		}
-	};
+	}
 
 	// Function to close the edit modal after update or insert
 	$scope.closeEditModal = function() {
+		closeEditModel();
+	}
+	function closeEditModel() {
 		$('#editrecord').modal('hide'); // Close the modal
 		$scope.$broadcast('show-errors-check-validity');
 		$scope.$broadcast('show-errors-reset');
@@ -204,6 +213,9 @@ angular.module('myApp')
 	
 	// Function to delete a single row based on index
 	$scope.deleteActiviteit = function(index) {
+		deleteActiviteit(index);
+	}
+	function deleteActiviteit(index) {
 		$scope.spinner = true;
 		
 		$http({
@@ -230,13 +242,16 @@ angular.module('myApp')
 			$scope.messagelocal = response.data.message;
 			$scope.spinner = false;
 		});
-	};
+	}
 
 	// ------------------------------------------------------------
 	// Form handing
 
 	// Function to reset the form for a new record
 	$scope.new = function() {
+		newActiviteit();
+	}
+	function newActiviteit() {
 		$scope.form = {}; // Destroy the current form, if any
 		$scope.original = angular.copy($scope.form);
 		
@@ -339,8 +354,8 @@ angular.module('myApp')
 		return array;
 	}
 
-	$scope.loadConfig();
+	loadConfig();
 	// First load own data, refresh when load is complete
-	$scope.loadOwn();
+	loadOwn();
 	
 });	

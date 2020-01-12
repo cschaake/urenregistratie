@@ -4,7 +4,7 @@
  *
  * Rest service voor goedkeuren van uren
  *
- * PHP version 5.4
+ * PHP version 7.4
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -15,10 +15,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2019 Schaake.nu
+ * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version    1.2.1
+ * @version    1.2.3
  * 
  * @var mysqli $mysqli
  * @var Authenticate $authenticate
@@ -156,6 +156,7 @@ function postOpleidingsuren($input)
 	}
 
 	$uur_obj = new Uur($json->username, $json->activiteit, $json->rol, "1-1-" . $json->datum, "00:00", "00:00", $json->uren);
+	$uur_obj->addGroep(1);
     $opleidingsuren_obj = new Opleidingsuren($mysqli);
 
     // Update record

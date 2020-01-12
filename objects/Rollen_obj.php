@@ -90,12 +90,13 @@ class Rollen
             INSERT
 				ura_rollen
             SET
-                rol = ?";
+                rol = ?,
+                puntenSparen = ?";
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('s', $record->rol);
+            $stmt->bind_param('si', $record->rol, $record->puntenSparen);
             $stmt->execute();
             $stmt->store_result();
 
@@ -212,14 +213,15 @@ class Rollen
             UPDATE
 				ura_rollen
             SET
-                rol = ?
+                rol = ?,
+                puntenSparen = ?
 			WHERE
 				id = ?";
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('si', $record->rol, $record->id);
+            $stmt->bind_param('sii', $record->rol, $record->puntenSparen, $record->id);
             $stmt->execute();
             $stmt->store_result();
 

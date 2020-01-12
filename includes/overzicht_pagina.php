@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.1
+ * @version    1.2.3
  */
 ?>
 
@@ -34,21 +34,21 @@
 						<span class="glyphicon glyphicon-user" style="font-size:7em"></span>
 					</div>
 					<div class="col-sm-9 text-right">
-						<table class="table">
-							<tr>
-								<th>Naam</th>
+						<table class="table"><caption>Gebruiker gegevens</caption>
+							<tr scope="row">
+								<th scope="row">Naam</th>
 								<td>{{ self.firstname }} {{ self.lastname }}</td>
 							</tr>
 							<tr>
-								<th>Login naam</th>
+								<th scope="row">Login naam</th>
 								<td>{{ self.username }}</td>
 							</tr>
 							<tr>
-								<th>Email</th>
+								<th scope="row">Email</th>
 								<td>{{ self.email }}</td>
 							</tr>
 							<tr>
-								<th>Rollen</th>
+								<th scope="row">Rollen</th>
 								<td>
 									<div ng-repeat="certificaat in certificaten">
 										{{ certificaat.rol }}
@@ -85,29 +85,29 @@
 
 			<div ng-init="showbewaking=false">
 				<div ng-show="showbewaking" class="panel-body ">
-					<table class="table">
+					<table class="table"><caption>Punten en bestellingen</caption>
 						<tr>
-							<th>Totaal gespaarde punten</th>
+							<th scope="row">Totaal gespaarde punten</th>
 							<td>{{ punten.totaal }}</td>
 						</tr>
 						<tr>
-							<th>Ingeleverde punten</th>
+							<th scope="row">Ingeleverde punten</th>
 							<td>{{ punten.gebruikt }}</td>
 						</tr>
 						<tr>
-							<th>Te gebruiken punten</th>
+							<th scope="row">Te gebruiken punten</th>
 							<td>{{ punten.totaal - punten.gebruikt }}</td>
 						</tr>
 						<tr>
-							<th>Openstaand bedrag</th>
+							<th scope="row">Openstaand bedrag</th>
 							<td>€ 0.00</td>
 						</tr>
 						<tr>
-							<th>Aantal openstaande bestellingen</th>
+							<th scope="row">Aantal openstaande bestellingen</th>
 							<td>0</td>
 						</tr>
 						<tr>
-							<th>Aantal geleverde bestellingen</th>
+							<th scope="row">Aantal geleverde bestellingen</th>
 							<td>0</td>
 						</tr>
 						
@@ -191,29 +191,29 @@
 
 			<div ng-init="showbewaking=false">
 				<div ng-show="showbewaking" class="panel-body ">
-					<table class="table">
+					<table class="table"><caption>Geregistreerde uren</caption>
 						<tr>
-							<th>Laatste certificering</th>
+							<th scope="row">Laatste certificering</th>
 							<td>{{ certificaat.gecertificeerd }}</td>
 						</tr>
 						<tr>
-							<th>Nieuwe certificering</th>
+							<th scope="row">Nieuwe certificering</th>
 							<td>{{ certificaat.verloopt }}</td>
 						</tr>
 						<tr>
-							<th>Aantal te maken uren</th>
+							<th scope="row">Aantal te maken uren</th>
 							<td>{{ certificaat.uren | number : 1 }}</td>
 						</tr>
 						<tr>
-							<th>Aantal ingevoerde uren</th>
+							<th scope="row">Aantal ingevoerde uren</th>
 							<td>{{ certificaat.ingevoerd | number : 1 }}</td>
 						</tr>
 						<tr>
-							<th>Aantal goedgekeurde uren</th>
+							<th scope="row">Aantal goedgekeurde uren</th>
 							<td>{{ certificaat.goedgekeurd | number : 1 }}</td>
 						</tr>
 						<tr>
-							<th>Aantal afgekeurde uren</th>
+							<th scope="row">Aantal afgekeurde uren</th>
 							<td>{{ certificaat.afgekeurd | number : 1 }}</td>
 						</tr>
 						
@@ -275,17 +275,17 @@
 			<div ng-init="showgoedkeur=false">
 				<div ng-show="showgoedkeur" class="panel-body ">
 					
-					<table class="table">
+					<table class="table"><caption>Goed te keuren uren</caption>
 						<tr>
-							<th>Aantal goed te keuren uren</th>
+							<th scope="row">Aantal goed te keuren uren</th>
 							<td>{{ getTotal(goedtekeuren, 'uren') | number : 1 }}</td>
 						</tr>
 						<tr>
-							<th>Totaal aantal ingevoerde uren</th>
+							<th scope="row">Totaal aantal ingevoerde uren</th>
 							<td>{{ getTotal(goedtekeuren, 'totaaluren') | number : 1 }}</td>
 						</tr>
 						<tr>
-							<th>Rollen</th>
+							<th scope="row">Rollen</th>
 							<td>
 								<div ng-repeat="record in goedtekeuren">
 									{{ record.rol }} {{ record.uren | number : 1 }} uren

@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.2.2
+ * @version    1.2.3
  * 
  * @var mysqli $mysqli
  * @var Authenticate $authenticate
@@ -109,7 +109,7 @@ function postUrenboeken(input $input)
     $jsoncontainer = $input->get_JSON();
 
     // Only admin and super may update records of other users
-    if (! ($authenticate->checkUsername($jsoncontainer->username) || $authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
+    if (! ($authenticate->checkUsername($jsoncontainer[0]->username) || $authenticate->checkGroup('admin') || $authenticate->checkGroup('super'))) {
         http_response_code(403);
         header('Content-Type: application/json');
         echo json_encode(array(

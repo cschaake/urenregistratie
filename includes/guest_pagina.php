@@ -18,11 +18,11 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.3
  */
 ?>
 <div class="jumbotron text-center">
-    <img class="img-rounded img-responsive center-block" src="images/RBA groot.png"></img>
+    <img alt="Reddingsbrigade" class="img-rounded img-responsive center-block" src="images/RBA groot.png"></img>
     <h1>Urenregistratie</h1>
     <hr/>
     <p>Urenregistratie applicatie van Reddingsbrigade Apeldoorn</p>

@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.1
+ * @version    1.2.3
  * 
  * @var mysqli $mysqli
  * @var Users $users
@@ -43,7 +43,7 @@ include_once('objects/Users_obj.php');
 
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="nl">
     <head>
         <title>Urenregistratie - Reddingsbrigade Apeldoorn</title>
         <meta charset="utf-8">

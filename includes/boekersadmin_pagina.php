@@ -17,7 +17,7 @@
  * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.2
+ * @version    1.2.3
  */
 
 /**
@@ -37,7 +37,7 @@
 			<div class="row">
 				<!-- For big displays -->
 				<div class="col-sm-9 hidden-sm hidden-xs">
-					<form role="form" class="form-inline">
+					<form aria-label="filers" role="form" class="form-inline">
 						<div class="form-group"><!-- Number of displayed rows -->
 							<select class="form-control" ng-model="itemsPerPage" id="numberOfRows" ng-options="'Toon ' + option + ' regels' for option in tableListOptions"></select>
 						</div>
@@ -62,7 +62,7 @@
 
 				<!-- for small displays -->
 				<div class="col-sm-12 hidden-lg hidden-md">
-					<form role="form">
+					<form aria-label="filters" role="form">
 						<div class="form-group">
 							<div class="input-group"><!-- Number of displayed tables and refresh data -->
 								<select class="form-control" ng-model="itemsPerPage" id="numberOfRows" ng-options="'Toon ' + option + ' regels' for option in tableListOptions"></select>
@@ -95,33 +95,33 @@
 				-->
 			<div class="table-responsive">
 				<!-- Table list -->
-				<table class="table table-striped table-bordered">
+				<table class="table table-striped table-bordered"><caption>Boerkes</caption>
 					<thead>
 						<!-- Table header -->
 						<!-- Header -->
 						<tr>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'username'">Username</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'username' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'username' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th class="hidden-xs">
+							<th scope="col" class="hidden-xs">
 								<a href="" ng-click="sortType = 'firstname'">Voornaam</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'firstname' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'firstname' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'lastname'">Achternaam</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'lastname' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'lastname' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th/>
+							<th scope="col"/>
 						</tr>
 
 					</thead>
@@ -199,7 +199,7 @@
 	<div id="editrecord" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Edit form -->
-			<form class="form-horizontal" role="form" novalidate name="editForm">
+			<form aria-label="edit" class="form-horizontal" role="form" novalidate name="editForm">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -240,21 +240,17 @@
 									<input id="{{ activiteit.id }}" name="activiteit" type="checkbox" value="{{ activiteit.id }}" ng-checked="form.activiteiten.indexOf(activiteit.id) > -1" ng-click="toggleActiviteit(activiteit.id)"/>
 									<label for="{{ activiteit.id }}">{{ activiteit.activiteit }}</label>
 								</div>
-								<!--<div ng-repeat="activiteit in activiteiten">
-									<input id="{{ activiteit.id }}" name="activiteit" type="checkbox" value="{{ activiteit.id }}" ng-checked="form.activiteiten.indexOf(activiteit.id) > -1" ng-click="toggleActiviteit(activiteit.id)"/>
-									<label for="{{ activiteit.id }}">{{ activiteit.activiteit }}</label>
-								</div>-->
 							</div>
 						</div>
 
 						<div class="table-responsive">
-							<table class="table table-striped table-bordered">
+							<table class="table table-striped table-bordered"><caption>Certificaten</caption>
 								<thead>
 									<tr>
-										<th>Rol</th>
-										<th>Gecertificeerd</th>
-										<th>Verloopt</th>
-										<th/>
+										<th scope="col">Rol</th>
+										<th scope="col">Gecertificeerd</th>
+										<th scope="col">Verloopt</th>
+										<th scope="col"/>
 									</tr>
 								</thead>
 								<tbody>
@@ -296,7 +292,7 @@
 	<div id="addcertificaat" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Edit form -->
-			<form class="form-horizontal" role="form" novalidate name="certForm">
+			<form aria-label="Certificaat toevoegen" class="form-horizontal" role="form" novalidate name="certForm">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>

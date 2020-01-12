@@ -4,7 +4,7 @@
  *
  * Rest service voor Rollen
  *
- * PHP version 7.2
+ * PHP version 7.4
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.1
+ * @version    1.2.3
  * 
  * @var mysqli $mysqli
  * @var Authenticate $authenticate
@@ -117,7 +117,7 @@ function postRol($input)
 	    exit;
 	}
 
- 	$rol_obj = new Rol(null, $json->rol);
+ 	$rol_obj = new Rol(null, $json->rol, null, null, $json->puntenSparen);
 
 	$rollen_obj = new Rollen($mysqli);
 
@@ -270,7 +270,7 @@ function putRol($input)
 	    exit;
 	}
 
-	$rol_obj = new Rol($json->id, $json->rol);
+	$rol_obj = new Rol($json->id, $json->rol, null, null, $json->puntenSparen);
 	$rollen_obj = new Rollen($mysqli);
 
 	try {

@@ -18,7 +18,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version    1.2.0
+ * @version    1.2.3
  */
 ?>
 
@@ -37,7 +37,7 @@
 			<div class="row">
 				<!-- For big displays -->
 				<div class="col-sm-9 hidden-sm hidden-xs">
-					<form role="form" class="form-inline">
+					<form aria-label="filter" role="form" class="form-inline">
 						<div class="form-group"><!-- Number of displayed rows -->
 							<select
 								class="form-control"
@@ -103,7 +103,7 @@
 
 				<!-- for small displays -->
 				<div class="col-sm-12 hidden-lg hidden-md">
-					<form role="form">
+					<form aria-label="filter" role="form">
 						<div class="form-group">
 							<div class="input-group"><!-- Number of displayed tables and refresh data -->
 								<select
@@ -176,12 +176,12 @@
 				-->
 			<div class="table-responsive">
 				<!-- Table list -->
-				<table class="table table-striped table-bordered">
+				<table class="table table-striped table-bordered"><caption>Opleidingsuren</caption>
 					<thead>
 						<!-- Table header -->
 						<!-- Header -->
 						<tr>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'voornaam'">voornaam</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'voornaam' && !sortReverse">
@@ -192,7 +192,7 @@
 									</span>
 								</a>
 							</th>
-							<th class="hidden-xs">
+							<th scope="col" class="hidden-xs">
 								<a href="" ng-click="sortType = 'achternaam'">achternaam</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'achternaam' && !sortReverse">
@@ -204,7 +204,7 @@
 								</a>
 							</th>
 
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'datum'">Jaar</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'datum' && !sortReverse">
@@ -216,18 +216,18 @@
 								</a>
 							</th>
 
-							<th>
+							<th scope="col">
 								Aantal
 							</th>
-							<th>
+							<th scope="col">
 
 							</th>
 						</tr>
 
 						<!--- Filters -->
 						<tr ng-show="showFilter">
-							<th>
-								<form role="form" class="form-inline">
+							<th scope="col">
+								<form aria-label="filter" role="form" class="form-inline">
 									<div class="form-group" style="width:100%">
 										<div class="input-group" style="width:100%">
 											<span
@@ -248,8 +248,8 @@
 									</div>
 								</form>
 							</th>
-							<th class="hidden-xs">
-								<form role="form" class="form-inline">
+							<th scope="col" class="hidden-xs">
+								<form aria-label="filter" role="form" class="form-inline">
 									<div class="form-group" style="width:100%">
 										<div class="input-group" style="width:100%">
 											<span
@@ -271,9 +271,9 @@
 								</form>
 							</th>
 
-							<th/>
-							<th/>
-							<th/>
+							<th scope="col"/>
+							<th scope="col"/>
+							<th scope="col"/>
 						</tr>
 					</thead>
 
@@ -354,7 +354,7 @@
 	<div id="editrecord" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Edit form -->
-			<form class="form-horizontal" role="form" novalidate name="editForm">
+			<form aria-label="Opleidingsuren wijzigen of toevoegen" class="form-horizontal" role="form" novalidate name="editForm">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>

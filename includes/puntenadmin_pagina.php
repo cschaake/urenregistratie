@@ -59,17 +59,18 @@
                     <div class="table-responsive">
                         <!-- Table list -->
                         <table class="table table-striped table-bordered">
+                        	<caption>Punten waardes</caption>
                             <thead>
                                 <!-- Table header -->
                                 <!-- Header -->
                                 <tr>
-                                    <th>
+                                    <th scope="row">
                                         Datum vanaf
                                     </th>
-                                    <th>
+                                    <th scope="row">
                                         Waarde
                                     </th>
-                                    <th/>
+                                    <th scope="row"/>
                                 </tr>
 
                             </thead>

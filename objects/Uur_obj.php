@@ -2,7 +2,7 @@
 /**
  * Class Uur | objects/Uur_obj.php
  *
- * PHP version 7.2
+ * PHP version 7.4
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -13,10 +13,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2019 Schaake.nu
+ * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.7
- * @version    1.2.0
+ * @version    1.2.3
  */
 
 /**
@@ -285,7 +285,7 @@ class Uur
      * @param string $groep
      * @return bool Succes vlag
      */
-    public function addGroep($groep_id, $groep)
+    public function addGroep($groep_id, $groep = null)
     {
         $this->groep_id = (int) filter_var($groep_id, FILTER_SANITIZE_STRING);
         $this->groep = filter_var($groep, FILTER_SANITIZE_STRING, FILTER_CUSTOM);

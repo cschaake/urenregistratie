@@ -16,7 +16,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.2
+ * @version    1.2.3
  */
 
 /** 
@@ -32,7 +32,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>                        
 			</button>
-			<a class="pull-left" href=""><img src="images/Icoon RBA.jpg" height="50px"></img></a>
+			<a class="pull-left" href=""><img alt="Reddingsbrigade" src="images/Icoon RBA.jpg" height="50px"></img></a>
 			<a class="navbar-brand" href="/urenregistratie/index.php">Urenregistratie </a>
 		</div>
 		<div class="collapse navbar-collapse" id="myNavbar">

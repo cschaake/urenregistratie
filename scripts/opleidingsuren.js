@@ -3,7 +3,7 @@
  *
  * AngularJS applicatie voor opleidingsuren pagina
  *
- * PHP version 5.4
+ * PHP version 7.4
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -14,10 +14,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.5
- * @version    1.2.1
+ * @version    1.2.3
  */
 
 // --------------------------------------------------------------------
@@ -49,7 +49,7 @@ angular.module('myApp')
 	$scope.spinner = false;
 	
 	// Get application configuration
-	$scope.loadConfig = function() {
+	function loadConfig() {
 		$http({
 			mehtod : 'GET',
 			url : 'rest/config.php',
@@ -64,14 +64,14 @@ angular.module('myApp')
 	}
 	
 	// Function to refresh the table data (retrieve data again from backend)
-	$scope.refresh = function() {
-		$scope.load();
+	function refresh() {
+		load();
 	}
 	
 	// ------------------------------------------------------------
 	// Data load functions
 	
-	$scope.load = function() {
+	function load() {
 		$scope.spinner = true;
 						
 		// Load uren
@@ -117,6 +117,9 @@ angular.module('myApp')
 
 	// Function to add a new record
 	$scope.insert = function(index) {
+		insert(index);
+	}
+	function insert(index) {
 		$scope.spinner = true;
 		
 		$scope.$broadcast('show-errors-check-validity');
@@ -127,7 +130,7 @@ angular.module('myApp')
 			$scope.form.akkoord = 1;
 			$scope.form.activiteit = 2;
 			$scope.form.groep_id = 1;
-			$scope.form.rol = 3;
+			$scope.form.rol = 11;
 			
 			if ($scope.form.edit === true) {
 				// The true value is set in the $scope.edit function
@@ -178,7 +181,7 @@ angular.module('myApp')
 						$scope.message = response.data.message;
 						$scope.spinner = false;
 					} else {
-						$scope.refresh();
+						refresh();
 					
 						$scope.closeEditModal();
 					}
@@ -189,10 +192,13 @@ angular.module('myApp')
 				
 			}
 		}
-	};
+	}
 	
 	// Function to close the edit modal after update or insert
 	$scope.closeEditModal = function() {
+		closeEditModal();
+	}
+	function closeEditModal() {
 		$('#editrecord').modal('hide'); // Close the modal
 		$scope.$broadcast('show-errors-check-validity');
 		$scope.$broadcast('show-errors-reset');
@@ -206,6 +212,9 @@ angular.module('myApp')
 
 	// Function to delete a single row based on index 
 	$scope.delete = function(index) {
+		deleteUur(index);
+	}
+	function deleteUur(index) {
 		$scope.spinner = true;
 
 		$http({
@@ -235,13 +244,16 @@ angular.module('myApp')
 		});
 		
 		
-	};
+	}
 
 	// ------------------------------------------------------------
 	// Form handing
 
 	// Function to reset the form for a new record
 	$scope.new = function() {
+		newForm();
+	}
+	function newForm() {
 		$scope.form = {}; // Destroy the current form, if any
 		$scope.form.uren = 25;
 		$scope.original = angular.copy($scope.form); // Copy the current form to the temporary original object
@@ -250,6 +262,9 @@ angular.module('myApp')
 	
 	// Function to fill the form with the record to be editted
 	$scope.edit = function(index) {
+		edit(index);
+	}
+	function edit(index) {
 		$scope.form = angular.copy($scope.uren[index]); // Copy the object row to the temporary form object
 		$scope.form.index = index; // Store the index of the original record
 		$scope.form.edit = true; // Set the edit variable to true, needed in the $scope.insert function
@@ -258,6 +273,9 @@ angular.module('myApp')
 									
 	// Function to reset the form to its original state
 	$scope.reset = function() {
+		reset();
+	}
+	function reset() {
 		$scope.$broadcast('show-errors-check-validity');
 		$scope.$broadcast('show-errors-reset');
 
@@ -338,8 +356,8 @@ angular.module('myApp')
 		return array;
 	}
 	
-	$scope.loadConfig();
+	loadConfig();
 	
-	$scope.refresh();
+	refresh();
 	
 });

@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.3
  */
 ?>
 
@@ -42,7 +42,7 @@
 			<div class="row">
 				<!-- For big displays -->
 				<div class="col-sm-9 hidden-sm hidden-xs">
-					<form role="form" class="form-inline">
+					<form aria-label="filter" role="form" class="form-inline">
 						<div class="form-group"><!-- Number of displayed rows -->
 							<select
 								class="form-control"
@@ -110,7 +110,7 @@
 
 				<!-- for small displays -->
 				<div class="col-sm-12 hidden-lg hidden-md">
-					<form role="form">
+					<form aria-label="filter" role="form">
 						<div class="form-group">
 							<div class="input-group"><!-- Number of displayed tables and refresh data -->
 								<select
@@ -181,12 +181,12 @@
 				-->
 			<div class="table-responsive">
 				<!-- Table list -->
-				<table class="table table-striped table-bordered">
+				<table class="table table-striped table-bordered"><caption>Uren</caption>
 					<thead>
 						<!-- Table header -->
 						<!-- Header -->
 						<tr>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'datum'">Datum</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'datum' && !sortReverse">
@@ -197,7 +197,7 @@
 									</span>
 								</a>
 							</th>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'voornaam'">voornaam</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'voornaam' && !sortReverse">
@@ -208,7 +208,7 @@
 									</span>
 								</a>
 							</th>
-							<th class="hidden-xs">
+							<th scope="col" class="hidden-xs">
 								<a href="" ng-click="sortType = 'achternaam'">achternaam</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'achternaam' && !sortReverse">
@@ -219,7 +219,7 @@
 									</span>
 								</a>
 							</th>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'activiteit'">Activiteit</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'activiteit' && !sortReverse">
@@ -230,7 +230,7 @@
 									</span>
 								</a>
 							</th>
-							<th class="hidden-xs hidden-sm">
+							<th scope="col" class="hidden-xs hidden-sm">
 								<a href="" ng-click="sortType = 'rol'">Rol</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'rol' && !sortReverse">
@@ -241,16 +241,16 @@
 									</span>
 								</a>
 							</th>
-							<th class="hidden-xs hidden-sm hidden-md">
+							<th scope="col" class="hidden-xs hidden-sm hidden-md">
 								Start
 							</th>
-							<th class="hidden-xs hidden-sm hidden-md">
+							<th scope="col" class="hidden-xs hidden-sm hidden-md">
 								Eind
 							</th>
-							<th>
+							<th scope="col">
 								Aantal
 							</th>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'akkoord'">Akkoord</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'akkoord' && !sortReverse">
@@ -265,9 +265,9 @@
 
 						<!--- Filters -->
 						<tr ng-show="showFilter">
-							<th/>
-							<th>
-								<form role="form" class="form-inline">
+							<th scope="col"/>
+							<th scope="col">
+								<form  aria-label="filter" role="form" class="form-inline">
 									<div class="form-group" style="width:100%">
 										<div class="input-group" style="width:100%">
 											<span
@@ -287,8 +287,8 @@
 									</div>
 								</form>
 							</th>
-							<th class="hidden-xs">
-								<form role="form" class="form-inline">
+							<th scope="col" class="hidden-xs">
+								<form aria-label="filter" role="form" class="form-inline">
 									<div class="form-group" style="width:100%">
 										<div class="input-group" style="width:100%">
 											<span
@@ -308,8 +308,8 @@
 									</div>
 								</form>
 							</th>
-							<th>
-								<form role="form" class="form-inline">
+							<th scope="col">
+								<form aria-label="filter" role="form" class="form-inline">
 									<div class="form-group" style="width:100%">
 										<div class="input-group" style="width:100%">
 											<span
@@ -329,8 +329,8 @@
 									</div>
 								</form>
 							</th>
-							<th class="hidden-xs hidden-sm">
-								<form role="form" class="form-inline">
+							<th scope="col" class="hidden-xs hidden-sm">
+								<form aria-label="filter" role="form" class="form-inline">
 									<div class="form-group" style="width:100%">
 										<div class="input-group" style="width:100%">
 											<span
@@ -350,10 +350,10 @@
 									</div>
 								</form>
 							</th>
-							<th class="hidden-xs hidden-sm hidden-md"/>
-							<th class="hidden-xs hidden-sm hidden-md"/>
-							<th/>
-							<th/>
+							<th scope="col" class="hidden-xs hidden-sm hidden-md"/>
+							<th scope="col" class="hidden-xs hidden-sm hidden-md"/>
+							<th scope="col"/>
+							<th scope="col"/>
 						</tr>
 					</thead>
 
@@ -486,7 +486,7 @@
 	-->
 	<div id="afkeur" class="modal" role="dialog">
 		<div class="modal-dialog">
-		<form class="form-horizontal" role="form" novalidate name="editForm">
+		<form aria-label="Afkeuren/goedkeuren" class="form-horizontal" role="form" novalidate name="editForm">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button

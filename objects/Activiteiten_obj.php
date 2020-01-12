@@ -98,14 +98,14 @@ class Activiteiten
         // Insert de nieuwe activiteit
         $prep_stmt = "
             INSERT INTO
-                ura_activiteiten (activiteit, groep_id, datum, begintijd, eindtijd, opbouw, opmerkingVerplicht)
+                ura_activiteiten (activiteit, groep_id, datum, begintijd, eindtijd, opbouw, opmerkingVerplicht, puntenSparen)
             VALUES
-				(?,?,?,?,?,?,?)";
+				(?,?,?,?,?,?,?,?)";
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('sisssii', $activiteit->activiteit, $activiteit->groep_id, $activiteit->datum, $activiteit->begintijd, $activiteit->eindtijd, $activiteit->opbouw, $activiteit->opmerkingVerplicht);
+            $stmt->bind_param('sisssiii', $activiteit->activiteit, $activiteit->groep_id, $activiteit->datum, $activiteit->begintijd, $activiteit->eindtijd, $activiteit->opbouw, $activiteit->opmerkingVerplicht, $activiteit->puntenSparen);
             $stmt->execute();
             $stmt->store_result();
 
@@ -273,7 +273,8 @@ class Activiteiten
                 activiteit = ?,
                 groep_id = ?,
                 opmerkingVerplicht = ?,
-                opbouw = ?
+                opbouw = ?,
+                puntenSparen = ?
             WHERE
                 id = ?";
 
@@ -281,16 +282,16 @@ class Activiteiten
 
         if ($stmt) {
             $stmt->bind_param(
-                'ssssiiii', 
+                'ssssiiiii', 
                 $activiteit->datum, 
                 $activiteit->begintijd, 
                 $activiteit->eindtijd, 
                 $activiteit->activiteit, 
                 $activiteit->groep_id, 
-                $activiteit->id,
                 $activiteit->opmerkingVerplicht,
-                $activiteit->opbouw
-                
+                $activiteit->opbouw,
+                $activiteit->puntenSparen,
+                $activiteit->id
                 );
             $stmt->execute();
             $stmt->store_result();

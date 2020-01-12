@@ -18,7 +18,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.3
  */
 
 ?>
@@ -35,7 +35,7 @@
             <div class="row">
                 <!-- For big displays -->
                 <div class="col-sm-9">
-                    <form role="form" class="form-inline">
+                    <form aria-label="Ververs pagina" role="form" class="form-inline">
                         <div class="form-group"><!-- Refresh data -->
                             <button class="btn btn-default" ng-click="refresh()" id="refreshData">Ververs pagina <span class="glyphicon glyphicon-refresh"></span></button>
                         </div>
@@ -56,15 +56,15 @@
                         -->
                     <div class="table-responsive">
                         <!-- Table list -->
-                        <table class="table table-striped table-bordered">
+                        <table class="table table-striped table-bordered"><caption>Groepen</caption>
                             <thead>
                                 <!-- Table header -->
                                 <!-- Header -->
                                 <tr>
-                                    <th>
+                                    <th scope="col">
                                         Groep
                                     </th>
-                                    <th/>
+                                    <th scope="col"/>
                                 </tr>
 
 
@@ -94,6 +94,7 @@
 
                 </div>
             </div>
+            
 
             <div id="rollenPanel" class="panel panel-default">
                 <div class="panel-heading">
@@ -107,15 +108,18 @@
                         -->
                     <div class="table-responsive">
                         <!-- Table list -->
-                        <table class="table table-striped table-bordered">
+                        <table class="table table-striped table-bordered"><caption>Rollen</caption>
                             <thead>
                                 <!-- Table header -->
                                 <!-- Header -->
                                 <tr>
-                                    <th>
+                                    <th scope="col">
                                         Rol
                                     </th>
-                                    <th/>
+                                    <th scope="col">
+                                    	Punten
+                                    </th>
+                                    <th scope="col"/>
                                 </tr>
                             </thead>
 
@@ -123,6 +127,7 @@
                             <tbody>
                                 <tr ng-repeat="rol in rollen">
                                     <td>{{ rol.rol }}</td>
+                                    <td>{{ rol.puntenSparen }}</td>	
                                     <td class="text-right" style="width:7em;">
                                         <button type="button" style="width:3em;" class="btn btn-xs btn-default" data-toggle="modal" data-target="#deleterol" ng-click="editrol(rollen.indexOf(rol))"><span class="glyphicon glyphicon glyphicon-trash"></span></button>&nbsp;
                                         <button type="button" style="width:3em;" class="btn btn-xs btn-default" data-toggle="modal" data-target="#editrol" ng-click="editrol(rollen.indexOf(rol))"><span class="glyphicon glyphicon glyphicon glyphicon-pencil"></span></button>
@@ -156,24 +161,24 @@
                         -->
                     <div class="table-responsive">
                         <!-- Table list -->
-                        <table class="table table-striped table-bordered">
+                        <table class="table table-striped table-bordered"><caption>Certificaten</caption>
                             <thead>
                                 <!-- Table header -->
                                 <!-- Header -->
                                 <tr>
-                                    <th>
+                                    <th scope="col">
                                         Certificaat
                                     </th>
-                                    <th>
+                                    <th scope="col">
                                         Groep
                                     </th>
-                                    <th>
+                                    <th scope="col">
                                         Looptijd
                                     </th>
-                                    <th>
+                                    <th scope="col">
                                         Uren
                                     </th>
-                                    <th/>
+                                    <th scope="col"/>
                                 </tr>
 
                             </thead>
@@ -217,7 +222,7 @@
 		<div class="modal-dialog">
 			
 			<!-- Edit form -->
-			<form class="form-horizontal" role="form" novalidate name="editgroepForm">
+			<form aria-label="Groep wijzigen/toevoegen" class="form-horizontal" role="form" novalidate name="editgroepForm">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -287,7 +292,7 @@
 	<div id="editrol" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Edit form -->
-			<form class="form-horizontal" role="form" novalidate name="editrolForm">
+			<form aria-label="Rol wijzigen/toevoegen" class="form-horizontal" role="form" novalidate name="editrolForm">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -314,6 +319,14 @@
 									required/>
 							</div>
 						</div>
+					
+						<div class="form-group has-feedback"
+    						show-errors="{ showSuccess: true }">
+    						<div class="col-sm-2"></div>
+    						<div class="col-sm-10">
+    							<input type="checkbox" name="punten" ng-model="rollen.form.puntenSparen"/> Punten sparen
+    						</div>
+    					</div>
 						
 						<br/>
 
@@ -321,6 +334,7 @@
 						<button class="btn btn-default" ng-click="reset()">Reset</button>
 						<button class="btn btn-default" data-dismiss="modal" ng-click="reset()">Annuleer</button>
 					</div>
+					{{ rollen }}
 				</div>
 			</form>
 		</div>
@@ -354,7 +368,7 @@
 	<div id="editcertificaat" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Edit form -->
-			<form class="form-horizontal" role="form" novalidate name="editcertificaatForm">
+			<form aria-label="Certificaat wijzigen/toevoegen" class="form-horizontal" role="form" novalidate name="editcertificaatForm">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>

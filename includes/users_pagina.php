@@ -16,7 +16,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.0
+ * @version    1.2.3
  */
 ?>
 <div ng-app="myApp" ng-controller="usersCtrl">
@@ -29,7 +29,7 @@
 			<div class="row">
 				<!-- For big displays -->
 				<div class="col-sm-9 hidden-sm hidden-xs">
-					<form role="form" class="form-inline">
+					<form aria-label="filter" role="form" class="form-inline">
 						<div class="form-group"><!-- Number of displayed rows -->
 							<select class="form-control" ng-model="itemsPerPage" id="numberOfRows" ng-options="'Show ' + option + ' rows' for option in tableListOptions"></select>
 						</div>
@@ -58,7 +58,7 @@
 
 				<!-- for small displays -->
 				<div class="col-sm-12 hidden-lg hidden-md">
-					<form role="form">
+					<form aria-label="filter" role="form">
 						<div class="form-group">
 							<div class="input-group"><!-- Number of displayed tables and refresh data -->
 								<select class="form-control" ng-model="itemsPerPage" id="numberOfRows" ng-options="'Show ' + option + ' rows' for option in tableListOptions"></select>
@@ -95,69 +95,69 @@
 			<div class="table-responsive">
 				<!-- Table list -->
 
-				<table class="table table-striped table-bordered">
+				<table class="table table-striped table-bordered"><caption>Users</caption>
 					<thead>
 						<!-- Table header -->
 						<!-- Header -->
 						<tr>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'username'">Username</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'username' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'username' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th class="hidden-xs">
+							<th scope="col" class="hidden-xs">
 								<a href="" ng-click="sortType = 'firstname'">First name</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'firstname' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'firstname' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'lastname'">Last name</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'lastname' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'lastname' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'email'">Email</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'email' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'email' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th class="hidden-xs hidden-sm hidden-md">
+							<th scope="col" class="hidden-xs hidden-sm hidden-md">
 								<a href="" ng-click="sortType = 'failedLogin'">Failed login</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'failedLogin' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'failedLogin' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th class="hidden-xs hidden-sm hidden-md">
+							<th scope="col" class="hidden-xs hidden-sm hidden-md">
 								<a href="" ng-click="sortType = 'lastLogin'">Last login</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'lastLogin' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'lastLogin' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th class="hidden-xs hidden-sm hidden-md">
+							<th scope="col" class="hidden-xs hidden-sm hidden-md">
 								<a href="" ng-click="sortType = 'status'">Status</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'status' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'status' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th>
+							<th scope="col">
 								<a href="" ng-click="sortType = 'created'">Created</a>
 								<a href="" ng-click="sortReverse = !sortReverse">
 									<span ng-show="sortType == 'created' && !sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet-alt pull-right"></span></span>
 									<span ng-show="sortType == 'created' && sortReverse"><span class="glyphicon glyphicon-sort-by-alphabet pull-right"></span></span>
 								</a>
 							</th>
-							<th>Groups</th>
-							<th/>
+							<th scope="col">Groups</th>
+							<th scope="col"/>
 						</tr>
 
 
@@ -244,7 +244,7 @@
 	<div id="editrecord" class="modal" role="dialog">
 		<div class="modal-dialog">
 			<!-- Edit form -->
-			<form class="form-horizontal" role="form" novalidate name="editForm">
+			<form aria-label="User wijzigen/toevoegen" class="form-horizontal" role="form" novalidate name="editForm">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal">&times;</button>

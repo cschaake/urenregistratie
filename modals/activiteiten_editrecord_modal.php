@@ -2,7 +2,7 @@
 /**
  * Modal editrecord | modals/activiteiten_editrecord_modal.php
  *
- * PHP version 7.2
+ * PHP version 7.4
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -13,10 +13,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2019 Schaake.nu
+ * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.2.0
- * @version    1.2.2
+ * @version    1.2.3
  */
 ?>
 
@@ -110,6 +110,14 @@
 						<div class="col-sm-2"></div>
 						<div class="col-sm-10">
 							<input type="checkbox" name="opmerkingVerplicht" ng-model="form.opmerkingVerplicht"/> Opmerking verplicht bij boeken
+						</div>
+					</div>
+					
+					<div class="form-group has-feedback"
+						show-errors="{ showSuccess: true }">
+						<div class="col-sm-2"></div>
+						<div class="col-sm-10">
+							<input type="checkbox" name="puntenSparen" ng-model="form.puntenSparen"/> Punten sparen
 						</div>
 					</div>
 

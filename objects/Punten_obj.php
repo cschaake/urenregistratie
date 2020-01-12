@@ -16,7 +16,7 @@
  * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.2.1
- * @version    1.2.2
+ * @version    1.2.3
  */
 
 /**
@@ -28,7 +28,7 @@ require_once ('Punt_obj.php');
  * Class Punten - Collection van Punt objecten
  *
  * @since Class available since Release 1.0.0
- * @version 1.2.2
+ * @version 1.2.3
  */
 class Punten
 {
@@ -389,7 +389,7 @@ class Punten
         
         if (isset($this->punten)) {
             foreach($this->punten as $punt) {
-                if (strtotime($punt->datum) > strtotime(PUNTENGELDIGHEID)) {
+                if ((strtotime($punt->datum) > strtotime(PUNTENGELDIGHEID)) && (strtotime($punt->datum) > strtotime(STARTPUNTEN))) { 
                     $this->totaalPunten = $this->totaalPunten + $punt->punten;
                     $this->puntenGebruikt = $this->puntenGebruikt + $punt->puntenGebruikt;
                 }

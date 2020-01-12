@@ -22,6 +22,10 @@
  */
 include_once ('Uur_obj.php');
 include_once ('User_obj.php');
+require_once ('Punten_obj.php');
+require_once ('PuntenWaardes_obj.php');
+require_once ('Activiteiten_obj.php');
+require_once ('Rollen_obj.php');
 
 /**
  * Class Opleidingsuren
@@ -323,12 +327,13 @@ class Opleidingsuren
                 eind = '00:00:00',
                 uren = ?,
                 akkoord = 1,
-                flag = 1";
+                flag = 1,
+                groep_id = ?";
 
         $stmt = $this->mysqli->prepare($prep_stmt);
 
         if ($stmt) {
-            $stmt->bind_param('siisd', $record->username, $record->activiteit_id, $record->rol_id, $record->datum, $record->uren);
+            $stmt->bind_param('siisdi', $record->username, $record->activiteit_id, $record->rol_id, $record->datum, $record->uren, $record->groep_id);
             $stmt->execute();
             $stmt->store_result();
 
@@ -341,6 +346,18 @@ class Opleidingsuren
             throw new Exception('Database error', 500);
         }
         $this->read();
+        
+
+            print_r($this);
+            // Geef het juiste aantal punten vrij bij goedkeuren.
+            $waardePunten_obj = new PuntenWaardes($this->mysqli);
+            $waardePunten_obj->read();
+            $waardePunten = $waardePunten_obj->getPuntenWaarde(date('Y-m-d'));
+            
+            $punt_obj = new Punt(0, $this->uren[0]->username, $this->uren[0]->datum, $this->uren[0]->start, $this->uren[0]->eind, $this->uren[0]->id, date('Y-m-d'), $this->uren[0]->uren, $waardePunten, 0);
+            $punten = new Punten($this->mysqli);
+            $punten->create($punt_obj);
+ 
 
         return true;
     }
@@ -385,4 +402,6 @@ class Opleidingsuren
 
         return $result;
     }
+    
+
 }

@@ -16,7 +16,7 @@
  * @copyright  2019 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.2.0
- * @version    1.2.0
+ * @version    1.2.3
  * 
  * @var string $startdate
  * @var string $enddate
@@ -147,21 +147,21 @@
 					<div class="form-group">
     					<label class="col-sm-2"></label>
     					<div class="col-sm-10">
-        					<table class="table table-bordered">
+        					<table class="table table-bordered"><caption>Uren overzicht</caption>
         						<tr>
-        							<td>Aantal uren</td>
+        							<th scope="row">Aantal uren</th>
         							<td>{{ calculateTime(form.eind, form.start, false) }}</td>
         						</tr>
         						<tr>
-        							<td>Extra opbouw uren</td>
+        							<th scope="row">Extra opbouw uren</th>
         							<td>{{ form.start == begintijd ? ExtraBeginUren : '0' }}</td>
         						</tr>
         						<tr>
-        							<td>Extra opruim uren</td>
+        							<th scope="row">Extra opruim uren</th>
         							<td>{{ form.eind == eindtijd ? ExtraEindUren : '0' }}</td>
         						</tr>
         						<tr>
-        							<td><strong>Totaal uren</strong></td>
+        							<th scope="row"><strong>Totaal uren</strong></th>
         							<td><strong>{{ calculateTime(form.eind, form.start, true) }}</strong></td>
         						</tr>
         					</table>

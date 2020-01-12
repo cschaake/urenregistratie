@@ -3,7 +3,7 @@
  *
  * AngularJS application for configuratie pagina
  *
- * PHP version 7.2
+ * PHP version 7.4
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -14,10 +14,10 @@
  *
  * @package    Urenverantwoording
  * @author     Christiaan Schaake <chris@schaake.nu>
- * @copyright  2017 Schaake.nu
+ * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.6
- * @version    1.2.1
+ * @version    1.2.3
  */
 // --------------------------------------------------------------------
 // Custom App
@@ -59,7 +59,7 @@ angular.module('myApp')
 	$scope.groepen.sortReverse = false; // Reverse sort order
 	
 	// Get application configuration
-	$scope.loadConfig = function() {
+	function loadConfig() {
 		$http({
 			mehtod : 'GET',
 			url : 'rest/config.php',
@@ -73,7 +73,7 @@ angular.module('myApp')
 		})
 	}
 	
-	$scope.loadConfiguratie = function() {
+	function loadConfiguratie() {
 		$scope.spinner = true;
 		
 		// Load Configuratie
@@ -107,10 +107,16 @@ angular.module('myApp')
 	
 	// Function to refresh the table data (retrieve data again from backend)
 	$scope.refresh = function() {
-		$scope.loadConfiguratie();
+		refresh();
+	}
+	function refresh() {
+		loadConfiguratie();
 	}
 
 	$scope.reset = function() {
+		reset();
+	}
+	function reset() {
 		$scope.$broadcast('show-errors-reset');
 		
 		$scope.messageGroepen = '';
@@ -123,6 +129,9 @@ angular.module('myApp')
 	}
 	
 	$scope.new = function() {
+		newform();
+	}
+	function newform() {
 		$scope.$broadcast('show-errors-reset');
 		$scope.groepen.form = null;
 		$scope.rollen.form = null;
@@ -131,6 +140,9 @@ angular.module('myApp')
 	
 	// Function fot editing groep
 	$scope.editgroep = function(index) {
+		editgroep(index);
+	}
+	function editgroep(index) {
 		$scope.groepen.form = angular.copy($scope.groepen[index]); 
         $scope.groepen.form.index = index; 
         $scope.groepen.form.edit = true; 
@@ -140,6 +152,9 @@ angular.module('myApp')
 	
 	// Function to add a new record
 	$scope.insertgroep = function(index) {
+		insertgroep(index);
+	}
+	function insertgroep(index) {
 		$scope.$broadcast('show-errors-check-validity');
 		$scope.$broadcast('show-errors-reset');
 		$scope.spinner = true;
@@ -201,10 +216,13 @@ angular.module('myApp')
 						
 			
 		}
-	};
+	}
 	
 	// Function to delete a single row based on index
 	$scope.deletegroep = function(index) {
+		deletegroep(index);
+	}
+	function deletegroep(index) {
 		$scope.$broadcast('show-errors-check-validity');
 		$scope.$broadcast('show-errors-reset');
 		$scope.spinner = true;
@@ -229,10 +247,13 @@ angular.module('myApp')
 			$scope.messageGroepen = response.data.message;
 			$scope.spinner = false;
 		});
-	};
+	}
 
 	// Function fot editing rol
 	$scope.editrol = function(index) {
+		editrol(index);
+	}
+	function editrol(index) {
 		$scope.rollen.form = angular.copy($scope.rollen[index]); 
         $scope.rollen.form.index = index; 
         $scope.rollen.form.edit = true; 
@@ -241,6 +262,9 @@ angular.module('myApp')
 	
 	// Function to add a new rol
 	$scope.insertrol = function(index) {
+		insertrol(index);
+	}
+	function insertrol(index) {
 		$scope.$broadcast('show-errors-check-validity');
 		$scope.$broadcast('show-errors-reset');
 		$scope.spinner = true;
@@ -292,10 +316,13 @@ angular.module('myApp')
 				});
 			}
 		}
-	};
+	}
 	
 	// Function to delete a single row based on index
 	$scope.deleterol = function(index) {
+		deleterol(index);
+	}
+	function deleterol(index) {
 		$scope.$broadcast('show-errors-check-validity');
 		$scope.$broadcast('show-errors-reset');
 		$scope.spinner = true;
@@ -319,12 +346,14 @@ angular.module('myApp')
 			$scope.messageRollen = response.data.message;
 			$scope.spinner = false;
 		});
-	};
+	}
 	
 	// Function for certificaat editing 
 	$scope.editcertificaat = function(index) {
-
-	$scope.certificaten.form = angular.copy($scope.certificaten[index]); 
+		editcertificaat(index);
+	}
+	function editcertificaat(index) {
+		$scope.certificaten.form = angular.copy($scope.certificaten[index]); 
         $scope.certificaten.form.index = index; 
         $scope.certificaten.form.edit = true; 
 
@@ -333,6 +362,9 @@ angular.module('myApp')
 	
 	// Function to add a new certificaat
 	$scope.insertcertificaat = function(index) {
+		insertcertificaat(index);
+	}
+	function insertcertificaat(index) {
 		$scope.$broadcast('show-errors-check-validity');
 		$scope.$broadcast('show-errors-reset');
 		$scope.spinner = true;
@@ -386,10 +418,13 @@ angular.module('myApp')
 				});
 			}
 		}
-	};
+	}
 	
 	// Function to delete a single row based on index
 	$scope.deletecertificaat = function(index) {
+		deletecertificaat(index);
+	}
+	function deletecertificaat(index) {
 		$scope.spinner = true;
 		
 		$http({
@@ -412,10 +447,10 @@ angular.module('myApp')
 			$scope.messageCertificaten = response.data.message;
 			$scope.spinner = false;
 		});
-	};
+	}
 	
-	$scope.loadConfig();
+	loadConfig();
 	
-	$scope.refresh();
+	refresh();
 	
 });

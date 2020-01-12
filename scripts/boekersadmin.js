@@ -397,10 +397,10 @@ angular.module('myApp')
     }
 
     $scope.calcCertificaat = function() {
-    	console.log("CalcCertificaat");
+
 	var l = $scope.certificaten.length;
 	for (var k=0; k<l; k++) {
-		console.log($scope.certificaten);
+
 	    if ($scope.certificaten[k].id === $scope.certificaat.id) {
 	    	
 		if ($scope.certificaat.gecertificeerd) {

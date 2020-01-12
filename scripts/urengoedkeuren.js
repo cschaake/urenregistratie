@@ -3,7 +3,7 @@
  *
  * AngularJS app voor de urengoedkeuren pagina
  *
- * PHP version 7.2
+ * PHP version 7.4
  *
  * LICENSE: This source file is subject to the MIT license
  * that is available through the world-wide-web at the following URI:
@@ -17,7 +17,7 @@
  * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.2
+ * @version    1.2.3
  */
 
 // --------------------------------------------------------------------
@@ -63,11 +63,14 @@ angular.module('myApp')
 	$scope.totalRecords = 0; // Get total unfiltered records
 
 	$scope.uren = '';
+	
+	// @todo check voor opleidingsuren voor button
+	$scope.opleidingBoeken = true;
 
 	$scope.spinner = false;
 	
 	// Get application configuration
-	$scope.loadConfig = function() {
+	function loadConfig() {
 		$http({
 			mehtod : 'GET',
 			url : 'rest/config.php',
@@ -81,14 +84,14 @@ angular.module('myApp')
 		})
 	}
 	
-	$scope.refresh = function() {
-		$scope.load();
+	function refresh() {
+		load();
 	}
 	
 	// ------------------------------------------------------------
 	// Data load functions
 	
-	$scope.load = function() {
+	function load() {
 		$scope.spinner = true;
 						
 		// Load uren
@@ -110,8 +113,7 @@ angular.module('myApp')
 				}
 				$scope.activiteiten = response.data.activiteiten;
 				
-				// @todo check voor opleidingsuren voor button
-				$scope.opleidingBoeken = true;
+				
 				
 				if (angular.isArray(response.data.groepen)) {
 					$scope.groepen = response.data.groepen;
@@ -138,6 +140,9 @@ angular.module('myApp')
 	}
 					
 	$scope.goedkeuren = function(index) {
+		goedkeuren(index);
+	}
+	function goedkeuren(index) {
 		$http({
 			method : 'POST',
 			url : 'rest/goedkeuren.php/' + $scope.form.id + '/goedkeuren',
@@ -156,9 +161,12 @@ angular.module('myApp')
 			$scope.message = response.data.message;
 			$scope.spinner = false;
 		});
-	};
+	}
 	
 	$scope.afkeuren = function(index) {
+		afkeuren(index);
+	}
+	function afkeuren(index) {
 		$http({
 			method : 'POST',
 			data: $scope.form,
@@ -181,13 +189,16 @@ angular.module('myApp')
 		});
 		
 		
-	};
+	}
 
 	// ------------------------------------------------------------
 	// Form handing
 	
 	// Function to fill the form with the record to be editted
 	$scope.edit = function(index) {
+		editForm(index);
+	}
+	function editForm(index) {
 		$scope.form = angular.copy($scope.uren[index]); // Copy the object row to the temporary form object
 		$scope.form.index = index; // Store the index of the original record
 		$scope.form.edit = true; // Set the edit variable to true, needed in the $scope.insert function
@@ -197,6 +208,9 @@ angular.module('myApp')
 
 	// Function to reset the form to its original state
 	$scope.reset = function() {
+		resetForm();
+	}
+	function resetForm() {
 		$scope.$broadcast('show-errors-check-validity');
 		$scope.$broadcast('show-errors-reset');
 		$scope.message = '';
@@ -281,7 +295,7 @@ angular.module('myApp')
 		return out;
 	}
 	
-	$scope.loadConfig();
+	loadConfig();
 
-	$scope.refresh();
+	refresh();
 });

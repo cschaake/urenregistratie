@@ -17,7 +17,7 @@
  * @copyright  2017 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.0.0
- * @version    1.2.1
+ * @version    1.2.3
  */
 
 // --------------------------------------------------------------------
@@ -26,8 +26,13 @@
 angular.module('myApp')
 .controller('gebuikersCtrl',function($scope,$filter,$http) {
 	
+	$scope.certificaten = '';
+	$scope.goedtekeuren = '';
+	$scope.punten = '';
+	$scope.spinner = false;
+
 	// Get application configuration
-	$scope.loadConfig = function() {
+	function loadConfig() {
 		$http({
 			mehtod : 'GET',
 			url : 'rest/config.php',
@@ -41,18 +46,8 @@ angular.module('myApp')
 		})
 	}
 	
-	$scope.certificaten = '';
-	$scope.goedtekeuren = '';
-	$scope.punten = '';
-
-	$scope.spinner = false;
-	
-	$scope.refresh = function() {
-		$scope.loadCertificaten();
-	}
-
 	// Load own data
-	$scope.loadOwn = function() {
+	function loadOwn() {
 		$scope.spinner = true;
 		
 		$http({
@@ -64,7 +59,7 @@ angular.module('myApp')
 				$scope.message = response.data.message;
 			} else {
 				$scope.self = response.data;
-				$scope.refresh();
+				refresh();
 				$scope.spinner = false;
 			}
 		}, function(response) {
@@ -72,7 +67,8 @@ angular.module('myApp')
 		});
 	}
 	
-	$scope.loadCertificaten = function() {
+	// Load certificaten
+	function loadCertificaten() {
 		$scope.spinner = true;
 						
 		// Load uren
@@ -87,7 +83,7 @@ angular.module('myApp')
 			} else {
 				$scope.certificaten = response.data.records;
 				
-				$scope.loadPunten();
+				loadPunten();
 			}
 		}, function(response) {
 			$scope.message = response.data.message;
@@ -95,7 +91,8 @@ angular.module('myApp')
 		});
 	}
 	
-	$scope.loadPunten = function() {
+	// Load punten 	
+	function loadPunten() {
 		$http({
 			method : 'GET',
 			url : 'rest/punten.php/getTotals/' + $scope.self.username,
@@ -107,7 +104,7 @@ angular.module('myApp')
 			} else {
 				$scope.punten = response.data.punten;
 
-				$scope.loadGoedtekeuren();
+				loadGoedtekeuren();
 			}
 		}, function(response) {
 			$scope.message = response.data.message;
@@ -115,7 +112,8 @@ angular.module('myApp')
 		});
 	}
 
-	$scope.loadGoedtekeuren = function() {
+	//Load goed te keuren uren
+	function loadGoedtekeuren() {
 		$http({
 			method : 'GET',
 			url : 'rest/rapportage.php/goedtekeuren/' + $scope.self.username,
@@ -138,6 +136,11 @@ angular.module('myApp')
 			$scope.message = response.data.message;
 			$scope.spinner = false;
 		});
+	}
+	
+	// Refresh data
+	function refresh() {
+		loadCertificaten();
 	}
 	
 	// ------------------------------------------------------------
@@ -172,7 +175,8 @@ angular.module('myApp')
 	}
 
 	// First load own data, refresh when load is complete
-	$scope.loadConfig();
-	$scope.loadOwn();
+	
+	loadConfig();
+	loadOwn();
 	
 });
