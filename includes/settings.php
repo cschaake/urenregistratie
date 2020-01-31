@@ -36,23 +36,4 @@ define("SMTP_HOST", "mercury.schaake.nu");
 define("SMTP_PORT", 25);
 define("SMTP_AUTH", false);
 
-// Moved to configuration
-// Application name
-/*
-define("TITLE", "Urenregistratie Reddingsbrigade Apeldoorn");
-define("APPLICATION_VERSION", "1.2.1");
 
-define("MINIMUM_USERNAME_LENGTH", 5);
-define("MINIMUM_PASSWORD_LENGTH", 8);
-
-define("EMAILFROM", "webmaster@schaake.nu");
-define("EMAILREPLYTO", "noreply@schaake.nu");
-
-// Groep_id voor opleidings uren, wordt gebruikt voor bepalen groep voor vaste opleidingsuren.
-define("OPLEIDINGS_GROEP_ID", 1);
-// Activiteit_id waarbij verplicht opmerking invoeren
-define("ACTIVITEIT_OPMERKING", 21);
-// Toestaan van uren voor en na huidige systeem datum, in PHP formaat. B.v. P3M is 3 maanden.
-define("INVOER_VOOR_HUIDIGE_DATUM", "P24M");
-define("INVOER_NA_HUIDIGE_DATUM", "P3M");
-*/

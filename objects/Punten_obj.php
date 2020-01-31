@@ -16,7 +16,7 @@
  * @copyright  2020 Schaake.nu
  * @license    http://www.opensource.org/licenses/mit-license.html  MIT License
  * @since      File available since Release 1.2.1
- * @version    1.2.3
+ * @version    1.2.4
  */
 
 /**
@@ -28,7 +28,7 @@ require_once ('Punt_obj.php');
  * Class Punten - Collection van Punt objecten
  *
  * @since Class available since Release 1.0.0
- * @version 1.2.3
+ * @version 1.2.4
  */
 class Punten
 {
@@ -107,39 +107,41 @@ class Punten
         $prep_stmt = null;
         $stmt = null;
         
+        if (! $this->_checkDubbelPunten($punt_obj)) {
       
-        $prep_stmt = "
-            INSERT
-				ura_punten
-            SET
-                username = ?,
-                datum = ?,
-                start = ?,
-                eind = ?,
-                uur_id = ?,
-                createDate = ?,
-                punten = ?,
-				waardePunten = ?,
-                puntenGebruikt = ?";
-        
-        $stmt = $this->mysqli->prepare($prep_stmt);
-        
-        if ($stmt) {
-            $stmt->bind_param('ssssisddd', $punt_obj->username, $punt_obj->datum, $punt_obj->start, $punt_obj->eind, $punt_obj->uur_id, $punt_obj->createDate, $punt_obj->punten, $punt_obj->waardePunten, $punt_obj->puntenGebruikt);
-            $stmt->execute();
-            $stmt->store_result();
+            $prep_stmt = "
+                INSERT
+    				ura_punten
+                SET
+                    username = ?,
+                    datum = ?,
+                    start = ?,
+                    eind = ?,
+                    uur_id = ?,
+                    createDate = ?,
+                    punten = ?,
+    				waardePunten = ?,
+                    puntenGebruikt = ?";
             
-            if ($stmt->affected_rows >= 1) {
-                $id = (int) $stmt->insert_id;
-            } else {
+            $stmt = $this->mysqli->prepare($prep_stmt);
+            
+            if ($stmt) {
+                $stmt->bind_param('ssssisddd', $punt_obj->username, $punt_obj->datum, $punt_obj->start, $punt_obj->eind, $punt_obj->uur_id, $punt_obj->createDate, $punt_obj->punten, $punt_obj->waardePunten, $punt_obj->puntenGebruikt);
+                $stmt->execute();
+                $stmt->store_result();
+                
+                if ($stmt->affected_rows >= 1) {
+                    $id = (int) $stmt->insert_id;
+                } else {
+                    $stmt->close();
+                    throw new Exception('Fout bij updaten punt', 500);
+                }
                 $stmt->close();
-                throw new Exception('Fout bij updaten punt', 500);
+            } else {
+                throw new Exception('Database error', 500);
             }
-            $stmt->close();
-        } else {
-            throw new Exception('Database error', 500);
+            $this->read($punt_obj->username, $id);
         }
-        $this->read($punt_obj->username, $id);
         
         return true;
     }
@@ -399,5 +401,51 @@ class Punten
         }
         
         return true;
+    }
+    
+    /**
+     * Method _checkDubbelPunten
+     * Controleer of er al punten zijn uitgegeven op hetzelfde tijdstip
+     *
+     * @access private
+     * @param Punt $punt_obj
+     * @return bool true wanneer reeds punten geboekt zijn
+     * @var string $prep_stmt
+     * @var mysqli_stmt $stmt
+     */
+    private function _checkDubbelPunten(Punt $punt_obj) {
+        $prep_stmt = null;
+        $stmt = null;
+    
+        $prep_stmt = "
+            SELECT id
+            FROM ura_punten
+            WHERE datum = ?
+            AND (start <= ? OR eind >= ?)
+            AND username = ?
+        ";
+            
+        $stmt = $this->mysqli->prepare($prep_stmt);
+          
+        if ($stmt) {
+            $stmt->bind_param('ssss', $punt_obj->datum, $punt_obj->start, $punt_obj->eind, $punt_obj->username);
+                
+            $stmt->execute();
+            $stmt->store_result();
+                
+            if ($stmt->affected_rows < 0) {
+                $stmt->close();
+                throw new Exception('Fout bij bepalen punten overlap', 500);
+            } elseif ($stmt->affected_rows > 0) {
+                $stmt->close();
+                return true;
+            }
+                
+            $stmt->close();
+        } else {
+            throw new Exception('Database error', 500);
+        }
+        
+        return false;
     }
 }
